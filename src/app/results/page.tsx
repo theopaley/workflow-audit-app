@@ -173,6 +173,21 @@ export default function ResultsPage() {
           </div>
         </div>
 
+        {/* CTA */}
+        <div className="flex justify-center">
+          <a
+            href="https://cal.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-8 py-4 text-base font-semibold text-white shadow-md transition-all hover:bg-indigo-500 hover:shadow-lg"
+          >
+            Book a Free Strategy Call
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+              <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
+            </svg>
+          </a>
+        </div>
+
         {/* Priority fixes */}
         <div>
           <h2 className="mb-5 text-xl font-bold text-slate-900">Top 3 Priority Fixes</h2>
@@ -257,12 +272,17 @@ export default function ResultsPage() {
               <path fillRule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clipRule="evenodd" />
             </svg>
           </div>
-          <h2 className="mb-2 text-xl font-bold text-white">
-            Our team will be in touch within 24 hours
+          <h2 className="mb-4 text-xl font-bold text-white">
+            Our team has been notified and will be in touch shortly
           </h2>
-          <p className="mx-auto max-w-md text-sm leading-relaxed text-slate-400">
-            {result.closingMessage}
-          </p>
+          <ul className="mx-auto max-w-md space-y-2 text-left">
+            {result.closingPoints.map((point, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed text-slate-400">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
+                {point}
+              </li>
+            ))}
+          </ul>
         </div>
 
       </main>

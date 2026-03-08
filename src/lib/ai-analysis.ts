@@ -44,7 +44,7 @@ export interface AnalysisResult {
   tierRationale: string;
   areas: AreaResult[];
   topThreePriorities: Priority[];
-  closingMessage: string;
+  closingPoints: string[];
 }
 
 // ─── Analysis function ────────────────────────────────────────────────────────

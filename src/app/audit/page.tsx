@@ -295,6 +295,41 @@ function ScaleInput({
   );
 }
 
+// ─── Glossary tooltips ────────────────────────────────────────────────────────
+
+function GlossaryTooltips({ glossary }: { glossary: Record<string, string> }) {
+  const [openTerm, setOpenTerm] = useState<string | null>(null);
+  const entries = Object.entries(glossary);
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {entries.map(([term, definition]) => (
+        <div key={term} className="relative">
+          <button
+            type="button"
+            className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600"
+            onMouseEnter={() => setOpenTerm(term)}
+            onMouseLeave={() => setOpenTerm(null)}
+            onClick={() => setOpenTerm(openTerm === term ? null : term)}
+          >
+            {term}
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold leading-none text-slate-500">
+              ?
+            </span>
+          </button>
+          {openTerm === term && (
+            <div className="absolute bottom-full left-0 z-10 mb-2 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-lg">
+              <p className="mb-1 text-xs font-semibold text-slate-800">{term}</p>
+              <p className="text-xs leading-relaxed text-slate-600">{definition}</p>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Skip toast ───────────────────────────────────────────────────────────────
 
 function SkipToast({
@@ -565,6 +600,9 @@ export default function AuditPage() {
             <h2 className="text-2xl font-bold leading-snug text-slate-900 sm:text-3xl">
               {question.question}
             </h2>
+
+            {/* Glossary tooltips */}
+            {question.glossary && <GlossaryTooltips glossary={question.glossary} />}
 
             {/* Input */}
             {question.type === "text" && (

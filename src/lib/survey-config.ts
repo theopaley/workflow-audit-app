@@ -8,6 +8,7 @@ export type QuestionType = "text" | "single" | "multi" | "scale";
 // mode "only" — skip if the ONLY selected values are from the trigger list
 //               (used for multi-select software questions where picking
 //               "Nothing / Manual" alongside real tools should not trigger a skip)
+// mode "unless" — skip if the answer does NOT match any of the trigger strings
 
 export type SkipMode = "any" | "only" | "unless";
 
@@ -20,6 +21,12 @@ export interface SkipRule {
 }
 
 export const SKIP_RULES: Record<string, SkipRule> = {
+  // Lead Capture (software) — no software → skip workflow questions
+  lead_capture_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
   // Lead Capture — show follow-up Q2b ONLY when owner doesn't know what % are followed up;
   // skip it silently for all other answers
   lead_capture_q2: {
@@ -28,16 +35,70 @@ export const SKIP_RULES: Record<string, SkipRule> = {
     targetIds: ["lead_capture_q2b"],
   },
 
+  // Lead Follow Up (software) — no software → skip workflow questions
+  lead_followup_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
   // Lead Follow Up — deals go cold very often AND owner admits they lose business
   lead_followup_q2: {
     triggers: ["Very often — we lose business because of it"],
     mode: "any",
   },
 
+  // Appointment Scheduling (software) — no software → skip workflow questions
+  scheduling_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
+  // Proposals & Quoting (software) — no software / don't send proposals → skip section
+  proposals_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
+  // Customer Onboarding (software) — no software → skip workflow questions
+  onboarding_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
+  // Job & Project Management (software) — no software → skip workflow questions
+  project_mgmt_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
+  // Invoicing & Payments (software) — no software → skip workflow questions
+  invoicing_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
+  // Customer Communication (software) — no software → skip workflow questions
+  communication_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
   // Customer Communication — no centralized system exists
   communication_q2: {
     triggers: ["Most of it — we have no real centralized system"],
     mode: "any",
+  },
+
+  // Reviews & Reputation (software) — no software → skip workflow questions
+  reviews_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
+
+  // Re-engagement (software) — no software → skip workflow questions
+  reengagement_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
   },
 
   // Referral Management (software) — only word-of-mouth / no software selected
@@ -52,9 +113,27 @@ export const SKIP_RULES: Record<string, SkipRule> = {
     mode: "any",
   },
 
+  // Reporting & Analytics (software) — no software → skip workflow questions
+  reporting_software: {
+    triggers: ["None — We don't use any software for this"],
+    mode: "only",
+  },
 };
 
 export const SKIPPED_VALUE = "SKIPPED: No system in place";
+
+// ─── Shared glossary definitions ─────────────────────────────────────────────
+
+const G: Record<string, string> = {
+  CRM: "Customer Relationship Management — software that keeps all your leads, deals, and customer history in one place so nothing falls through the cracks.",
+  "automated sequences":
+    "Pre-written messages that send automatically at the right time — no one has to remember to follow up manually.",
+  "no-shows": "Clients who book an appointment but don't show up and don't cancel in advance.",
+  segmentation:
+    "Grouping your customers by shared traits — like what they bought or how long ago — so you can send each group a relevant message instead of one generic blast.",
+  "key business metrics":
+    "The most important numbers that show how your business is performing — things like monthly revenue, close rate, and how many new customers you're getting. Also called KPIs (Key Performance Indicators).",
+};
 
 export interface Question {
   id: string;
@@ -69,6 +148,9 @@ export interface Question {
    *  When present, the survey page stores an additional `{id}_value` answer
    *  containing the numeric string so the AI can use it directly. */
   midpoints?: Record<string, number>;
+  /** Plain-English definitions for jargon terms in this question.
+   *  Rendered as hoverable "?" tooltip chips below the question text. */
+  glossary?: Record<string, string>;
 }
 
 export interface Area {
@@ -243,10 +325,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How quickly does a new lead typically get contacted after they submit a form or inquiry?",
     options: [
-      "Within minutes — it's automated",
-      "Within a few hours",
-      "Same day, but manually",
       "It varies — sometimes days later",
+      "Same day, but manually",
+      "Within a few hours",
+      "Within minutes — it's automated",
+      "I honestly don't know",
     ],
   },
   {
@@ -255,16 +338,16 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "What percentage of your inbound leads do you believe are actually followed up on?",
     options: [
-      "Close to 100% — we don't miss leads",
-      "Around 75–90%",
-      "About half",
       "Honestly, we're not sure — it's hard to track",
+      "About half",
+      "Around 75–90%",
+      "Close to 100% — we don't miss leads",
     ],
   },
   {
     id: "lead_capture_q2b",
     areaId: "lead_capture",
-    type: "single",
+    type: "multi",
     question: "What makes it hard to track where your leads come from?",
     options: [
       "Too many different sources",
@@ -273,6 +356,7 @@ export const QUESTIONS: Question[] = [
       "We're too busy to track it",
       "We never set it up properly",
     ],
+    glossary: { CRM: G.CRM },
   },
   {
     id: "lead_capture_q3",
@@ -280,10 +364,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "Do you know which marketing channels or sources are generating your best leads?",
     options: [
-      "Yes — we track source and quality clearly",
-      "Somewhat — we know roughly where leads come from",
-      "Not really — we don't track lead source well",
       "No — all leads go into the same bucket",
+      "Not really — we don't track lead source well",
+      "Somewhat — we know roughly where leads come from",
+      "Yes — we track source and quality clearly",
+      "I honestly don't know",
     ],
   },
 
@@ -312,6 +397,7 @@ export const QUESTIONS: Question[] = [
       "None — We don't use any software for this",
       "Other",
     ],
+    glossary: { CRM: G.CRM },
   },
   {
     id: "lead_followup_q1",
@@ -319,11 +405,13 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much of your follow-up process is automated versus done manually?",
     options: [
-      "Mostly automated — sequences run without us",
-      "About half and half",
-      "Mostly manual — someone has to remember to do it",
       "Completely manual — nothing is automated",
+      "Mostly manual — someone has to remember to do it",
+      "About half and half",
+      "Mostly automated — sequences run without us",
+      "I honestly don't know",
     ],
+    glossary: { "automated sequences": G["automated sequences"] },
   },
   {
     id: "lead_followup_q2",
@@ -331,10 +419,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do deals go cold because of a missed or delayed follow-up?",
     options: [
-      "Rarely — our follow-up is tight",
-      "Occasionally — a few times a month",
-      "Regularly — it's a known problem",
       "Very often — we lose business because of it",
+      "Regularly — it's a known problem",
+      "Occasionally — a few times a month",
+      "Rarely — our follow-up is tight",
+      "I honestly don't know",
     ],
   },
   {
@@ -344,6 +433,7 @@ export const QUESTIONS: Question[] = [
     question: "How organized and up-to-date is your CRM or lead tracking system right now?",
     scaleMin: "A mess — outdated and incomplete",
     scaleMax: "Pristine — always accurate",
+    glossary: { CRM: G.CRM },
   },
 
   // ─── 3. Appointment Scheduling ───────────────────────────────────────────────
@@ -376,10 +466,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How many back-and-forth messages does it typically take to book an appointment?",
     options: [
-      "Zero — clients book themselves online",
-      "One or two — quick and easy",
-      "Three to five — some back and forth",
       "Many — it's a whole process",
+      "Three to five — some back and forth",
+      "One or two — quick and easy",
+      "Zero — clients book themselves online",
+      "I honestly don't know",
     ],
   },
   {
@@ -388,11 +479,13 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do no-shows or last-minute cancellations disrupt your schedule?",
     options: [
-      "Rarely — we have reminders and deposits in place",
-      "Occasionally — a few times a month",
-      "Regularly — it's a real problem",
       "Very often — it costs us significant time and revenue",
+      "Regularly — it's a real problem",
+      "Occasionally — a few times a month",
+      "Rarely — we have reminders and deposits in place",
+      "I honestly don't know",
     ],
+    glossary: { "no-shows": G["no-shows"] },
   },
   {
     id: "scheduling_q3",
@@ -431,10 +524,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How long does it typically take to get a proposal out after an initial conversation?",
     options: [
-      "Same day — we can turn them around fast",
-      "1–2 days",
-      "3–5 days",
       "More than a week",
+      "3–5 days",
+      "1–2 days",
+      "Same day — we can turn them around fast",
+      "I honestly don't know",
     ],
   },
   {
@@ -443,10 +537,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much time does your team spend manually creating or customizing each proposal?",
     options: [
-      "Very little — we have templates that do the heavy lifting",
-      "About 30–60 minutes per proposal",
-      "A few hours per proposal",
       "Half a day or more — it's very time-consuming",
+      "A few hours per proposal",
+      "About 30–60 minutes per proposal",
+      "Very little — we have templates that do the heavy lifting",
+      "I honestly don't know",
     ],
   },
   {
@@ -470,7 +565,7 @@ export const QUESTIONS: Question[] = [
       "Monday.com",
       "Asana",
       "Notion",
-      "Google Drive",
+      "Google Forms",
       "Trello",
       "ClickUp",
       "Dubsado",
@@ -486,10 +581,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How consistent is your onboarding experience — does every new client get the same quality process?",
     options: [
-      "Very consistent — we follow the same process every time",
-      "Mostly consistent with some variation",
-      "Quite inconsistent — it depends on who handles it",
       "Every onboarding is different / fully ad hoc",
+      "Quite inconsistent — it depends on who handles it",
+      "Mostly consistent with some variation",
+      "Very consistent — we follow the same process every time",
+      "I honestly don't know",
     ],
   },
   {
@@ -498,10 +594,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much senior team time is required to onboard each new client?",
     options: [
-      "Very little — the process is largely self-serve",
-      "A few hours",
-      "Half a day to a full day",
       "Multiple days of senior team involvement",
+      "Half a day to a full day",
+      "A few hours",
+      "Very little — the process is largely self-serve",
+      "I honestly don't know",
     ],
   },
   {
@@ -541,10 +638,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do jobs or projects miss deadlines due to unclear ownership or process breakdowns?",
     options: [
-      "Rarely — we hit our deadlines consistently",
-      "Occasionally — a few times a month",
-      "Regularly — it's a known issue",
       "Very often — missed deadlines are common",
+      "Regularly — it's a known issue",
+      "Occasionally — a few times a month",
+      "Rarely — we hit our deadlines consistently",
+      "I honestly don't know",
     ],
   },
   {
@@ -553,10 +651,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much time per week does your team spend chasing status updates or sitting in progress meetings that a better system could eliminate?",
     options: [
-      "Very little — our system handles it",
-      "A few hours a week",
-      "Half a day or more per week",
       "It's one of our biggest time drains",
+      "Half a day or more per week",
+      "A few hours a week",
+      "Very little — our system handles it",
+      "I honestly don't know",
     ],
   },
   {
@@ -598,10 +697,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do invoices go unpaid past their due date because of a process gap (not just a difficult client)?",
     options: [
-      "Rarely — our invoicing and follow-up is tight",
-      "Occasionally — a few per month",
-      "Regularly — late payments are common",
       "Very often — cash flow is a constant concern",
+      "Regularly — late payments are common",
+      "Occasionally — a few per month",
+      "Rarely — our invoicing and follow-up is tight",
+      "I honestly don't know",
     ],
   },
   {
@@ -610,10 +710,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much time does your team spend each month chasing late payments or correcting invoicing errors?",
     options: [
-      "Under 2 hours",
-      "2–5 hours",
-      "5–10 hours",
       "More than 10 hours",
+      "5–10 hours",
+      "2–5 hours",
+      "Under 2 hours",
+      "I honestly don't know",
     ],
   },
   {
@@ -637,6 +738,7 @@ export const QUESTIONS: Question[] = [
       "Outlook",
       "Slack",
       "Microsoft Teams",
+      "SMS / Text message",
       "Intercom",
       "Zendesk",
       "Freshdesk",
@@ -654,10 +756,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do customer messages get missed, delayed, or lost between team members?",
     options: [
-      "Rarely — we have a solid shared system",
-      "Occasionally — a few times a month",
-      "Regularly — it's an ongoing problem",
       "Very often — messages fall through the cracks constantly",
+      "Regularly — it's an ongoing problem",
+      "Occasionally — a few times a month",
+      "Rarely — we have a solid shared system",
+      "I honestly don't know",
     ],
   },
   {
@@ -666,10 +769,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much customer communication happens outside your main tools — e.g., on personal phones, personal email, or WhatsApp?",
     options: [
-      "Very little — almost everything goes through official channels",
-      "Some — maybe 20–30% is off-channel",
-      "A lot — more than half",
       "Most of it — we have no real centralized system",
+      "A lot — more than half",
+      "Some — maybe 20–30% is off-channel",
+      "Very little — almost everything goes through official channels",
+      "I honestly don't know",
     ],
   },
   {
@@ -707,10 +811,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do you proactively ask satisfied customers to leave a review?",
     options: [
-      "Always — it's built into our process",
-      "Often — but not consistently",
-      "Occasionally — when we remember",
       "Rarely or never",
+      "Occasionally — when we remember",
+      "Often — but not consistently",
+      "Always — it's built into our process",
+      "I honestly don't know",
     ],
   },
   {
@@ -719,10 +824,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How quickly does your team respond to negative reviews or public complaints?",
     options: [
-      "Within hours — we monitor reviews closely",
-      "Within a day or two",
-      "Within a week",
       "We rarely or never respond to reviews",
+      "Within a week",
+      "Within a day or two",
+      "Within hours — we monitor reviews closely",
+      "I honestly don't know",
     ],
   },
   {
@@ -760,10 +866,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do you follow up with past customers who haven't bought or used your service recently?",
     options: [
-      "Regularly — we have automated re-engagement sequences",
-      "Occasionally — we do ad hoc campaigns",
-      "Rarely — only when we think of it",
       "Never — we have no re-engagement process",
+      "Rarely — only when we think of it",
+      "Occasionally — we do ad hoc campaigns",
+      "Regularly — we have automated re-engagement sequences",
+      "I honestly don't know",
     ],
   },
   {
@@ -772,11 +879,13 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "When you reach out to past customers, do you tailor the message or send the same thing to everyone?",
     options: [
-      "Always tailored — we segment by customer type, history, or behaviour",
-      "Partially — some segmentation but mostly generic",
-      "Same message to everyone",
       "We don't have a defined message — it's different every time",
+      "Same message to everyone",
+      "Partially — some segmentation but mostly generic",
+      "Always tailored — we segment by customer type, history, or behaviour",
+      "I honestly don't know",
     ],
+    glossary: { segmentation: G.segmentation },
   },
   {
     id: "reengagement_q3",
@@ -811,10 +920,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "Do you have a formal referral program, or does referral business happen organically?",
     options: [
-      "Formal program — with incentives and a clear process",
-      "Semi-formal — we ask, but it's not structured",
-      "Purely organic — we never actively ask",
       "We don't get referrals / haven't thought about it",
+      "Purely organic — we never actively ask",
+      "Semi-formal — we ask, but it's not structured",
+      "Formal program — with incentives and a clear process",
+      "I honestly don't know",
     ],
   },
   {
@@ -823,11 +933,13 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "Do you have a way to track which new customers came through referrals and who sent them?",
     options: [
-      "Yes — it's tracked in our CRM or a dedicated system",
-      "Loosely — we ask but don't record it formally",
       "No — we have no way to trace referral sources",
       "Referrals come in but we often don't know who sent them",
+      "Loosely — we ask but don't record it formally",
+      "Yes — it's tracked in our CRM or a dedicated system",
+      "I honestly don't know",
     ],
+    glossary: { CRM: G.CRM },
   },
   {
     id: "referrals_q3",
@@ -864,10 +976,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How often do business decisions get delayed because the right data isn't available or isn't trusted?",
     options: [
-      "Rarely — we have good visibility into our numbers",
-      "Occasionally — a few times a month",
-      "Regularly — data gaps slow us down often",
       "Very often — we mostly operate on gut feel",
+      "Regularly — data gaps slow us down often",
+      "Occasionally — a few times a month",
+      "Rarely — we have good visibility into our numbers",
+      "I honestly don't know",
     ],
   },
   {
@@ -876,10 +989,11 @@ export const QUESTIONS: Question[] = [
     type: "single",
     question: "How much manual work goes into producing your regular reports — pulling data, formatting, copy-pasting across tools?",
     options: [
-      "Very little — mostly automated",
-      "A few hours a month",
-      "Many hours a month — it's a real burden",
       "Reports are almost entirely manual or we don't produce them",
+      "Many hours a month — it's a real burden",
+      "A few hours a month",
+      "Very little — mostly automated",
+      "I honestly don't know",
     ],
   },
   {
@@ -889,5 +1003,6 @@ export const QUESTIONS: Question[] = [
     question: "How confident are you that your key business metrics are accurate and up to date at any given moment?",
     scaleMin: "Not confident — we're often working with stale data",
     scaleMax: "Very confident — real-time and reliable",
+    glossary: { "key business metrics": G["key business metrics"] },
   },
 ];

@@ -108,6 +108,6 @@ Return a single valid JSON object with this structure:
       "firstStep": "string"
     }
   ],
-  "closingMessage": "string — energizing not overwhelming, they are the hero"
+  "closingPoints": ["string — 3 to 4 short bullet points, energizing not overwhelming, they are the hero. Each point stands alone as a complete thought."]
 }
 `;
