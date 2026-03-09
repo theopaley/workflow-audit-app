@@ -551,6 +551,7 @@ export default function AuditPage() {
         const midpoint = question.midpoints[val];
         if (midpoint !== undefined) {
           next[`${question.id}_value`] = String(midpoint);
+          next[`${question.id}_label`] = val;
         }
       }
       return next;

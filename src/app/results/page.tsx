@@ -36,6 +36,12 @@ function gradeToStatus(grade: string): Status {
   return "Critical";
 }
 
+function formatCurrency(n: number): string {
+  if (n >= 1000000) return `$${(n / 1000000).toFixed(1).replace(".0", "")}M`;
+  if (n >= 1000) return `$${Math.round(n / 1000)}K`;
+  return `$${n.toLocaleString()}`;
+}
+
 function scoreColor(score: number) {
   if (score >= 70) return "text-emerald-600";
   if (score >= 50) return "text-amber-500";
@@ -76,6 +82,7 @@ function ScoreRing({ score }: { score: number }) {
 export default function ResultsPage() {
   const router = useRouter();
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [revenueLabel, setRevenueLabel] = useState<string>("");
 
   useEffect(() => {
     try {
@@ -86,6 +93,17 @@ export default function ResultsPage() {
       }
       const parsed = JSON.parse(raw) as AnalysisResult;
       setResult(parsed);
+
+      try {
+        const answersRaw = sessionStorage.getItem("auditAnswers");
+        if (answersRaw) {
+          const answers = JSON.parse(answersRaw) as Record<string, unknown>;
+          const label = answers["fin_monthly_revenue_label"];
+          if (label) setRevenueLabel(String(label).replace("/month", "").trim());
+        }
+      } catch {
+        // revenue label is cosmetic — silently skip if unavailable
+      }
     } catch {
       router.push("/audit");
     }
@@ -136,18 +154,37 @@ export default function ResultsPage() {
         {/* Score card */}
         <div className="rounded-2xl border border-slate-200 bg-white p-8">
           <h1 className="mb-1 text-2xl font-bold text-slate-900">Your Workflow Health Score</h1>
-          <p className="mb-8 text-slate-500">Based on your responses across all 12 workflow areas.</p>
+          <p className="mb-8 text-slate-500">
+            {revenueLabel
+              ? `You've built a business generating ${revenueLabel} in monthly revenue. Here's how your workflows measure up.`
+              : "Based on your responses across all 12 workflow areas."}
+          </p>
 
           <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start">
-            {/* Ring */}
-            <div className="relative shrink-0">
-              <ScoreRing score={result.overallScore} />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className={`text-4xl font-bold ${scoreColor(result.overallScore)}`}>
-                  {result.overallScore}
-                </span>
-                <span className="text-xs font-medium text-slate-400">/ 100</span>
+            {/* Ring + leakage */}
+            <div className="flex shrink-0 flex-col items-center gap-3">
+              <div className="relative">
+                <ScoreRing score={result.overallScore} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className={`text-4xl font-bold ${scoreColor(result.overallScore)}`}>
+                    {result.overallScore}
+                  </span>
+                  <span className="text-xs font-medium text-slate-400">/ 100</span>
+                </div>
               </div>
+              {result.totalMonthlyLeakage > 0 && (
+                <div className="text-center">
+                  <p className="text-xs font-medium uppercase tracking-widest text-slate-400">
+                    Est. Monthly Leakage
+                  </p>
+                  <p className={`text-2xl font-bold ${scoreColor(result.overallScore)}`}>
+                    {formatCurrency(result.totalMonthlyLeakage)}<span className="text-sm font-medium text-slate-400"> /mo</span>
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {formatCurrency(result.totalAnnualLeakage)} per year
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Legend */}

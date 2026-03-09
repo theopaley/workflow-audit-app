@@ -90,6 +90,9 @@ export default function Home() {
           <p className="mt-4 text-sm text-slate-400">
             No account required · Takes about 10 minutes · PDF report emailed to you
           </p>
+          <p className="mt-2 text-xs text-slate-400">
+            Currently optimized for service-based businesses with 5–25 employees
+          </p>
         </div>
       </section>
 
