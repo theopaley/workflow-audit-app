@@ -6,6 +6,7 @@ import type { SurveyAnswers } from "@/types/survey";
 
 export type Grade = "Red" | "Amber" | "Green";
 export type Effort = "Low" | "Medium" | "High";
+export type StackAction = "CONFIGURE" | "CONNECT" | "REPLACE" | "DEPLOY" | null;
 
 export interface AreaResult {
   id: string;
@@ -20,6 +21,9 @@ export interface AreaResult {
   reframe: string;
   empower: string;
   priority: 1 | 2 | 3 | null;
+  stackAction: StackAction;
+  stackReasoning: string;
+  replacementTool: string;
 }
 
 export interface Priority {
@@ -28,6 +32,15 @@ export interface Priority {
   effort: Effort;
   impact: Effort;
   firstStep: string;
+}
+
+export interface StackSummary {
+  configureCount: number;
+  connectCount: number;
+  replaceCount: number;
+  deployCount: number;
+  estimatedImplementationHours: number;
+  topStackIssue: string;
 }
 
 export interface AnalysisResult {
@@ -42,6 +55,7 @@ export interface AnalysisResult {
   visibilityMultiplier: number;
   recommendedTier: string;
   tierRationale: string;
+  stackSummary: StackSummary;
   areas: AreaResult[];
   topThreePriorities: Priority[];
   closingPoints: string[];
