@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const MESSAGES = [
-  "Analyzing your workflows…",
-  "Identifying inefficiencies…",
-  "Calculating revenue impact…",
-  "Mapping your software stack…",
-  "Scoring each workflow area…",
-  "Generating your report…",
-  "Finalizing recommendations…",
+  "Analyzing your workflow data...",
+  "Scoring your 12 workflow areas...",
+  "Calculating revenue leakage...",
+  "Identifying your top priorities...",
+  "Generating your PDF report...",
+  "Sending your report...",
+  "Your audit is ready!",
 ];
 
 const MESSAGE_DURATION = 2600; // ms per message
@@ -47,6 +47,7 @@ export default function ProcessingPage() {
       return;
     }
 
+    // Step 1: AI analysis
     fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -60,13 +61,43 @@ export default function ProcessingPage() {
         }
         return res.json();
       })
-      .then((result) => {
+      .then(async (result) => {
         sessionStorage.setItem("auditResult", JSON.stringify(result));
+
+        // Step 2: generate PDF
+        const pdfRes = await fetch("/api/generate-report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ auditResult: result, auditAnswers: answers }),
+        });
+        if (!pdfRes.ok) {
+          const body = await pdfRes.json().catch(() => ({}));
+          throw new Error(body?.error ?? `PDF generation failed (${pdfRes.status})`);
+        }
+
+        const pdfArrayBuffer = await pdfRes.arrayBuffer();
+        const uint8 = new Uint8Array(pdfArrayBuffer);
+        let binary = "";
+        uint8.forEach((b) => (binary += String.fromCharCode(b)));
+        const pdfBase64 = btoa(binary);
+
+        // Step 3: send emails
+        const sendRes = await fetch("/api/send-report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answers, result, pdf: pdfBase64 }),
+        });
+        if (!sendRes.ok) {
+          const body = await sendRes.json().catch(() => ({}));
+          throw new Error(body?.error ?? `Email delivery failed (${sendRes.status})`);
+        }
+
+        // Step 4: all done
         setApiDone(true);
       })
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
-        console.error("[processing] API call failed:", message);
+        console.error("[processing] failed:", message);
         setError(message);
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
