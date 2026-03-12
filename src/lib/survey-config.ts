@@ -341,6 +341,22 @@ export const QUESTIONS: Question[] = [
     },
   },
 
+  {
+    id: "financial_platform",
+    areaId: null,
+    type: "multi",
+    question: "Which financial or accounting platform does your business use?",
+    options: [
+      "FreshBooks",
+      "QuickBooks",
+      "Wave",
+      "Xero",
+      "Zoho Books",
+      "None",
+      "Other",
+    ],
+  },
+
   // ─── 1. Lead Capture ─────────────────────────────────────────────────────────
   {
     id: "lead_capture_software",
