@@ -285,7 +285,7 @@ export async function sendReportEmails(
   pdfBuffer: Buffer
 ): Promise<void> {
   const ownerEmail = String(answers["intro_email"] ?? "");
-  const fromEmail = "WorkflowAudit <onboarding@resend.dev>";
+  const fromEmail = "WorkflowAudit <hello@revrep.ai>";
   const teamEmail = process.env.TEAM_NOTIFICATION_EMAIL!;
 
   console.log("[email] Starting send — owner:", ownerEmail, "| team:", teamEmail);
