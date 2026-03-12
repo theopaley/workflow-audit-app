@@ -25,13 +25,17 @@ export async function POST(req: NextRequest) {
   }
 
   const pdfBuffer = Buffer.from(pdfBase64, "base64");
+  console.log("[send-report] PDF buffer size:", pdfBuffer.byteLength, "bytes");
+  console.log("[send-report] Business:", result.businessName, "| Owner:", result.ownerName);
 
   try {
     await sendReportEmails(result, answers, pdfBuffer);
   } catch (err) {
-    console.error("[send-report] Email delivery failed:", err);
-    return NextResponse.json({ error: "Email delivery failed" }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[send-report] Email delivery failed:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 
+  console.log("[send-report] Done");
   return NextResponse.json({ ok: true });
 }

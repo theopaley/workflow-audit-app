@@ -112,32 +112,42 @@ export default function ProcessingPage() {
     }
   }, [animationDone, apiDone, router]);
 
-  // ── Animation — unchanged, but marks animationDone instead of navigating ────
+  // ── Animation ─────────────────────────────────────────────────────────────
+  // Messages 0–5 cycle on the timer.
+  // Message 6 ("Your audit is ready!") only shows once apiDone is true.
+  // If the timer reaches message 5 before apiDone, it holds there until apiDone fires.
+  const LAST_AUTO_INDEX = MESSAGES.length - 2; // index 5
+  const READY_INDEX = MESSAGES.length - 1;     // index 6
+
   useEffect(() => {
     if (error) return;
 
-    if (messageIndex >= MESSAGES.length - 1) {
-      const timer = setTimeout(() => {
-        setAnimationDone(true);
-      }, MESSAGE_DURATION);
+    // On the final "ready" message — wait briefly then allow navigation
+    if (messageIndex >= READY_INDEX) {
+      const timer = setTimeout(() => setAnimationDone(true), MESSAGE_DURATION);
       return () => clearTimeout(timer);
     }
 
-    // Fade out → swap message → fade in
-    const fadeOut = setTimeout(() => {
-      setVisible(false);
-    }, MESSAGE_DURATION - 400);
+    // Held on last auto-message — wait for apiDone before advancing
+    if (messageIndex >= LAST_AUTO_INDEX) {
+      if (!apiDone) return;
+      // apiDone just became true — quickly fade to "ready"
+      const fadeOut = setTimeout(() => setVisible(false), 300);
+      const swap = setTimeout(() => {
+        setMessageIndex(READY_INDEX);
+        setVisible(true);
+      }, 700);
+      return () => { clearTimeout(fadeOut); clearTimeout(swap); };
+    }
 
+    // Normal cycle for messages 0–4
+    const fadeOut = setTimeout(() => setVisible(false), MESSAGE_DURATION - 400);
     const swap = setTimeout(() => {
       setMessageIndex((i) => i + 1);
       setVisible(true);
     }, MESSAGE_DURATION);
-
-    return () => {
-      clearTimeout(fadeOut);
-      clearTimeout(swap);
-    };
-  }, [messageIndex, error]);
+    return () => { clearTimeout(fadeOut); clearTimeout(swap); };
+  }, [messageIndex, error, apiDone]);
 
   const progress = Math.round(((messageIndex + 1) / MESSAGES.length) * 100);
 

@@ -284,11 +284,18 @@ export async function sendReportEmails(
   answers: SurveyAnswers,
   pdfBuffer: Buffer
 ): Promise<void> {
-  const ownerEmail = String(answers["intro_email"]);
+  const ownerEmail = String(answers["intro_email"] ?? "");
   const fromEmail = process.env.RESEND_FROM_EMAIL!;
   const teamEmail = process.env.TEAM_NOTIFICATION_EMAIL!;
 
-  await Promise.all([
+  console.log("[email] Starting send — owner:", ownerEmail, "| team:", teamEmail);
+  console.log("[email] From:", fromEmail, "| PDF size:", pdfBuffer.byteLength, "bytes");
+
+  if (!ownerEmail) throw new Error("Owner email is missing from survey answers");
+  if (!fromEmail) throw new Error("RESEND_FROM_EMAIL env var is not set");
+  if (!teamEmail) throw new Error("TEAM_NOTIFICATION_EMAIL env var is not set");
+
+  const [ownerRes, teamRes] = await Promise.all([
     resend.emails.send({
       from: fromEmail,
       to: ownerEmail,
@@ -304,4 +311,16 @@ export async function sendReportEmails(
       attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
     }),
   ]);
+
+  // Resend SDK v2+ returns { data, error } instead of throwing — check explicitly
+  if (ownerRes.error) {
+    console.error("[email] Owner email failed:", ownerRes.error);
+    throw new Error(`Owner email failed: ${JSON.stringify(ownerRes.error)}`);
+  }
+  if (teamRes.error) {
+    console.error("[email] Team email failed:", teamRes.error);
+    throw new Error(`Team email failed: ${JSON.stringify(teamRes.error)}`);
+  }
+
+  console.log("[email] Both emails sent — owner id:", ownerRes.data?.id, "| team id:", teamRes.data?.id);
 }
