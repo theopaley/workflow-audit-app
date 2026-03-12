@@ -435,7 +435,7 @@ function CoverPage({
     <Page size="A4" style={s.coverPageDark}>
       {/* Top — eyebrow + title + statement */}
       <View>
-        <Text style={s.coverEyebrow}>WorkflowAudit™ — Confidential AI Readiness Report</Text>
+        <Text style={s.coverEyebrow}>Presented by RevRep — Confidential AI Readiness Report</Text>
         <Text style={s.coverBusiness}>{name}</Text>
         <Text style={s.coverDate}>Generated {TODAY}</Text>
 
