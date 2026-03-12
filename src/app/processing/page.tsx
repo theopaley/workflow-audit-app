@@ -20,6 +20,7 @@ export default function ProcessingPage() {
   const [messageIndex, setMessageIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [animationDone, setAnimationDone] = useState(false);
+  const [pdfDone, setPdfDone] = useState(false);
   const [apiDone, setApiDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,6 +85,9 @@ export default function ProcessingPage() {
         }
         const pdfBase64 = btoa(chunks.join(""));
 
+        // PDF is ready — advance message to "Sending your report..."
+        setPdfDone(true);
+
         // Step 3: send emails
         const sendRes = await fetch("/api/send-report", {
           method: "POST",
@@ -113,25 +117,26 @@ export default function ProcessingPage() {
   }, [animationDone, apiDone, router]);
 
   // ── Animation ─────────────────────────────────────────────────────────────
-  // Messages 0–5 cycle on the timer.
-  // Message 6 ("Your audit is ready!") only shows once apiDone is true.
-  // If the timer reaches message 5 before apiDone, it holds there until apiDone fires.
-  const LAST_AUTO_INDEX = MESSAGES.length - 2; // index 5
-  const READY_INDEX = MESSAGES.length - 1;     // index 6
+  // Messages 0–3 cycle on the timer.
+  // Message 4 ("Generating your PDF report...") holds until pdfDone.
+  // Message 5 ("Sending your report...") holds until apiDone.
+  // Message 6 ("Your audit is ready!") shows then navigates.
+  const HOLD_PDF_INDEX  = MESSAGES.length - 3; // index 4
+  const HOLD_SEND_INDEX = MESSAGES.length - 2; // index 5
+  const READY_INDEX     = MESSAGES.length - 1; // index 6
 
   useEffect(() => {
     if (error) return;
 
-    // On the final "ready" message — wait briefly then allow navigation
+    // "Your audit is ready!" — wait briefly then navigate
     if (messageIndex >= READY_INDEX) {
       const timer = setTimeout(() => setAnimationDone(true), MESSAGE_DURATION);
       return () => clearTimeout(timer);
     }
 
-    // Held on last auto-message — wait for apiDone before advancing
-    if (messageIndex >= LAST_AUTO_INDEX) {
+    // "Sending your report..." — hold until email send completes
+    if (messageIndex >= HOLD_SEND_INDEX) {
       if (!apiDone) return;
-      // apiDone just became true — quickly fade to "ready"
       const fadeOut = setTimeout(() => setVisible(false), 300);
       const swap = setTimeout(() => {
         setMessageIndex(READY_INDEX);
@@ -140,14 +145,25 @@ export default function ProcessingPage() {
       return () => { clearTimeout(fadeOut); clearTimeout(swap); };
     }
 
-    // Normal cycle for messages 0–4
+    // "Generating your PDF report..." — hold until PDF generation completes
+    if (messageIndex >= HOLD_PDF_INDEX) {
+      if (!pdfDone) return;
+      const fadeOut = setTimeout(() => setVisible(false), 300);
+      const swap = setTimeout(() => {
+        setMessageIndex(HOLD_SEND_INDEX);
+        setVisible(true);
+      }, 700);
+      return () => { clearTimeout(fadeOut); clearTimeout(swap); };
+    }
+
+    // Normal cycle for messages 0–3
     const fadeOut = setTimeout(() => setVisible(false), MESSAGE_DURATION - 400);
     const swap = setTimeout(() => {
       setMessageIndex((i) => i + 1);
       setVisible(true);
     }, MESSAGE_DURATION);
     return () => { clearTimeout(fadeOut); clearTimeout(swap); };
-  }, [messageIndex, error, apiDone]);
+  }, [messageIndex, error, pdfDone, apiDone]);
 
   const progress = Math.round(((messageIndex + 1) / MESSAGES.length) * 100);
 
