@@ -464,6 +464,7 @@ const s = StyleSheet.create({
   statCallout: {
     borderLeftWidth: 3,
     borderLeftColor: C.amber,
+    borderLeftStyle: "solid",
     backgroundColor: C.amberLight,
     paddingLeft: 10,
     paddingRight: 10,
