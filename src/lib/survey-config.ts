@@ -202,8 +202,8 @@ export const QUESTIONS: Question[] = [
     id: "intro_email",
     areaId: null,
     type: "text",
-    question: "What email should we send the report to?",
-    placeholder: "you@company.com",
+    question: "What's the best email address to send your report to?",
+    placeholder: "your@email.com",
   },
 
   // ─── Financial Baseline ───────────────────────────────────────────────────────

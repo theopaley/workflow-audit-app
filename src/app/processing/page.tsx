@@ -77,9 +77,12 @@ export default function ProcessingPage() {
 
         const pdfArrayBuffer = await pdfRes.arrayBuffer();
         const uint8 = new Uint8Array(pdfArrayBuffer);
-        let binary = "";
-        uint8.forEach((b) => (binary += String.fromCharCode(b)));
-        const pdfBase64 = btoa(binary);
+        const chunks: string[] = [];
+        const chunkSize = 32768;
+        for (let i = 0; i < uint8.length; i += chunkSize) {
+          chunks.push(String.fromCharCode(...Array.from(uint8.subarray(i, i + chunkSize))));
+        }
+        const pdfBase64 = btoa(chunks.join(""));
 
         // Step 3: send emails
         const sendRes = await fetch("/api/send-report", {
