@@ -113,6 +113,8 @@ function TextInput({
   );
 }
 
+const TWO_COL_SINGLE = new Set(["fin_avg_sale", "fin_monthly_revenue"]);
+
 function SingleSelect({
   question,
   value,
@@ -122,26 +124,31 @@ function SingleSelect({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const twoCol = TWO_COL_SINGLE.has(question.id);
   return (
     <div className="mt-8">
       <p className="mb-4 text-sm text-slate-400">Select one</p>
-      <div className="flex flex-col gap-3">
-        {question.options?.map((opt, i) => (
-          <button
-            key={opt}
-            onClick={() => onChange(opt)}
-            className={`flex items-center gap-4 rounded-xl border-2 px-5 py-4 text-left text-base font-medium transition-all ${
-              value === opt
-                ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
-            }`}
-          >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
-              {String.fromCharCode(65 + i)}
-            </span>
-            {opt}
-          </button>
-        ))}
+      <div className={twoCol ? "grid grid-cols-2 gap-3" : "flex flex-col gap-3"}>
+        {question.options?.map((opt, i) => {
+          const isFullWidth =
+            twoCol && (opt === "None — We don't use any software for this" || opt === "Other");
+          return (
+            <button
+              key={opt}
+              onClick={() => onChange(opt)}
+              className={`flex items-center gap-4 rounded-xl border-2 px-5 py-4 text-left text-base font-medium transition-all ${
+                value === opt
+                  ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
+              } ${isFullWidth ? "col-span-2" : ""}`}
+            >
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
+                {String.fromCharCode(65 + i)}
+              </span>
+              {opt}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
