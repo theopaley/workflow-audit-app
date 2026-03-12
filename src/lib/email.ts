@@ -285,14 +285,13 @@ export async function sendReportEmails(
   pdfBuffer: Buffer
 ): Promise<void> {
   const ownerEmail = String(answers["intro_email"] ?? "");
-  const fromEmail = process.env.RESEND_FROM_EMAIL!;
+  const fromEmail = "WorkflowAudit <onboarding@resend.dev>";
   const teamEmail = process.env.TEAM_NOTIFICATION_EMAIL!;
 
   console.log("[email] Starting send — owner:", ownerEmail, "| team:", teamEmail);
   console.log("[email] From:", fromEmail, "| PDF size:", pdfBuffer.byteLength, "bytes");
 
   if (!ownerEmail) throw new Error("Owner email is missing from survey answers");
-  if (!fromEmail) throw new Error("RESEND_FROM_EMAIL env var is not set");
   if (!teamEmail) throw new Error("TEAM_NOTIFICATION_EMAIL env var is not set");
 
   const [ownerRes, teamRes] = await Promise.all([
