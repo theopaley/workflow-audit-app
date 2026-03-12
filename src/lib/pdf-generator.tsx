@@ -16,6 +16,9 @@ Font.registerHyphenationCallback((word) => [word]);
 
 // ─── Palette ─────────────────────────────────────────────────────────────────
 
+const COVER_BG   = "#0F172A"; // near-black navy for dark cover
+const COVER_MUTED = "#94A3B8"; // slate-400 — readable on dark
+
 const C = {
   indigo: "#4F46E5",
   indigoLight: "#EEF2FF",
@@ -38,6 +41,11 @@ function formatCurrency(n: number): string {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1).replace(".0", "")}M`;
   if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
   return `$${n}`;
+}
+
+/** Full comma-formatted currency, e.g. $1,234,567 */
+function formatCurrencyFull(n: number): string {
+  return "$" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function scoreColor(score: number): string {
@@ -84,6 +92,15 @@ const s = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  coverPageDark: {
+    backgroundColor: COVER_BG,
+    fontFamily: "Helvetica",
+    paddingHorizontal: 56,
+    paddingVertical: 72,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
 
   // Typography
   wordmark: {
@@ -93,22 +110,41 @@ const s = StyleSheet.create({
     letterSpacing: 1,
     textTransform: "uppercase",
   },
-  coverBusiness: {
-    fontSize: 28,
+  coverEyebrow: {
+    fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: C.body,
-    marginTop: 8,
-    lineHeight: 1.25,
+    color: COVER_MUTED,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+  },
+  coverBusiness: {
+    fontSize: 36,
+    fontFamily: "Helvetica-Bold",
+    color: C.white,
+    marginTop: 10,
+    lineHeight: 1.2,
   },
   coverDate: {
     fontSize: 11,
-    color: C.muted,
+    color: COVER_MUTED,
     marginTop: 6,
+  },
+  coverStatement: {
+    fontSize: 17,
+    fontFamily: "Times-Roman",
+    color: "#CBD5E1",
+    lineHeight: 1.65,
+    marginTop: 24,
+  },
+  coverStatementAmount: {
+    fontSize: 17,
+    fontFamily: "Times-Bold",
+    color: C.white,
   },
   coverScoreLabel: {
     fontSize: 11,
     fontFamily: "Helvetica-Bold",
-    color: C.muted,
+    color: COVER_MUTED,
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 4,
@@ -120,13 +156,13 @@ const s = StyleSheet.create({
   },
   coverScoreOutOf: {
     fontSize: 18,
-    color: C.muted,
+    color: COVER_MUTED,
     marginLeft: 4,
   },
   coverLeakageLabel: {
     fontSize: 11,
     fontFamily: "Helvetica-Bold",
-    color: C.muted,
+    color: COVER_MUTED,
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 4,
@@ -139,7 +175,7 @@ const s = StyleSheet.create({
   },
   coverLeakageSub: {
     fontSize: 11,
-    color: C.muted,
+    color: COVER_MUTED,
     marginTop: 3,
   },
 
@@ -392,13 +428,24 @@ function CoverPage({
   result: AnalysisResult;
   businessDescription: string;
 }) {
+  const name = businessDescription || result.businessName;
+  const annualFormatted = formatCurrencyFull(result.totalAnnualLeakage);
+
   return (
-    <Page size="A4" style={s.coverPage}>
-      {/* Top */}
+    <Page size="A4" style={s.coverPageDark}>
+      {/* Top — eyebrow + title + statement */}
       <View>
-        <Text style={s.wordmark}>WorkflowAudit</Text>
-        <Text style={s.coverBusiness}>{businessDescription || result.businessName}</Text>
+        <Text style={s.coverEyebrow}>WorkflowAudit™ — Confidential AI Readiness Report</Text>
+        <Text style={s.coverBusiness}>{name}</Text>
         <Text style={s.coverDate}>Generated {TODAY}</Text>
+
+        <Text style={s.coverStatement}>
+          {"Based on your audit, "}
+          <Text style={{ fontFamily: "Times-Bold", color: C.white }}>{name}</Text>
+          {" is losing an estimated "}
+          <Text style={s.coverStatementAmount}>{annualFormatted}</Text>
+          {" every year to workflow gaps that AI can fix. Here's exactly where it's going — and how to get it back."}
+        </Text>
       </View>
 
       {/* Middle — score + leakage */}
@@ -430,16 +477,16 @@ function CoverPage({
         </View>
 
         {/* Divider rule */}
-        <View style={{ height: 1, backgroundColor: C.border }} />
+        <View style={{ height: 1, backgroundColor: "#1E293B" }} />
       </View>
 
       {/* Bottom — prepared for */}
       <View>
-        <Text style={s.muted}>Prepared for</Text>
-        <Text style={[s.body, { fontFamily: "Helvetica-Bold", marginTop: 2 }]}>
+        <Text style={[s.muted, { color: COVER_MUTED }]}>Prepared for</Text>
+        <Text style={[s.body, { fontFamily: "Helvetica-Bold", marginTop: 2, color: C.white }]}>
           {result.ownerName}
         </Text>
-        <Text style={[s.muted, { marginTop: 2 }]}>{result.recommendedTier}</Text>
+        <Text style={[s.muted, { marginTop: 2, color: COVER_MUTED }]}>{result.recommendedTier}</Text>
       </View>
     </Page>
   );
