@@ -83,6 +83,7 @@ export default function ResultsPage() {
   const router = useRouter();
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [revenueLabel, setRevenueLabel] = useState<string>("");
+  const [pdfState, setPdfState] = useState<"idle" | "loading" | "error">("idle");
 
   useEffect(() => {
     try {
@@ -108,6 +109,32 @@ export default function ResultsPage() {
       router.push("/audit");
     }
   }, [router]);
+
+  const downloadPdf = async () => {
+    if (!result) return;
+    setPdfState("loading");
+    try {
+      const answersRaw = sessionStorage.getItem("auditAnswers");
+      const auditAnswers = answersRaw ? JSON.parse(answersRaw) : {};
+      const res = await fetch("/api/generate-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ auditResult: result, auditAnswers }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "workflowaudit-report.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+      setPdfState("idle");
+    } catch (err) {
+      console.error("[download-report]", err);
+      setPdfState("error");
+    }
+  };
 
   // Render nothing while reading sessionStorage (avoids flash of empty content)
   if (!result) return null;
@@ -211,7 +238,7 @@ export default function ResultsPage() {
         </div>
 
         {/* CTA */}
-        <div className="flex justify-center">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <a
             href="https://cal.com"
             target="_blank"
@@ -223,6 +250,34 @@ export default function ResultsPage() {
               <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
             </svg>
           </a>
+          <div className="flex flex-col items-center gap-1">
+            <button
+              onClick={downloadPdf}
+              disabled={pdfState === "loading"}
+              className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-600 px-8 py-4 text-base font-semibold text-indigo-600 transition-all hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {pdfState === "loading" ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Generating report...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                    <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+                    <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+                  </svg>
+                  Download Report
+                </>
+              )}
+            </button>
+            {pdfState === "error" && (
+              <p className="text-xs text-red-500">PDF generation failed — please try again.</p>
+            )}
+          </div>
         </div>
 
         {/* Priority fixes */}

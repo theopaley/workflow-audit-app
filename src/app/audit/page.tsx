@@ -260,6 +260,7 @@ function MultiSelect({
 }
 
 function ScaleInput({
+  question,
   value,
   onChange,
 }: {
@@ -267,6 +268,7 @@ function ScaleInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const idk = "I honestly don't know";
   return (
     <div className="mt-8">
       <p className="mb-4 text-sm text-slate-400">Select one</p>
@@ -290,6 +292,21 @@ function ScaleInput({
             </button>
           );
         })}
+        {question.allowDontKnow && (
+          <button
+            onClick={() => onChange(idk)}
+            className={`flex items-center gap-4 rounded-xl border-2 px-5 py-4 text-left text-base font-medium transition-all ${
+              value === idk
+                ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
+            }`}
+          >
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
+              ?
+            </span>
+            I honestly don&apos;t know
+          </button>
+        )}
       </div>
     </div>
   );
@@ -368,6 +385,7 @@ export default function AuditPage() {
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [skipToast, setSkipToast] = useState<{ areaName: string; visible: boolean } | null>(null);
   const skipToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const continueRef = useRef<HTMLButtonElement>(null);
 
   const question = QUESTIONS[index];
   const total = QUESTIONS.length;
@@ -415,6 +433,7 @@ export default function AuditPage() {
       setTimeout(() => {
         setIndex(newIndex);
         setAnimating(false);
+        window.scrollTo(0, 0);
       }, 220);
     },
     []
@@ -556,6 +575,9 @@ export default function AuditPage() {
       }
       return next;
     });
+    setTimeout(() => {
+      continueRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 0);
   };
 
   const setOtherText = (val: string) => {
@@ -662,6 +684,7 @@ export default function AuditPage() {
               </button>
             )}
             <button
+              ref={continueRef}
               onClick={advance}
               disabled={!canAdvance()}
               className="flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
