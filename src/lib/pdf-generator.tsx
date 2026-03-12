@@ -104,6 +104,95 @@ const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
   },
 };
 
+// ─── Platform page data ───────────────────────────────────────────────────────
+
+const RECOMMENDED_PLATFORMS = [
+  {
+    name: "GoHighLevel (GHL)",
+    description:
+      "Your automation backbone. Connects lead intake, follow-up, review requests, referral campaigns, and appointment reminders into one system.",
+    actionText: "Core to your entire implementation",
+  },
+  {
+    name: "ElevenLabs Voice Agent",
+    description:
+      "An AI receptionist that answers every inbound call 24/7, books appointments, qualifies leads, and routes urgent jobs.",
+    actionText: "Highest-impact addition for lead capture",
+  },
+  {
+    name: "SMS / 2-Way Texting",
+    description:
+      "98% of texts are read within 3 minutes. Built into GHL — minimal setup required.",
+    actionText: "Built into GHL — minimal setup required",
+  },
+  {
+    name: "Reporting Dashboard",
+    description:
+      "Tracks lead response time, review velocity, no-show rate, and referral volume. Built during implementation.",
+    actionText: "Built during implementation — no extra tools needed",
+  },
+];
+
+interface PlatformEntry {
+  name: string;
+  status: "Well Set Up" | "Underutilized" | "Gap";
+  description: string;
+  actionText: string;
+}
+
+function getStackDescription(action: StackAction): string {
+  switch (action) {
+    case "CONFIGURE": return "In your stack — needs configuration";
+    case "CONNECT":   return "Needs integration with other tools";
+    case "REPLACE":   return "Candidate for replacement";
+    case "DEPLOY":    return "Ready for additional automation";
+    default:          return "Currently in use";
+  }
+}
+
+function buildLeftColumnCards(
+  result: AnalysisResult,
+  answers: SurveyAnswers
+): PlatformEntry[] {
+  const entries: PlatformEntry[] = [];
+
+  for (const area of result.areas) {
+    const raw = answers[`${area.id}_software`];
+    const selected: string[] = Array.isArray(raw)
+      ? raw
+      : typeof raw === "string"
+      ? [raw]
+      : [];
+
+    const hasNone = selected.some((p) => p.toLowerCase().startsWith("none"));
+    const platforms = selected.filter(
+      (p) => !p.toLowerCase().startsWith("none") && p !== "Other"
+    );
+
+    if (hasNone || platforms.length === 0) {
+      entries.push({
+        name: area.name,
+        status: "Gap",
+        description: "No platform in use for this workflow area",
+        actionText: area.empower,
+      });
+    } else {
+      const status: PlatformEntry["status"] =
+        area.score >= 70 ? "Well Set Up" : "Underutilized";
+      const description = getStackDescription(area.stackAction);
+      const actionText = area.replacementTool
+        ? `Replace with: ${area.replacementTool}`
+        : area.stackReasoning;
+
+      for (const platform of platforms) {
+        entries.push({ name: platform, status, description, actionText });
+      }
+    }
+  }
+
+  return entries;
+}
+
 const TODAY = new Date().toLocaleDateString("en-US", {
   year: "numeric",
   month: "long",
@@ -418,6 +507,41 @@ const s = StyleSheet.create({
     marginBottom: 3,
   },
 
+  // Platform stack page
+  platformCard: {
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 8,
+  },
+  platformCardName: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: C.body,
+    flex: 1,
+    marginRight: 6,
+  },
+  platformCardDesc: {
+    fontSize: 8,
+    color: C.muted,
+    lineHeight: 1.45,
+    marginBottom: 4,
+  },
+  platformCardAction: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.indigo,
+  },
+  platformColHeader: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.muted,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 10,
+  },
+
   // Closing page
   closingHeading: {
     fontSize: 32,
@@ -713,7 +837,78 @@ function FindingsPage({ result }: { result: AnalysisResult }) {
   );
 }
 
-// ─── Page 4: Closing ─────────────────────────────────────────────────────────
+// ─── Page 4: Platform Stack ───────────────────────────────────────────────────
+
+function PlatformPage({
+  result,
+  answers,
+}: {
+  result: AnalysisResult;
+  answers: SurveyAnswers;
+}) {
+  const leftCards = buildLeftColumnCards(result, answers);
+
+  return (
+    <Page size="A4" style={s.page}>
+      <Text style={s.sectionLabel}>Technology Stack</Text>
+      <Text style={s.pageTitle}>Your Technology Stack</Text>
+      <View style={s.sectionDivider} />
+      <Text style={[s.body, { marginBottom: 20 }]}>
+        Based on your audit responses, here's an honest look at the tools you're already running — and what we recommend adding.
+      </Text>
+
+      <View style={[s.row, { alignItems: "flex-start" }]}>
+        {/* Left column — platforms already in use */}
+        <View style={{ flex: 1, paddingRight: 10 }}>
+          <Text style={s.platformColHeader}>Platforms you already have</Text>
+          {leftCards.map((card, i) => {
+            const statusColor =
+              card.status === "Well Set Up" ? C.green :
+              card.status === "Underutilized" ? C.amber : C.red;
+            const statusBg =
+              card.status === "Well Set Up" ? C.greenLight :
+              card.status === "Underutilized" ? C.amberLight : C.redLight;
+            return (
+              <View key={i} style={s.platformCard} wrap={false}>
+                <View style={[s.row, { marginBottom: 4, flexWrap: "wrap" }]}>
+                  <Text style={s.platformCardName}>{card.name}</Text>
+                  <View style={[s.scoreBadge, { backgroundColor: statusBg }]}>
+                    <Text style={[s.scoreBadgeText, { color: statusColor }]}>
+                      {card.status}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={s.platformCardDesc}>{card.description}</Text>
+                <Text style={s.platformCardAction}>{card.actionText}</Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {/* Right column — recommended additions */}
+        <View style={{ flex: 1, paddingLeft: 10 }}>
+          <Text style={s.platformColHeader}>Platforms we recommend adding</Text>
+          {RECOMMENDED_PLATFORMS.map((rec, i) => (
+            <View key={i} style={s.platformCard} wrap={false}>
+              <View style={[s.row, { marginBottom: 4 }]}>
+                <Text style={s.platformCardName}>{rec.name}</Text>
+                <View style={[s.scoreBadge, { backgroundColor: C.indigoLight }]}>
+                  <Text style={[s.scoreBadgeText, { color: C.indigo }]}>Recommended</Text>
+                </View>
+              </View>
+              <Text style={s.platformCardDesc}>{rec.description}</Text>
+              <Text style={s.platformCardAction}>{rec.actionText}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <PageFooter page={4} businessName={result.businessName} />
+    </Page>
+  );
+}
+
+// ─── Page 5: Closing ─────────────────────────────────────────────────────────
 
 function ClosingPage({ result }: { result: AnalysisResult }) {
   const encouragement = result.closingPoints[0] ?? "Your business has everything it needs to run better — the systems just need to catch up with the team.";
@@ -773,6 +968,7 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
       <CoverPage result={result} businessDescription={companyName} />
       <ExecutiveSummaryPage result={result} />
       <FindingsPage result={result} />
+      <PlatformPage result={result} answers={answers} />
       <ClosingPage result={result} />
     </Document>
   );
