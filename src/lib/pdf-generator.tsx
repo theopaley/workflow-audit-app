@@ -67,6 +67,43 @@ const STACK_ACTION_COLORS: Record<NonNullable<StackAction>, { bg: string; text: 
   DEPLOY:    { bg: C.indigoLight, text: C.indigo },
 };
 
+// ─── Industry stats ──────────────────────────────────────────────────────────
+
+const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
+  lead_followup: {
+    stat: "Businesses that follow up within 5 minutes are 100x more likely to convert than those who wait 30 minutes. The average service business takes 42+ hours to respond.",
+    source: "Harvard Business Review",
+  },
+  scheduling: {
+    stat: "The average no-show rate across service businesses is 19% — costing small businesses $26,000/year in lost revenue. Automated reminders reduce no-shows by 30–40%.",
+    source: "10to8 / Financesonline",
+  },
+  reviews: {
+    stat: "89% of consumers read reviews before deciding. A single star increase = 5–9% revenue lift. Google's top 3 results earn 126% more traffic than everyone below them.",
+    source: "Harvard Business Review / SOCi",
+  },
+  referrals: {
+    stat: "83% of happy customers are willing to refer — but only 29% ever do. For 82% of small businesses, referrals are the #1 source of new clients.",
+    source: "Texas Tech / Nielsen",
+  },
+  invoicing: {
+    stat: "56% of small businesses are owed money from unpaid invoices, averaging $17,500 each. Businesses with high overdue invoice volume are 1.4x more likely to report cash flow problems.",
+    source: "QuickBooks 2025",
+  },
+  proposals: {
+    stat: "50% of the time, the first company to send a quote wins the job — yet most service businesses are still quoting manually, days after the request.",
+    source: "industry research",
+  },
+  reengagement: {
+    stat: "An existing customer has a 60–70% chance of buying again vs. 1–3% for a brand new prospect. 73% of businesses have no structured plan to re-engage past clients.",
+    source: "Adobe / Bain & Company",
+  },
+  communication: {
+    stat: "53% of people will switch to a competitor if response time is too slow. 78% of customers buy from the first business that responds — regardless of price.",
+    source: "Verse.ai / LeadConnect",
+  },
+};
+
 const TODAY = new Date().toLocaleDateString("en-US", {
   year: "numeric",
   month: "long",
@@ -334,6 +371,53 @@ const s = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
   },
 
+  // Stat callout box
+  statCallout: {
+    borderLeftWidth: 3,
+    borderLeftColor: C.amber,
+    backgroundColor: C.amberLight,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
+    marginBottom: 10,
+  },
+  statCalloutLabel: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.amber,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  statCalloutText: {
+    fontSize: 9,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 3,
+  },
+  statCalloutSource: {
+    fontSize: 8,
+    color: C.muted,
+    fontFamily: "Helvetica-Oblique",
+  },
+  yourResultLabel: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.red,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+  whatToDoLabel: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: C.green,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 3,
+  },
+
   // Closing page
   closingHeading: {
     fontSize: 32,
@@ -537,8 +621,11 @@ function ExecutiveSummaryPage({ result }: { result: AnalysisResult }) {
 
 function FindingCard({ area }: { area: AreaResult }) {
   const action = area.stackAction;
+  const industryStat = INDUSTRY_STATS[area.id];
+
   return (
     <View style={s.findingCard} wrap={false}>
+      {/* Header: area name + score badge */}
       <View style={s.findingHeader}>
         <Text style={s.findingAreaName}>{area.name}</Text>
         <View style={[s.scoreBadge, { backgroundColor: scoreBackground(area.score) }]}>
@@ -548,22 +635,28 @@ function FindingCard({ area }: { area: AreaResult }) {
         </View>
       </View>
 
-      <Text style={s.body}>{area.scoreReasoning}</Text>
-
-      {area.monthlyLeakage > 0 && (
-        <View style={s.mt8}>
-          <Text style={s.findingSubLabel}>Estimated leakage</Text>
-          <Text style={[s.body, { color: C.red }]}>
-            {formatCurrency(area.monthlyLeakage)}/mo — {area.leakageExplanation}
-          </Text>
+      {/* 1. Industry stat callout — only when score < 70 and stat exists */}
+      {industryStat && area.score < 70 && (
+        <View style={s.statCallout}>
+          <Text style={s.statCalloutLabel}>Industry Data</Text>
+          <Text style={s.statCalloutText}>{industryStat.stat}</Text>
+          <Text style={s.statCalloutSource}>— {industryStat.source}</Text>
         </View>
       )}
 
+      {/* 2. Your result */}
+      <View style={area.score < 70 && industryStat ? s.mt4 : s.mt8}>
+        <Text style={s.yourResultLabel}>Your Result</Text>
+        <Text style={s.body}>{area.scoreReasoning}</Text>
+      </View>
+
+      {/* 3. What to do */}
       <View style={s.mt8}>
-        <Text style={s.findingSubLabel}>What to do</Text>
+        <Text style={s.whatToDoLabel}>What To Do</Text>
         <Text style={s.body}>{area.empower}</Text>
       </View>
 
+      {/* 4. Tool chips */}
       {action && (
         <View style={[s.row, s.mt8, { flexWrap: "wrap" }]}>
           <StackBadge action={action} />
