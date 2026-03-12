@@ -122,6 +122,10 @@ STACK SUMMARY — after evaluating all areas, produce a top-level stackSummary:
 - estimatedImplementationHours: use 2 hours as a baseline for a pure configure/deploy engagement, up to 8 hours for a complex mixed stack requiring multiple integrations and replacements. Be realistic.
 - topStackIssue: one plain-English sentence naming the single biggest stack problem holding this business back.
 
+FIELD DERIVATION:
+- businessName: use answers.intro_company_name exactly as entered
+- ownerName: use answers.intro_name exactly as entered
+
 Return a single valid JSON object with this structure:
 {
   "businessName": "string",

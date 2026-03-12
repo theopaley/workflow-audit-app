@@ -185,6 +185,13 @@ export const QUESTIONS: Question[] = [
     placeholder: "Your full name",
   },
   {
+    id: "intro_company_name",
+    areaId: null,
+    type: "text",
+    question: "What's the name of your business?",
+    placeholder: "e.g. Mike's Plumbing Co.",
+  },
+  {
     id: "intro_business",
     areaId: null,
     type: "text",

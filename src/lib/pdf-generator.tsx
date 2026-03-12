@@ -619,16 +619,18 @@ interface AuditReportDocumentProps {
 }
 
 export function AuditReportDocument({ result, answers }: AuditReportDocumentProps) {
-  const businessDescription =
-    typeof answers.intro_business === "string" ? answers.intro_business : result.businessName;
+  const companyName =
+    typeof answers.intro_company_name === "string" && answers.intro_company_name.trim()
+      ? answers.intro_company_name.trim()
+      : result.businessName;
 
   return (
     <Document
-      title={`WorkflowAudit — ${result.businessName}`}
+      title={`WorkflowAudit — ${companyName}`}
       author="WorkflowAudit"
       subject="Workflow Audit Report"
     >
-      <CoverPage result={result} businessDescription={businessDescription} />
+      <CoverPage result={result} businessDescription={companyName} />
       <ExecutiveSummaryPage result={result} />
       <FindingsPage result={result} />
       <ClosingPage result={result} />
