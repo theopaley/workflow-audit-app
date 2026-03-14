@@ -168,24 +168,25 @@ function buildLeftColumnCards(
     );
 
     if (hasNone || platforms.length === 0) {
+      // Always show gap areas regardless of score
       entries.push({
         name: area.name,
         status: "Gap",
         description: "No platform in use for this workflow area",
         actionText: area.empower,
       });
-    } else {
-      const status: PlatformEntry["status"] =
-        area.score >= 70 ? "Well Set Up" : "Underutilized";
+    } else if (area.score < 70) {
+      // Only show platforms for underperforming areas
       const description = getStackDescription(area.stackAction);
       const actionText = area.replacementTool
         ? `Replace with: ${area.replacementTool}`
         : area.stackReasoning;
 
       for (const platform of platforms) {
-        entries.push({ name: platform, status, description, actionText });
+        entries.push({ name: platform, status: "Underutilized", description, actionText });
       }
     }
+    // score >= 70 with real platforms: intentionally omitted
   }
 
   return entries;
@@ -486,15 +487,15 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 6,
-    padding: 12,
-    marginBottom: 8,
+    padding: 10,
+    marginBottom: 6,
     backgroundColor: C.white,
   },
   platformCardRow: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 3,
   },
   platformCardName: {
     fontSize: 11,
@@ -504,13 +505,13 @@ const s = StyleSheet.create({
     marginRight: 6,
   },
   platformCardDesc: {
-    fontSize: 9,
+    fontSize: 11,
     color: C.inkMuted,
-    lineHeight: 1.45,
-    marginBottom: 4,
+    lineHeight: 1.4,
+    marginBottom: 3,
   },
   platformCardAction: {
-    fontSize: 9,
+    fontSize: 10,
     fontFamily: "Helvetica-Bold",
     color: C.green,
   },
@@ -793,54 +794,46 @@ function PlatformPage({
         you're already running — and what we recommend adding.
       </Text>
 
-      <View style={s.twoCol}>
-        {/* Left — existing platforms */}
-        <View style={{ flex: 1, paddingRight: 12 }}>
-          <Text style={s.colHeader}>Platforms you already have</Text>
-          {leftCards.map((card, i) => {
-            const statusColor =
-              card.status === "Well Set Up"   ? C.green  :
-              card.status === "Underutilized" ? C.gold   : C.accent;
-            const statusBg =
-              card.status === "Well Set Up"   ? C.greenLight  :
-              card.status === "Underutilized" ? C.goldLight   : C.accentLight;
+      {/* Section 1 — existing platforms */}
+      <Text style={[s.colHeader, { marginBottom: 10 }]}>Platforms You Already Have</Text>
+      {leftCards.map((card, i) => {
+        const statusColor =
+          card.status === "Underutilized" ? C.gold : C.accent;
+        const statusBg =
+          card.status === "Underutilized" ? C.goldLight : C.accentLight;
 
-            return (
-              <View key={i} style={s.platformCard} wrap={false}>
-                <View style={s.platformCardRow}>
-                  <Text style={s.platformCardName}>{card.name}</Text>
-                  <View style={[s.statusBadge, { backgroundColor: statusBg }]}>
-                    <Text style={[s.statusBadgeText, { color: statusColor }]}>
-                      {card.status}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={s.platformCardDesc}>{card.description}</Text>
-                <Text style={s.platformCardAction}>{card.actionText}</Text>
+        return (
+          <View key={i} style={s.platformCard} wrap={false}>
+            <View style={s.platformCardRow}>
+              <Text style={s.platformCardName}>{card.name}</Text>
+              <View style={[s.statusBadge, { backgroundColor: statusBg }]}>
+                <Text style={[s.statusBadgeText, { color: statusColor }]}>
+                  {card.status}
+                </Text>
               </View>
-            );
-          })}
-        </View>
-
-        {/* Right — recommended additions */}
-        <View style={{ flex: 1, paddingLeft: 12 }}>
-          <Text style={s.colHeader}>Platforms we recommend adding</Text>
-          {RECOMMENDED_PLATFORMS.map((rec, i) => (
-            <View key={i} style={s.platformCard} wrap={false}>
-              <View style={s.platformCardRow}>
-                <Text style={s.platformCardName}>{rec.name}</Text>
-                <View style={[s.statusBadge, { backgroundColor: C.greenLight }]}>
-                  <Text style={[s.statusBadgeText, { color: C.green }]}>
-                    Recommended
-                  </Text>
-                </View>
-              </View>
-              <Text style={s.platformCardDesc}>{rec.description}</Text>
-              <Text style={s.platformCardAction}>{rec.actionText}</Text>
             </View>
-          ))}
+            <Text style={s.platformCardDesc}>{card.description}</Text>
+            <Text style={s.platformCardAction}>{card.actionText}</Text>
+          </View>
+        );
+      })}
+
+      {/* Section 2 — recommended additions */}
+      <Text style={[s.colHeader, { marginTop: 20, marginBottom: 10 }]}>
+        Platforms We Recommend Adding
+      </Text>
+      {RECOMMENDED_PLATFORMS.map((rec, i) => (
+        <View key={i} style={s.platformCard} wrap={false}>
+          <View style={s.platformCardRow}>
+            <Text style={s.platformCardName}>{rec.name}</Text>
+            <View style={[s.statusBadge, { backgroundColor: C.greenLight }]}>
+              <Text style={[s.statusBadgeText, { color: C.green }]}>Recommended</Text>
+            </View>
+          </View>
+          <Text style={s.platformCardDesc}>{rec.description}</Text>
+          <Text style={s.platformCardAction}>{rec.actionText}</Text>
         </View>
-      </View>
+      ))}
 
       <PageFooter page={3} businessName={result.businessName} />
     </Page>
