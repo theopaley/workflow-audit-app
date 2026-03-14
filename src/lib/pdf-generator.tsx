@@ -6,68 +6,48 @@ import {
   View,
   StyleSheet,
   Font,
+  Svg,
+  Circle,
 } from "@react-pdf/renderer";
 import type { AnalysisResult, AreaResult, StackAction } from "./ai-analysis";
 import type { SurveyAnswers } from "@/types/survey";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
-// Use built-in Helvetica to avoid network fetches at render time.
 Font.registerHyphenationCallback((word) => [word]);
 
-// ─── Palette ─────────────────────────────────────────────────────────────────
-
-const COVER_BG   = "#0F172A"; // near-black navy for dark cover
-const COVER_MUTED = "#94A3B8"; // slate-400 — readable on dark
+// ─── Color system ─────────────────────────────────────────────────────────────
 
 const C = {
-  indigo: "#4F46E5",
-  indigoLight: "#EEF2FF",
-  indigoMid: "#818CF8",
-  body: "#111827",
-  muted: "#6B7280",
-  border: "#E5E7EB",
-  white: "#FFFFFF",
-  red: "#DC2626",
-  redLight: "#FEF2F2",
-  amber: "#D97706",
-  amberLight: "#FFFBEB",
-  green: "#059669",
-  greenLight: "#ECFDF5",
+  ink:         "#1a1a1a",
+  inkLight:    "#4a4a4a",
+  inkMuted:    "#8a8a8a",
+  paper:       "#f7f4ef",
+  white:       "#ffffff",
+  accent:      "#c8402e",
+  accentLight: "#f5e8e6",
+  gold:        "#b8860b",
+  goldLight:   "#faf5e4",
+  green:       "#2a6b3c",
+  greenLight:  "#e8f4ec",
+  border:      "#ddd9d2",
+  warn:        "#e07b20",
+  warnLight:   "#fef3e8",
+  coverBg:     "#1a1a1a",
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Stack action config ──────────────────────────────────────────────────────
 
-function formatCurrency(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1).replace(".0", "")}M`;
-  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
-  return `$${n}`;
-}
-
-/** Full comma-formatted currency, e.g. $1,234,567 */
-function formatCurrencyFull(n: number): string {
-  return "$" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function scoreColor(score: number): string {
-  if (score >= 70) return C.green;
-  if (score >= 50) return C.amber;
-  return C.red;
-}
-
-function scoreBackground(score: number): string {
-  if (score >= 70) return C.greenLight;
-  if (score >= 50) return C.amberLight;
-  return C.redLight;
-}
-
-const STACK_ACTION_COLORS: Record<NonNullable<StackAction>, { bg: string; text: string }> = {
-  CONFIGURE: { bg: "#EFF6FF", text: "#1D4ED8" },
-  CONNECT:   { bg: "#F0FDF4", text: "#15803D" },
-  REPLACE:   { bg: "#FFF7ED", text: "#C2410C" },
-  DEPLOY:    { bg: C.indigoLight, text: C.indigo },
+const STACK_ACTION_CONFIG: Record<
+  NonNullable<StackAction>,
+  { bg: string; text: string; label: string }
+> = {
+  CONFIGURE: { bg: C.warnLight,   text: C.warn,   label: "Configure" },
+  CONNECT:   { bg: C.greenLight,  text: C.green,  label: "Connect"   },
+  REPLACE:   { bg: C.warnLight,   text: C.warn,   label: "Replace"   },
+  DEPLOY:    { bg: C.accentLight, text: C.accent, label: "Deploy"    },
 };
 
-// ─── Industry stats ──────────────────────────────────────────────────────────
+// ─── Industry stats ───────────────────────────────────────────────────────────
 
 const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
   lead_followup: {
@@ -92,7 +72,7 @@ const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
   },
   proposals: {
     stat: "50% of the time, the first company to send a quote wins the job — yet most service businesses are still quoting manually, days after the request.",
-    source: "industry research",
+    source: "Industry research",
   },
   reengagement: {
     stat: "An existing customer has a 60–70% chance of buying again vs. 1–3% for a brand new prospect. 73% of businesses have no structured plan to re-engage past clients.",
@@ -104,34 +84,36 @@ const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
   },
 };
 
-// ─── Platform page data ───────────────────────────────────────────────────────
+// ─── Recommended platforms (static right column) ──────────────────────────────
 
 const RECOMMENDED_PLATFORMS = [
   {
     name: "GoHighLevel (GHL)",
     description:
-      "Your automation backbone. Connects lead intake, follow-up, review requests, referral campaigns, and appointment reminders into one system.",
-    actionText: "Core to your entire implementation",
+      "Your automation backbone. Connects lead intake, follow-up, review requests, referral campaigns into one system.",
+    actionText: "→ Core to your entire implementation",
   },
   {
     name: "ElevenLabs Voice Agent",
     description:
-      "An AI receptionist that answers every inbound call 24/7, books appointments, qualifies leads, and routes urgent jobs.",
-    actionText: "Highest-impact addition for lead capture",
+      "AI receptionist answering every inbound call 24/7. Books appointments, qualifies leads, routes urgent jobs.",
+    actionText: "→ Highest-impact addition for lead capture",
   },
   {
     name: "SMS / 2-Way Texting",
     description:
-      "98% of texts are read within 3 minutes. Built into GHL — minimal setup required.",
-    actionText: "Built into GHL — minimal setup required",
+      "98% of texts read within 3 minutes. Built into GHL — minimal setup required.",
+    actionText: "→ Built into GHL — minimal setup required",
   },
   {
     name: "Reporting Dashboard",
     description:
-      "Tracks lead response time, review velocity, no-show rate, and referral volume. Built during implementation.",
-    actionText: "Built during implementation — no extra tools needed",
+      "Tracks lead response time, review velocity, no-show rate, referral volume.",
+    actionText: "→ Built during implementation — no extra tools needed",
   },
 ];
+
+// ─── Platform helpers ─────────────────────────────────────────────────────────
 
 interface PlatformEntry {
   name: string;
@@ -193,437 +175,441 @@ function buildLeftColumnCards(
   return entries;
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatCurrency(n: number): string {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1).replace(".0", "")}M`;
+  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
+  return `$${n}`;
+}
+
+function formatCurrencyFull(n: number): string {
+  return "$" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 const TODAY = new Date().toLocaleDateString("en-US", {
   year: "numeric",
   month: "long",
   day: "numeric",
 });
 
+const CIRC = 2 * Math.PI * 40; // SVG circle circumference for r=40
+
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  // Pages
-  page: {
-    backgroundColor: C.white,
-    fontFamily: "Helvetica",
-    paddingHorizontal: 56,
-    paddingVertical: 56,
-  },
+  // ── Pages ──
   coverPage: {
-    backgroundColor: C.white,
+    backgroundColor: C.coverBg,
     fontFamily: "Helvetica",
     paddingHorizontal: 56,
-    paddingVertical: 72,
+    paddingTop: 64,
+    paddingBottom: 48,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
   },
-  coverPageDark: {
-    backgroundColor: COVER_BG,
+  paperPage: {
+    backgroundColor: C.paper,
     fontFamily: "Helvetica",
-    paddingHorizontal: 56,
-    paddingVertical: 72,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
+    paddingHorizontal: 48,
+    paddingTop: 48,
+    paddingBottom: 64,
+  },
+  whitePage: {
+    backgroundColor: C.white,
+    fontFamily: "Helvetica",
+    paddingHorizontal: 48,
+    paddingTop: 48,
+    paddingBottom: 64,
   },
 
-  // Typography
-  wordmark: {
-    fontSize: 13,
-    fontFamily: "Helvetica-Bold",
-    color: C.indigo,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
+  // ── Cover ──
   coverEyebrow: {
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: COVER_MUTED,
+    color: C.inkMuted,
     letterSpacing: 1.5,
     textTransform: "uppercase",
+    marginBottom: 20,
   },
-  coverBusiness: {
+  coverName: {
     fontSize: 36,
     fontFamily: "Helvetica-Bold",
     color: C.white,
-    marginTop: 10,
     lineHeight: 1.2,
+    marginBottom: 10,
   },
-  coverDate: {
-    fontSize: 11,
-    color: COVER_MUTED,
-    marginTop: 6,
+  coverSubtitle: {
+    fontSize: 18,
+    color: "#8e8e8e",
+    lineHeight: 1.4,
+    marginBottom: 20,
+  },
+  coverRule: {
+    height: 1,
+    backgroundColor: "#363636",
+    marginBottom: 24,
   },
   coverStatement: {
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: "Times-Roman",
-    color: "#CBD5E1",
+    color: "#bebebe",
     lineHeight: 1.65,
-    marginTop: 24,
   },
-  coverStatementAmount: {
-    fontSize: 17,
+  coverStatementBold: {
+    fontSize: 18,
     fontFamily: "Times-Bold",
     color: C.white,
   },
-  coverScoreLabel: {
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: COVER_MUTED,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  coverScoreValue: {
-    fontSize: 72,
-    fontFamily: "Helvetica-Bold",
-    lineHeight: 1,
-  },
-  coverScoreOutOf: {
-    fontSize: 18,
-    color: COVER_MUTED,
-    marginLeft: 4,
-  },
-  coverLeakageLabel: {
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: COVER_MUTED,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  coverLeakageValue: {
-    fontSize: 36,
-    fontFamily: "Helvetica-Bold",
-    color: C.red,
-    lineHeight: 1,
-  },
-  coverLeakageSub: {
-    fontSize: 11,
-    color: COVER_MUTED,
-    marginTop: 3,
-  },
 
-  // Section headings
-  pageTitle: {
-    fontSize: 22,
-    fontFamily: "Helvetica-Bold",
-    color: C.body,
-    marginBottom: 6,
-  },
-  pageTitleAccent: {
-    color: C.indigo,
-  },
-  sectionDivider: {
-    height: 2,
-    backgroundColor: C.indigo,
-    marginBottom: 20,
-    width: 40,
-  },
-  sectionLabel: {
+  // ── Cover bottom ──
+  scoreLabel: {
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: C.indigo,
+    color: C.inkMuted,
     textTransform: "uppercase",
-    letterSpacing: 1.5,
-    marginBottom: 16,
+    letterSpacing: 1,
+    marginBottom: 8,
   },
-
-  // Body text
-  body: {
-    fontSize: 10,
-    color: C.body,
-    lineHeight: 1.65,
-  },
-  muted: {
-    fontSize: 9,
-    color: C.muted,
-    lineHeight: 1.5,
-  },
-
-  // Priority cards
-  priorityCard: {
-    borderWidth: 1,
-    borderColor: C.border,
+  leakageBanner: {
+    flex: 1,
+    backgroundColor: C.accent,
     borderRadius: 6,
-    padding: 16,
-    marginBottom: 12,
-  },
-  priorityNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 4,
-    backgroundColor: C.indigo,
-    display: "flex",
-    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    marginLeft: 20,
     justifyContent: "center",
-    marginRight: 12,
   },
-  priorityNumberText: {
-    fontSize: 11,
+  leakageBannerLabel: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: "#f5a098",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  leakageBannerValue: {
+    fontSize: 32,
     fontFamily: "Helvetica-Bold",
     color: C.white,
+    lineHeight: 1,
   },
-  priorityHeadline: {
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: C.body,
-    marginBottom: 4,
-    flex: 1,
-  },
-  priorityArea: {
-    fontSize: 9,
-    color: C.indigo,
-    fontFamily: "Helvetica-Bold",
-    backgroundColor: C.indigoLight,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    marginRight: 6,
-  },
-  tag: {
-    fontSize: 9,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    marginRight: 6,
-  },
-  firstStepLabel: {
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    color: C.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginTop: 10,
-    marginBottom: 3,
+  leakageBannerSub: {
+    fontSize: 10,
+    color: "#f5a098",
+    marginTop: 4,
   },
 
-  // Area finding cards
+  // ── Section header ──
+  sectionRow: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontFamily: "Helvetica-Bold",
+    color: C.ink,
+    marginRight: 16,
+  },
+  sectionRule: {
+    flex: 1,
+    height: 1,
+    backgroundColor: C.border,
+  },
+  introText: {
+    fontSize: 12,
+    color: C.inkLight,
+    lineHeight: 1.6,
+    marginBottom: 20,
+  },
+
+  // ── Finding cards ──
   findingCard: {
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 6,
-    padding: 16,
-    marginBottom: 14,
+    marginBottom: 16,
+    backgroundColor: C.white,
   },
-  findingHeader: {
+  findingCardHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: C.border,
+    borderBottomStyle: "solid",
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 10,
+    alignItems: "center",
   },
-  findingAreaName: {
-    fontSize: 12,
-    fontFamily: "Helvetica-Bold",
-    color: C.body,
-    flex: 1,
-    marginRight: 12,
+  findingCardBody: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 16,
   },
-  scoreBadge: {
+  actionBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scoreBadgeText: {
-    fontSize: 10,
-    fontFamily: "Helvetica-Bold",
-  },
-  stackBadge: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
     borderRadius: 4,
-    marginRight: 6,
-    marginTop: 10,
+    marginRight: 12,
   },
-  stackBadgeText: {
-    fontSize: 8,
+  actionBadgeText: {
+    fontSize: 9,
     fontFamily: "Helvetica-Bold",
     letterSpacing: 0.5,
   },
-  findingSubLabel: {
-    fontSize: 8,
+  findingAreaName: {
+    fontSize: 16,
     fontFamily: "Helvetica-Bold",
-    color: C.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginTop: 8,
-    marginBottom: 2,
+    color: C.ink,
+    flex: 1,
   },
-  toolText: {
-    fontSize: 9,
-    color: C.indigo,
+  findingLeakage: {
+    fontSize: 18,
     fontFamily: "Helvetica-Bold",
+    color: C.accent,
   },
 
-  // Stat callout box
+  // ── Stat callout ──
   statCallout: {
+    backgroundColor: C.goldLight,
     borderLeftWidth: 3,
-    borderLeftColor: C.amber,
+    borderLeftColor: C.gold,
     borderLeftStyle: "solid",
-    backgroundColor: C.amberLight,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 8,
-    paddingBottom: 8,
-    marginBottom: 10,
+    borderRadius: 4,
+    padding: 14,
+    marginBottom: 14,
   },
   statCalloutLabel: {
-    fontSize: 8,
+    fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: C.amber,
+    color: C.gold,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     marginBottom: 4,
   },
   statCalloutText: {
-    fontSize: 9,
-    color: C.body,
-    lineHeight: 1.55,
+    fontSize: 13,
+    color: C.ink,
+    lineHeight: 1.5,
     marginBottom: 3,
   },
   statCalloutSource: {
-    fontSize: 8,
-    color: C.muted,
+    fontSize: 10,
+    color: C.inkMuted,
     fontFamily: "Helvetica-Oblique",
   },
+
+  // ── Finding body ──
   yourResultLabel: {
-    fontSize: 8,
+    fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: C.red,
+    color: C.accent,
     textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 3,
+    letterSpacing: 1.5,
+    marginBottom: 4,
   },
   whatToDoLabel: {
-    fontSize: 8,
+    fontSize: 9,
     fontFamily: "Helvetica-Bold",
     color: C.green,
     textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 3,
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  findingBodyMuted: {
+    fontSize: 13,
+    color: C.inkLight,
+    lineHeight: 1.55,
+  },
+  findingBodyDark: {
+    fontSize: 13,
+    color: C.ink,
+    lineHeight: 1.55,
   },
 
-  // Platform stack page
+  // ── Tool chips ──
+  toolChipsRow: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+  },
+  toolChip: {
+    backgroundColor: C.paper,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginRight: 6,
+    marginTop: 4,
+  },
+  toolChipText: {
+    fontSize: 11,
+    color: C.inkLight,
+  },
+
+  // ── Platform stack ──
+  twoCol: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  colHeader: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: C.inkMuted,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 12,
+  },
   platformCard: {
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 6,
-    padding: 10,
+    padding: 12,
     marginBottom: 8,
+    backgroundColor: C.white,
+  },
+  platformCardRow: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
   },
   platformCardName: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: "Helvetica-Bold",
-    color: C.body,
+    color: C.ink,
     flex: 1,
     marginRight: 6,
   },
   platformCardDesc: {
-    fontSize: 8,
-    color: C.muted,
+    fontSize: 9,
+    color: C.inkMuted,
     lineHeight: 1.45,
     marginBottom: 4,
   },
   platformCardAction: {
-    fontSize: 8,
+    fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: C.indigo,
+    color: C.green,
   },
-  platformColHeader: {
+  statusBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  statusBadgeText: {
     fontSize: 8,
     fontFamily: "Helvetica-Bold",
-    color: C.muted,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 10,
   },
 
-  // Closing page
+  // ── Closing ──
   closingHeading: {
-    fontSize: 32,
+    fontSize: 40,
     fontFamily: "Helvetica-Bold",
-    color: C.body,
-    marginBottom: 12,
+    color: C.white,
     lineHeight: 1.2,
+    marginBottom: 16,
   },
-  closingAccent: {
-    color: C.indigo,
+  closingSubtext: {
+    fontSize: 14,
+    color: "#8e8e8e",
+    lineHeight: 1.6,
+    marginBottom: 32,
+    maxWidth: 380,
   },
   ctaButton: {
-    backgroundColor: C.indigo,
+    backgroundColor: C.accent,
     borderRadius: 24,
     paddingHorizontal: 28,
-    paddingVertical: 12,
+    paddingVertical: 14,
     alignSelf: "flex-start",
-    marginTop: 28,
+    marginBottom: 14,
   },
   ctaText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "Helvetica-Bold",
     color: C.white,
   },
   ctaUrl: {
     fontSize: 9,
-    color: C.muted,
-    marginTop: 8,
+    color: C.inkMuted,
   },
 
-  // Layout utilities
+  // ── Utilities ──
   row: { display: "flex", flexDirection: "row", alignItems: "center" },
-  spacer: { flex: 1 },
-  mt4:  { marginTop: 4 },
-  mt8:  { marginTop: 8 },
+  mt8:  { marginTop: 8  },
   mt12: { marginTop: 12 },
-  mt20: { marginTop: 20 },
-  mt32: { marginTop: 32 },
+  mt16: { marginTop: 16 },
   footer: {
     position: "absolute",
-    bottom: 28,
-    left: 56,
-    right: 56,
+    bottom: 24,
+    left: 48,
+    right: 48,
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
   },
   footerText: {
     fontSize: 8,
-    color: C.muted,
+    color: C.inkMuted,
   },
 });
 
-// ─── Shared components ────────────────────────────────────────────────────────
+// ─── Score ring (SVG) ─────────────────────────────────────────────────────────
+
+function ScoreRing({ score }: { score: number }) {
+  const dash = CIRC * (score / 100);
+  const gap  = CIRC - dash;
+
+  return (
+    <View style={{ width: 110, height: 110, position: "relative" }}>
+      <Svg width="110" height="110" viewBox="0 0 100 100">
+        {/* Track */}
+        <Circle cx="50" cy="50" r="40" fill="none" stroke="#2e2e2e" strokeWidth="8" />
+        {/* Arc */}
+        <Circle
+          cx="50"
+          cy="50"
+          r="40"
+          fill="none"
+          stroke={C.accent}
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${gap}`}
+          transform="rotate(-90, 50, 50)"
+        />
+      </Svg>
+      {/* Centered score text overlaid on SVG */}
+      <View
+        style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0, bottom: 0,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={{ fontSize: 26, fontFamily: "Helvetica-Bold", color: C.white, lineHeight: 1 }}>
+          {score}
+        </Text>
+        <Text style={{ fontSize: 9, color: C.inkMuted, marginTop: 2 }}>/100</Text>
+      </View>
+    </View>
+  );
+}
+
+// ─── Page footer ──────────────────────────────────────────────────────────────
 
 function PageFooter({ page, businessName }: { page: number; businessName: string }) {
   return (
     <View style={s.footer} fixed>
-      <Text style={s.footerText}>WorkflowAudit — {businessName}</Text>
+      <Text style={s.footerText}>RevRep — {businessName}</Text>
       <Text style={s.footerText}>{page}</Text>
-    </View>
-  );
-}
-
-function EffortTag({ label, value }: { label: string; value: string }) {
-  const color = value === "Low" ? C.green : value === "Medium" ? C.amber : C.red;
-  const bg   = value === "Low" ? C.greenLight : value === "Medium" ? C.amberLight : C.redLight;
-  return (
-    <View style={[s.tag, { backgroundColor: bg }]}>
-      <Text style={[s.tag, { color, margin: 0, padding: 0, fontFamily: "Helvetica-Bold" }]}>
-        {label}: {value}
-      </Text>
-    </View>
-  );
-}
-
-function StackBadge({ action }: { action: NonNullable<StackAction> }) {
-  const cfg = STACK_ACTION_COLORS[action];
-  return (
-    <View style={[s.stackBadge, { backgroundColor: cfg.bg }]}>
-      <Text style={[s.stackBadgeText, { color: cfg.text }]}>{action}</Text>
     </View>
   );
 }
@@ -632,213 +618,143 @@ function StackBadge({ action }: { action: NonNullable<StackAction> }) {
 
 function CoverPage({
   result,
-  businessDescription,
+  businessName,
 }: {
   result: AnalysisResult;
-  businessDescription: string;
+  businessName: string;
 }) {
-  const name = businessDescription || result.businessName;
   const annualFormatted = formatCurrencyFull(result.totalAnnualLeakage);
 
   return (
-    <Page size="A4" style={s.coverPageDark}>
-      {/* Top — eyebrow + title + statement */}
+    <Page size="A4" style={s.coverPage}>
+      {/* Top — eyebrow, name, subtitle, rule, statement */}
       <View>
-        <Text style={s.coverEyebrow}>Presented by RevRep — Confidential AI Readiness Report</Text>
-        <Text style={s.coverBusiness}>{name}</Text>
-        <Text style={s.coverDate}>Generated {TODAY}</Text>
-
+        <Text style={s.coverEyebrow}>
+          Presented by RevRep — Confidential AI Readiness Report
+        </Text>
+        <Text style={s.coverName}>{businessName}</Text>
+        <Text style={s.coverSubtitle}>
+          Your personalized workflow assessment &amp; action plan
+        </Text>
+        <View style={s.coverRule} />
         <Text style={s.coverStatement}>
           {"Based on your audit, "}
-          <Text style={{ fontFamily: "Times-Bold", color: C.white }}>{name}</Text>
+          <Text style={{ fontFamily: "Times-Bold", color: C.white }}>{businessName}</Text>
           {" is losing an estimated "}
-          <Text style={s.coverStatementAmount}>{annualFormatted}</Text>
+          <Text style={s.coverStatementBold}>{annualFormatted}</Text>
           {" every year to workflow gaps that AI can fix. Here's exactly where it's going — and how to get it back."}
         </Text>
       </View>
 
-      {/* Middle — score + leakage */}
+      {/* Bottom — score ring + leakage banner */}
       <View>
-        <View style={[s.row, { alignItems: "flex-end", marginBottom: 32 }]}>
-          {/* Score */}
-          <View style={{ marginRight: 48 }}>
-            <Text style={s.coverScoreLabel}>Workflow Health Score</Text>
-            <View style={s.row}>
-              <Text style={[s.coverScoreValue, { color: scoreColor(result.overallScore) }]}>
-                {result.overallScore}
-              </Text>
-              <Text style={[s.coverScoreOutOf, { marginTop: 46 }]}> / 100</Text>
-            </View>
+        <View style={s.row}>
+          {/* Score ring */}
+          <View>
+            <Text style={s.scoreLabel}>Workflow Health Score</Text>
+            <ScoreRing score={result.overallScore} />
           </View>
 
-          {/* Leakage */}
+          {/* Leakage banner */}
           {result.totalMonthlyLeakage > 0 && (
-            <View>
-              <Text style={s.coverLeakageLabel}>Est. Monthly Leakage</Text>
-              <Text style={s.coverLeakageValue}>
+            <View style={s.leakageBanner}>
+              <Text style={s.leakageBannerLabel}>Est. Monthly Leakage</Text>
+              <Text style={s.leakageBannerValue}>
                 {formatCurrency(result.totalMonthlyLeakage)}/mo
               </Text>
-              <Text style={s.coverLeakageSub}>
-                {formatCurrency(result.totalAnnualLeakage)} per year
+              <Text style={s.leakageBannerSub}>
+                {formatCurrencyFull(result.totalAnnualLeakage)} per year
               </Text>
             </View>
           )}
         </View>
-
-        {/* Divider rule */}
-        <View style={{ height: 1, backgroundColor: "#1E293B" }} />
-      </View>
-
-      {/* Bottom — prepared for */}
-      <View>
-        <Text style={[s.muted, { color: COVER_MUTED }]}>Prepared for</Text>
-        <Text style={[s.body, { fontFamily: "Helvetica-Bold", marginTop: 2, color: C.white }]}>
-          {result.ownerName}
-        </Text>
-        <Text style={[s.muted, { marginTop: 2, color: COVER_MUTED }]}>{result.recommendedTier}</Text>
       </View>
     </Page>
   );
 }
 
-// ─── Page 2: Executive Summary ────────────────────────────────────────────────
-
-function ExecutiveSummaryPage({ result }: { result: AnalysisResult }) {
-  return (
-    <Page size="A4" style={s.page}>
-      <Text style={s.sectionLabel}>Executive Summary</Text>
-      <Text style={s.pageTitle}>What we found</Text>
-      <View style={s.sectionDivider} />
-
-      <Text style={s.body}>{result.reportOpening}</Text>
-
-      <View style={s.mt32}>
-        <Text style={[s.sectionLabel, { marginBottom: 12 }]}>Top 3 Priority Fixes</Text>
-        {result.topThreePriorities.map((p, i) => (
-          <View key={i} style={s.priorityCard} wrap={false}>
-            <View style={s.row}>
-              <View style={s.priorityNumber}>
-                <Text style={s.priorityNumberText}>{i + 1}</Text>
-              </View>
-              <Text style={s.priorityHeadline}>{p.headline}</Text>
-            </View>
-            <View style={[s.row, s.mt8]}>
-              <View style={s.priorityArea}>
-                <Text style={{ fontSize: 9, color: C.indigo, fontFamily: "Helvetica-Bold" }}>
-                  {p.areaName}
-                </Text>
-              </View>
-              <EffortTag label="Effort" value={p.effort} />
-              <EffortTag label="Impact" value={p.impact} />
-            </View>
-            <Text style={s.firstStepLabel}>First step</Text>
-            <Text style={s.body}>{p.firstStep}</Text>
-          </View>
-        ))}
-      </View>
-
-      <PageFooter page={2} businessName={result.businessName} />
-    </Page>
-  );
-}
-
-// ─── Page 3+: Findings ────────────────────────────────────────────────────────
+// ─── Page 2: Findings ─────────────────────────────────────────────────────────
 
 function FindingCard({ area }: { area: AreaResult }) {
-  const action = area.stackAction;
-  const industryStat = INDUSTRY_STATS[area.id];
+  const action    = area.stackAction;
+  const actionCfg = action ? STACK_ACTION_CONFIG[action] : null;
+  const stat      = INDUSTRY_STATS[area.id];
 
   return (
     <View style={s.findingCard} wrap={false}>
-      {/* Header: area name + score badge */}
-      <View style={s.findingHeader}>
+      {/* Header */}
+      <View style={s.findingCardHeader}>
+        {actionCfg && (
+          <View style={[s.actionBadge, { backgroundColor: actionCfg.bg }]}>
+            <Text style={[s.actionBadgeText, { color: actionCfg.text }]}>
+              {actionCfg.label}
+            </Text>
+          </View>
+        )}
         <Text style={s.findingAreaName}>{area.name}</Text>
-        <View style={[s.scoreBadge, { backgroundColor: scoreBackground(area.score) }]}>
-          <Text style={[s.scoreBadgeText, { color: scoreColor(area.score) }]}>
-            {area.score} / 100
+        {area.monthlyLeakage > 0 && (
+          <Text style={s.findingLeakage}>
+            {formatCurrency(area.monthlyLeakage)}/mo
           </Text>
+        )}
+      </View>
+
+      {/* Body */}
+      <View style={s.findingCardBody}>
+        {/* 1. Industry stat callout */}
+        {stat && area.score < 70 && (
+          <View style={s.statCallout}>
+            <Text style={s.statCalloutLabel}>Industry Data</Text>
+            <Text style={s.statCalloutText}>{stat.stat}</Text>
+            <Text style={s.statCalloutSource}>— {stat.source}</Text>
+          </View>
+        )}
+
+        {/* 2. Your result */}
+        <View>
+          <Text style={s.yourResultLabel}>Your Result</Text>
+          <Text style={s.findingBodyMuted}>{area.scoreReasoning}</Text>
         </View>
-      </View>
 
-      {/* 1. Industry stat callout — only when score < 70 and stat exists */}
-      {industryStat && area.score < 70 && (
-        <View style={s.statCallout}>
-          <Text style={s.statCalloutLabel}>Industry Data</Text>
-          <Text style={s.statCalloutText}>{industryStat.stat}</Text>
-          <Text style={s.statCalloutSource}>— {industryStat.source}</Text>
+        {/* 3. What to do */}
+        <View style={s.mt12}>
+          <Text style={s.whatToDoLabel}>What To Do</Text>
+          <Text style={s.findingBodyDark}>{area.empower}</Text>
         </View>
-      )}
 
-      {/* 2. Your result */}
-      <View style={area.score < 70 && industryStat ? s.mt4 : s.mt8}>
-        <Text style={s.yourResultLabel}>Your Result</Text>
-        <Text style={s.body}>{area.scoreReasoning}</Text>
-      </View>
-
-      {/* 3. What to do */}
-      <View style={s.mt8}>
-        <Text style={s.whatToDoLabel}>What To Do</Text>
-        <Text style={s.body}>{area.empower}</Text>
-      </View>
-
-      {/* 4. Tool chips */}
-      {action && (
-        <View style={[s.row, s.mt8, { flexWrap: "wrap" }]}>
-          <StackBadge action={action} />
-          {area.replacementTool ? (
-            <View style={{ flex: 1 }}>
-              <Text style={s.toolText}>{area.replacementTool}</Text>
+        {/* 4. Tool chips */}
+        {area.replacementTool && (
+          <View style={s.toolChipsRow}>
+            <View style={s.toolChip}>
+              <Text style={s.toolChipText}>{area.replacementTool}</Text>
             </View>
-          ) : (
-            <View style={{ flex: 1 }}>
-              <Text style={s.muted}>{area.stackReasoning}</Text>
-            </View>
-          )}
-        </View>
-      )}
+          </View>
+        )}
+      </View>
     </View>
   );
 }
 
 function FindingsPage({ result }: { result: AnalysisResult }) {
   const flaggedAreas = result.areas.filter((a) => a.score < 70);
-  const redAreas   = flaggedAreas.filter((a) => a.grade === "Red");
-  const amberAreas = flaggedAreas.filter((a) => a.grade === "Amber");
 
   return (
-    <Page size="A4" style={s.page}>
-      <Text style={s.sectionLabel}>Findings</Text>
-      <Text style={s.pageTitle}>Areas below the threshold</Text>
-      <View style={s.sectionDivider} />
+    <Page size="A4" style={s.paperPage}>
+      <View style={s.sectionRow}>
+        <Text style={s.sectionTitle}>Your Findings</Text>
+        <View style={s.sectionRule} />
+      </View>
 
-      {redAreas.length > 0 && (
-        <View style={s.mt8}>
-          <Text style={[s.muted, { marginBottom: 10, fontFamily: "Helvetica-Bold", color: C.red }]}>
-            Critical — Score below 50
-          </Text>
-          {redAreas.map((area) => (
-            <FindingCard key={area.id} area={area} />
-          ))}
-        </View>
-      )}
+      {flaggedAreas.map((area) => (
+        <FindingCard key={area.id} area={area} />
+      ))}
 
-      {amberAreas.length > 0 && (
-        <View style={redAreas.length > 0 ? s.mt20 : s.mt8}>
-          <Text style={[s.muted, { marginBottom: 10, fontFamily: "Helvetica-Bold", color: C.amber }]}>
-            Needs Improvement — Score 50–69
-          </Text>
-          {amberAreas.map((area) => (
-            <FindingCard key={area.id} area={area} />
-          ))}
-        </View>
-      )}
-
-      <PageFooter page={3} businessName={result.businessName} />
+      <PageFooter page={2} businessName={result.businessName} />
     </Page>
   );
 }
 
-// ─── Page 4: Platform Stack ───────────────────────────────────────────────────
+// ─── Page 3: Technology Stack ─────────────────────────────────────────────────
 
 function PlatformPage({
   result,
@@ -850,31 +766,35 @@ function PlatformPage({
   const leftCards = buildLeftColumnCards(result, answers);
 
   return (
-    <Page size="A4" style={s.page}>
-      <Text style={s.sectionLabel}>Technology Stack</Text>
-      <Text style={s.pageTitle}>Your Technology Stack</Text>
-      <View style={s.sectionDivider} />
-      <Text style={[s.body, { marginBottom: 20 }]}>
-        Based on your audit responses, here's an honest look at the tools you're already running — and what we recommend adding.
+    <Page size="A4" style={s.whitePage}>
+      <View style={s.sectionRow}>
+        <Text style={s.sectionTitle}>Your Technology Stack</Text>
+        <View style={s.sectionRule} />
+      </View>
+
+      <Text style={s.introText}>
+        Based on your audit responses, here's an honest look at the tools
+        you're already running — and what we recommend adding.
       </Text>
 
-      <View style={[s.row, { alignItems: "flex-start" }]}>
-        {/* Left column — platforms already in use */}
-        <View style={{ flex: 1, paddingRight: 10 }}>
-          <Text style={s.platformColHeader}>Platforms you already have</Text>
+      <View style={s.twoCol}>
+        {/* Left — existing platforms */}
+        <View style={{ flex: 1, paddingRight: 12 }}>
+          <Text style={s.colHeader}>Platforms you already have</Text>
           {leftCards.map((card, i) => {
             const statusColor =
-              card.status === "Well Set Up" ? C.green :
-              card.status === "Underutilized" ? C.amber : C.red;
+              card.status === "Well Set Up"   ? C.green  :
+              card.status === "Underutilized" ? C.gold   : C.accent;
             const statusBg =
-              card.status === "Well Set Up" ? C.greenLight :
-              card.status === "Underutilized" ? C.amberLight : C.redLight;
+              card.status === "Well Set Up"   ? C.greenLight  :
+              card.status === "Underutilized" ? C.goldLight   : C.accentLight;
+
             return (
               <View key={i} style={s.platformCard} wrap={false}>
-                <View style={[s.row, { marginBottom: 4, flexWrap: "wrap" }]}>
+                <View style={s.platformCardRow}>
                   <Text style={s.platformCardName}>{card.name}</Text>
-                  <View style={[s.scoreBadge, { backgroundColor: statusBg }]}>
-                    <Text style={[s.scoreBadgeText, { color: statusColor }]}>
+                  <View style={[s.statusBadge, { backgroundColor: statusBg }]}>
+                    <Text style={[s.statusBadgeText, { color: statusColor }]}>
                       {card.status}
                     </Text>
                   </View>
@@ -886,15 +806,17 @@ function PlatformPage({
           })}
         </View>
 
-        {/* Right column — recommended additions */}
-        <View style={{ flex: 1, paddingLeft: 10 }}>
-          <Text style={s.platformColHeader}>Platforms we recommend adding</Text>
+        {/* Right — recommended additions */}
+        <View style={{ flex: 1, paddingLeft: 12 }}>
+          <Text style={s.colHeader}>Platforms we recommend adding</Text>
           {RECOMMENDED_PLATFORMS.map((rec, i) => (
             <View key={i} style={s.platformCard} wrap={false}>
-              <View style={[s.row, { marginBottom: 4 }]}>
+              <View style={s.platformCardRow}>
                 <Text style={s.platformCardName}>{rec.name}</Text>
-                <View style={[s.scoreBadge, { backgroundColor: C.indigoLight }]}>
-                  <Text style={[s.scoreBadgeText, { color: C.indigo }]}>Recommended</Text>
+                <View style={[s.statusBadge, { backgroundColor: C.greenLight }]}>
+                  <Text style={[s.statusBadgeText, { color: C.green }]}>
+                    Recommended
+                  </Text>
                 </View>
               </View>
               <Text style={s.platformCardDesc}>{rec.description}</Text>
@@ -904,42 +826,44 @@ function PlatformPage({
         </View>
       </View>
 
-      <PageFooter page={4} businessName={result.businessName} />
+      <PageFooter page={3} businessName={result.businessName} />
     </Page>
   );
 }
 
-// ─── Page 5: Closing ─────────────────────────────────────────────────────────
+// ─── Page 4: Closing CTA ──────────────────────────────────────────────────────
 
 function ClosingPage({ result }: { result: AnalysisResult }) {
-  const encouragement = result.closingPoints[0] ?? "Your business has everything it needs to run better — the systems just need to catch up with the team.";
+  const encouragement =
+    result.closingPoints?.[0] ??
+    "Your business has everything it needs to run better — the systems just need to catch up with the team.";
 
   return (
     <Page size="A4" style={s.coverPage}>
+      {/* Eyebrow */}
       <View>
-        <Text style={s.wordmark}>WorkflowAudit</Text>
+        <Text style={s.coverEyebrow}>RevRep — Confidential</Text>
       </View>
 
+      {/* Main content */}
       <View>
         <Text style={s.closingHeading}>
-          Ready to{"\n"}
-          <Text style={s.closingAccent}>fix this?</Text>
+          Ready to{"\n"}fix this?
         </Text>
-        <View style={{ height: 2, backgroundColor: C.indigo, width: 40, marginBottom: 20 }} />
-        <Text style={[s.body, { maxWidth: 360 }]}>{encouragement}</Text>
-
+        <Text style={s.closingSubtext}>{encouragement}</Text>
         <View style={s.ctaButton}>
-          <Text style={s.ctaText}>Book a Free Strategy Call</Text>
+          <Text style={s.ctaText}>Schedule Your Implementation Call →</Text>
         </View>
         <Text style={s.ctaUrl}>https://workflow-audit-app.vercel.app</Text>
       </View>
 
+      {/* Footer strip */}
       <View>
-        <View style={{ height: 1, backgroundColor: C.border, marginBottom: 16 }} />
-        <Text style={s.muted}>
+        <View style={{ height: 1, backgroundColor: "#2e2e2e", marginBottom: 12 }} />
+        <Text style={[s.footerText, { color: "#4e4e4e" }]}>
           {result.tierRationale}
         </Text>
-        <Text style={[s.muted, { marginTop: 6 }]}>
+        <Text style={[s.footerText, { color: "#4e4e4e", marginTop: 4 }]}>
           Recommended: {result.recommendedTier}
         </Text>
       </View>
@@ -956,18 +880,18 @@ interface AuditReportDocumentProps {
 
 export function AuditReportDocument({ result, answers }: AuditReportDocumentProps) {
   const companyName =
-    typeof answers.intro_company_name === "string" && answers.intro_company_name.trim()
+    typeof answers.intro_company_name === "string" &&
+    answers.intro_company_name.trim()
       ? answers.intro_company_name.trim()
       : result.businessName;
 
   return (
     <Document
-      title={`WorkflowAudit — ${companyName}`}
-      author="WorkflowAudit"
-      subject="Workflow Audit Report"
+      title={`RevRep Audit — ${companyName}`}
+      author="RevRep"
+      subject="AI Readiness Audit Report"
     >
-      <CoverPage result={result} businessDescription={companyName} />
-      <ExecutiveSummaryPage result={result} />
+      <CoverPage result={result} businessName={companyName} />
       <FindingsPage result={result} />
       <PlatformPage result={result} answers={answers} />
       <ClosingPage result={result} />
@@ -975,11 +899,12 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
   );
 }
 
-// ─── PDF generation helper (server-side) ─────────────────────────────────────
+// ─── PDF generation helper (server-side only) ─────────────────────────────────
 
 /**
- * Renders the report to a Buffer. Call this server-side only.
- * Returns a Uint8Array suitable for attaching to an email or streaming as a download.
+ * Renders the report to a Buffer. Must be called server-side — requires
+ * ANTHROPIC_API_KEY to have run first. Returns a Uint8Array for email
+ * attachment or streaming download.
  */
 export async function generateAuditPDF(
   result: AnalysisResult,
