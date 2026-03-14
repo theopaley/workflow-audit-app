@@ -391,9 +391,9 @@ const s = StyleSheet.create({
 
   // ── Stat callout ──
   statCallout: {
-    backgroundColor: C.goldLight,
+    backgroundColor: "#000000",
     borderLeftWidth: 3,
-    borderLeftColor: C.gold,
+    borderLeftColor: C.accent,
     borderLeftStyle: "solid",
     borderRadius: 4,
     padding: 14,
@@ -402,20 +402,20 @@ const s = StyleSheet.create({
   statCalloutLabel: {
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
-    color: C.gold,
+    color: C.accent,
     textTransform: "uppercase",
     letterSpacing: 1.5,
     marginBottom: 4,
   },
   statCalloutText: {
     fontSize: 13,
-    color: C.ink,
+    color: "#ffffff",
     lineHeight: 1.5,
     marginBottom: 3,
   },
   statCalloutSource: {
     fontSize: 10,
-    color: C.inkMuted,
+    color: "#999999",
     fontFamily: "Helvetica-Oblique",
   },
 
