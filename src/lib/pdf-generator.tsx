@@ -21,7 +21,7 @@ const C = {
   ink:         "#1a1a1a",
   inkLight:    "#4a4a4a",
   inkMuted:    "#8a8a8a",
-  paper:       "#f7f4ef",
+  paper:       "#ffffff",
   white:       "#ffffff",
   accent:      "#c8402e",
   accentLight: "#f5e8e6",
@@ -81,6 +81,22 @@ const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
   communication: {
     stat: "53% of people will switch to a competitor if response time is too slow. 78% of customers buy from the first business that responds — regardless of price.",
     source: "Verse.ai / LeadConnect",
+  },
+  lead_capture: {
+    stat: "Businesses that track lead sources grow 2x faster than those that don't. Yet 61% of small businesses have no system for capturing where their leads come from.",
+    source: "HubSpot / Salesforce SMB Report",
+  },
+  onboarding: {
+    stat: "A structured onboarding process improves customer retention by 50%. Customers who feel confused or ignored in the first 30 days are 3x more likely to churn.",
+    source: "Wyzowl / Bain & Company",
+  },
+  project_mgmt: {
+    stat: "Businesses using dedicated job management software report 23% higher on-time completion rates and spend 40% less time on administrative coordination.",
+    source: "Jobber / ServiceTitan Industry Report",
+  },
+  reporting: {
+    stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
+    source: "Clutch SMB Survey / Dun & Bradstreet",
   },
 };
 
