@@ -133,19 +133,27 @@ const RECOMMENDED_PLATFORMS = [
 
 interface PlatformEntry {
   name: string;
-  status: "Well Set Up" | "Underutilized" | "Gap";
+  badge: "Deploy" | "Configure" | "Automate";
   description: string;
   actionText: string;
 }
 
-function getStackDescription(action: StackAction): string {
-  switch (action) {
-    case "CONFIGURE": return "In your stack — needs configuration";
-    case "CONNECT":   return "Needs integration with other tools";
-    case "REPLACE":   return "Candidate for replacement";
-    case "DEPLOY":    return "Ready for additional automation";
-    default:          return "Currently in use";
-  }
+const BADGE_CONFIG: Record<PlatformEntry["badge"], { bg: string; text: string }> = {
+  Deploy:    { bg: C.accentLight, text: C.accent },
+  Configure: { bg: C.warnLight,   text: C.warn   },
+  Automate:  { bg: C.greenLight,  text: C.green  },
+};
+
+// Badge priority for Jobber consolidation (higher = worse)
+const BADGE_PRIORITY: Record<PlatformEntry["badge"], number> = {
+  Deploy: 3, Configure: 2, Automate: 1,
+};
+
+function resolveAreaBadge(area: AreaResult, isGap: boolean): PlatformEntry["badge"] {
+  if (isGap) return "Deploy";
+  if (area.score >= 70) return "Automate";
+  if (area.stackAction === "DEPLOY") return "Deploy";
+  return "Configure"; // CONFIGURE, CONNECT, REPLACE, null
 }
 
 function buildLeftColumnCards(
@@ -168,28 +176,55 @@ function buildLeftColumnCards(
     );
 
     if (hasNone || platforms.length === 0) {
-      // Always show gap areas regardless of score
       entries.push({
         name: area.name,
-        status: "Gap",
+        badge: "Deploy",
         description: "No platform in use for this workflow area",
-        actionText: area.empower,
+        actionText: `Deploy ${area.name} — ${area.empower}`,
       });
-    } else if (area.score < 70) {
-      // Only show platforms for underperforming areas
-      const description = getStackDescription(area.stackAction);
-      const actionText = area.replacementTool
-        ? `Replace with: ${area.replacementTool}`
-        : area.stackReasoning;
+    } else {
+      const badge = resolveAreaBadge(area, false);
+      const description =
+        badge === "Automate"
+          ? "Platform is set up — ready for automation layering"
+          : badge === "Deploy"
+          ? "Full deployment needed — not yet active"
+          : "Platform exists but needs setup or optimization";
 
       for (const platform of platforms) {
-        entries.push({ name: platform, status: "Underutilized", description, actionText });
+        const actionText =
+          badge === "Automate"
+            ? `Automate ${platform} — ${area.stackReasoning}`
+            : badge === "Deploy"
+            ? `Deploy ${platform} — ${area.empower}`
+            : `Configure ${platform} — ${area.stackReasoning}`;
+
+        entries.push({ name: platform, badge, description, actionText });
       }
     }
-    // score >= 70 with real platforms: intentionally omitted
   }
 
-  return entries;
+  // FIX 7 — Consolidate multiple Jobber entries into one card
+  const jobberEntries = entries.filter((e) => e.name === "Jobber");
+  const rest          = entries.filter((e) => e.name !== "Jobber");
+
+  if (jobberEntries.length > 1) {
+    const worstBadge = jobberEntries.reduce<PlatformEntry["badge"]>(
+      (w, e) => (BADGE_PRIORITY[e.badge] > BADGE_PRIORITY[w] ? e.badge : w),
+      "Automate"
+    );
+    rest.push({
+      name: "Jobber",
+      badge: worstBadge,
+      description:
+        "You're using Jobber across scheduling, proposals, job management, and invoicing — but most automation features are sitting unused.",
+      actionText: "Configure automation across all Jobber modules",
+    });
+  } else if (jobberEntries.length === 1) {
+    rest.push(jobberEntries[0]);
+  }
+
+  return rest;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -698,7 +733,7 @@ function FindingCard({ area }: { area: AreaResult }) {
   const stat      = INDUSTRY_STATS[area.id];
 
   return (
-    <View style={s.findingCard} wrap={false}>
+    <View style={s.findingCard}>
       {/* Header */}
       <View style={s.findingCardHeader}>
         {actionCfg && (
@@ -797,23 +832,21 @@ function PlatformPage({
       {/* Section 1 — existing platforms */}
       <Text style={[s.colHeader, { marginBottom: 10 }]}>Platforms You Already Have</Text>
       {leftCards.map((card, i) => {
-        const statusColor =
-          card.status === "Underutilized" ? C.gold : C.accent;
-        const statusBg =
-          card.status === "Underutilized" ? C.goldLight : C.accentLight;
-
+        const badgeCfg = BADGE_CONFIG[card.badge];
         return (
           <View key={i} style={s.platformCard} wrap={false}>
             <View style={s.platformCardRow}>
               <Text style={s.platformCardName}>{card.name}</Text>
-              <View style={[s.statusBadge, { backgroundColor: statusBg }]}>
-                <Text style={[s.statusBadgeText, { color: statusColor }]}>
-                  {card.status}
+              <View style={[s.statusBadge, { backgroundColor: badgeCfg.bg }]}>
+                <Text style={[s.statusBadgeText, { color: badgeCfg.text }]}>
+                  {card.badge}
                 </Text>
               </View>
             </View>
             <Text style={s.platformCardDesc}>{card.description}</Text>
-            <Text style={s.platformCardAction}>{card.actionText}</Text>
+            <Text style={[s.platformCardAction, { color: badgeCfg.text }]}>
+              {card.actionText}
+            </Text>
           </View>
         );
       })}
@@ -866,14 +899,11 @@ function ClosingPage({ result }: { result: AnalysisResult }) {
         <Text style={s.ctaUrl}>https://workflow-audit-app.vercel.app</Text>
       </View>
 
-      {/* Footer strip */}
+      {/* Footer strip — value-based pricing */}
       <View>
         <View style={{ height: 1, backgroundColor: "#2e2e2e", marginBottom: 12 }} />
-        <Text style={[s.footerText, { color: "#4e4e4e" }]}>
-          {result.tierRationale}
-        </Text>
-        <Text style={[s.footerText, { color: "#4e4e4e", marginTop: 4 }]}>
-          Recommended: {result.recommendedTier}
+        <Text style={[s.footerText, { color: "#4e4e4e", lineHeight: 1.6 }]}>
+          {`Based on your estimated annual leakage of ${formatCurrencyFull(result.totalAnnualLeakage)}, your implementation investment range is ${formatCurrencyFull(result.totalAnnualLeakage * 0.20)} – ${formatCurrencyFull(result.totalAnnualLeakage * 0.25)}.`}
         </Text>
       </View>
     </Page>
