@@ -1002,8 +1002,8 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
       : result.businessName;
 
   const cardTotal = result.areas
-    .filter((a: AreaResult) => (a.monthlyLeakage ?? 0) > 0)
-    .reduce((sum: number, a: AreaResult) => sum + a.monthlyLeakage, 0);
+    .filter((a: AreaResult) => a.score < 70)
+    .reduce((sum: number, a: AreaResult) => sum + (a.monthlyLeakage ?? 0), 0);
   const scaleFactor = cardTotal > 0 ? result.totalMonthlyLeakage / cardTotal : 1;
 
   return (
