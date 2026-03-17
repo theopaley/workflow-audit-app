@@ -49,59 +49,103 @@ const STACK_ACTION_CONFIG: Record<
 
 // ─── Industry stats ───────────────────────────────────────────────────────────
 
+const _STAT_PROJECT_MGMT = {
+  stat: "Businesses that standardize their project management processes complete jobs 28% faster and report 33% fewer costly errors.",
+  source: "McKinsey / Asana State of Work Report",
+};
+const _STAT_VISIBILITY = {
+  stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
+  source: "Clutch SMB Survey / Dun & Bradstreet",
+};
+
 const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
+  // Lead Follow-Up variants
   lead_followup: {
     stat: "Businesses that follow up within 5 minutes are 100x more likely to convert than those who wait 30 minutes. The average service business takes 42+ hours to respond.",
     source: "Harvard Business Review",
   },
+  lead_follow_up:         { stat: "Businesses that follow up within 5 minutes are 100x more likely to convert than those who wait 30 minutes. The average service business takes 42+ hours to respond.", source: "Harvard Business Review" },
+  lead_followup_crm:      { stat: "Businesses that follow up within 5 minutes are 100x more likely to convert than those who wait 30 minutes. The average service business takes 42+ hours to respond.", source: "Harvard Business Review" },
+
+  // Scheduling variants
   scheduling: {
     stat: "The average no-show rate across service businesses is 19% — costing small businesses $26,000/year in lost revenue. Automated reminders reduce no-shows by 30–40%.",
     source: "10to8 / Financesonline",
   },
+  appointment_scheduling: { stat: "The average no-show rate across service businesses is 19% — costing small businesses $26,000/year in lost revenue. Automated reminders reduce no-shows by 30–40%.", source: "10to8 / Financesonline" },
+
+  // Reviews variants
   reviews: {
     stat: "89% of consumers read reviews before deciding. A single star increase = 5–9% revenue lift. Google's top 3 results earn 126% more traffic than everyone below them.",
     source: "Harvard Business Review / SOCi",
   },
+  reviews_reputation:     { stat: "89% of consumers read reviews before deciding. A single star increase = 5–9% revenue lift. Google's top 3 results earn 126% more traffic than everyone below them.", source: "Harvard Business Review / SOCi" },
+
+  // Referrals variants
   referrals: {
     stat: "83% of happy customers are willing to refer — but only 29% ever do. For 82% of small businesses, referrals are the #1 source of new clients.",
     source: "Texas Tech / Nielsen",
   },
+  referral_management:    { stat: "83% of happy customers are willing to refer — but only 29% ever do. For 82% of small businesses, referrals are the #1 source of new clients.", source: "Texas Tech / Nielsen" },
+
+  // Invoicing variants
   invoicing: {
     stat: "56% of small businesses are owed money from unpaid invoices, averaging $17,500 each. Businesses with high overdue invoice volume are 1.4x more likely to report cash flow problems.",
     source: "QuickBooks 2025",
   },
+  invoicing_payments:     { stat: "56% of small businesses are owed money from unpaid invoices, averaging $17,500 each. Businesses with high overdue invoice volume are 1.4x more likely to report cash flow problems.", source: "QuickBooks 2025" },
+  invoicing_payment:      { stat: "56% of small businesses are owed money from unpaid invoices, averaging $17,500 each. Businesses with high overdue invoice volume are 1.4x more likely to report cash flow problems.", source: "QuickBooks 2025" },
+
+  // Proposals variants
   proposals: {
     stat: "50% of the time, the first company to send a quote wins the job — yet most service businesses are still quoting manually, days after the request.",
     source: "Industry research",
   },
+  proposals_quoting:      { stat: "50% of the time, the first company to send a quote wins the job — yet most service businesses are still quoting manually, days after the request.", source: "Industry research" },
+
+  // Re-engagement variants
   reengagement: {
     stat: "An existing customer has a 60–70% chance of buying again vs. 1–3% for a brand new prospect. 73% of businesses have no structured plan to re-engage past clients.",
     source: "Adobe / Bain & Company",
   },
+  re_engagement:          { stat: "An existing customer has a 60–70% chance of buying again vs. 1–3% for a brand new prospect. 73% of businesses have no structured plan to re-engage past clients.", source: "Adobe / Bain & Company" },
+
+  // Communication variants
   communication: {
     stat: "53% of people will switch to a competitor if response time is too slow. 78% of customers buy from the first business that responds — regardless of price.",
     source: "Verse.ai / LeadConnect",
   },
-  project_mgmt: {
-    stat: "Businesses that standardize their project management processes complete jobs 28% faster and report 33% fewer costly errors.",
-    source: "McKinsey / Asana State of Work Report",
-  },
-  reporting: {
-    stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
-    source: "Clutch SMB Survey / Dun & Bradstreet",
-  },
+  customer_communication: { stat: "53% of people will switch to a competitor if response time is too slow. 78% of customers buy from the first business that responds — regardless of price.", source: "Verse.ai / LeadConnect" },
+
+  // Job & Project Management variants (FIX 2)
+  project_mgmt:                 _STAT_PROJECT_MGMT,
+  project_management:           _STAT_PROJECT_MGMT,
+  job_management:               _STAT_PROJECT_MGMT,
+  job_project_management:       _STAT_PROJECT_MGMT,
+  jobs_and_project_management:  _STAT_PROJECT_MGMT,
+  job_and_project_management:   _STAT_PROJECT_MGMT,
+  jobs_projects:                _STAT_PROJECT_MGMT,
+
+  // Business Visibility / Reporting variants (FIX 1)
+  reporting:              _STAT_VISIBILITY,
+  business_visibility:    _STAT_VISIBILITY,
+  visibility:             _STAT_VISIBILITY,
+  reporting_analytics:    _STAT_VISIBILITY,
+  reporting_and_analytics: _STAT_VISIBILITY,
+  business_metrics:       _STAT_VISIBILITY,
+
+  // Lead Capture variants
   lead_capture: {
     stat: "Businesses that track lead sources grow 2x faster than those that don't. Yet 61% of small businesses have no system for capturing where their leads come from.",
     source: "HubSpot / Salesforce SMB Report",
   },
+
+  // Onboarding variants
   onboarding: {
     stat: "A structured onboarding process improves customer retention by 50%. Customers who feel confused or ignored in the first 30 days are 3x more likely to churn.",
     source: "Wyzowl / Bain & Company",
   },
-  business_visibility: {
-    stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
-    source: "Clutch SMB Survey / Dun & Bradstreet",
-  },
+  customer_onboarding:    { stat: "A structured onboarding process improves customer retention by 50%. Customers who feel confused or ignored in the first 30 days are 3x more likely to churn.", source: "Wyzowl / Bain & Company" },
 };
 
 // ─── Recommended platforms (static right column) ──────────────────────────────
@@ -111,25 +155,25 @@ const RECOMMENDED_PLATFORMS = [
     name: "GoHighLevel (GHL)",
     description:
       "Your automation backbone. Connects lead intake, follow-up, review requests, referral campaigns into one system.",
-    actionText: "→ Core to your entire implementation",
+    actionText: "Core to your entire implementation",
   },
   {
     name: "ElevenLabs Voice Agent",
     description:
       "AI receptionist answering every inbound call 24/7. Books appointments, qualifies leads, routes urgent jobs.",
-    actionText: "→ Highest-impact addition for lead capture",
+    actionText: "Highest-impact addition for lead capture",
   },
   {
     name: "SMS / 2-Way Texting",
     description:
       "98% of texts read within 3 minutes. Built into GHL — minimal setup required.",
-    actionText: "→ Built into GHL — minimal setup required",
+    actionText: "Built into GHL — minimal setup required",
   },
   {
     name: "Reporting Dashboard",
     description:
       "Tracks lead response time, review velocity, no-show rate, referral volume.",
-    actionText: "→ Built during implementation — no extra tools needed",
+    actionText: "Built during implementation — no extra tools needed",
   },
 ];
 
@@ -643,19 +687,20 @@ const s = StyleSheet.create({
 function ScoreRing({ score }: { score: number }) {
   const dash = CIRC * (score / 100);
   const gap  = CIRC - dash;
+  const ringColor = score >= 70 ? C.green : score >= 40 ? C.warn : C.accent;
 
   return (
     <View style={{ width: 110, height: 110, position: "relative" }}>
       <Svg width="110" height="110" viewBox="0 0 100 100">
         {/* Track */}
-        <Circle cx="50" cy="50" r="40" fill="none" stroke="#2e2e2e" strokeWidth="8" />
-        {/* Arc */}
+        <Circle cx="50" cy="50" r="40" fill="none" stroke="#333333" strokeWidth="8" />
+        {/* Arc — fills proportionally to score */}
         <Circle
           cx="50"
           cy="50"
           r="40"
           fill="none"
-          stroke={C.accent}
+          stroke={ringColor}
           strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={`${dash} ${gap}`}
