@@ -175,6 +175,22 @@ function resolveAreaBadge(area: AreaResult, isGap: boolean): PlatformEntry["badg
   return "Configure"; // CONFIGURE, CONNECT, REPLACE, null
 }
 
+function findSoftwareAnswer(answers: SurveyAnswers, areaId: string): string {
+  // Try exact match first
+  if (answers[`${areaId}_software`]) return answers[`${areaId}_software`] as string;
+
+  // Try normalized match — strip non-alphanumeric and compare
+  const normalizedId = areaId.toLowerCase().replace(/[^a-z]/g, '');
+  for (const key of Object.keys(answers)) {
+    if (!key.endsWith('_software')) continue;
+    const normalizedKey = key.replace('_software', '').toLowerCase().replace(/[^a-z]/g, '');
+    if (normalizedKey.includes(normalizedId) || normalizedId.includes(normalizedKey)) {
+      return answers[key] as string;
+    }
+  }
+  return '';
+}
+
 function buildLeftColumnCards(
   result: AnalysisResult,
   answers: SurveyAnswers
@@ -185,7 +201,7 @@ function buildLeftColumnCards(
     // Only show cards for flagged areas
     if (area.score >= 70) continue;
 
-    const raw = answers[`${area.id}_software`];
+    const raw = findSoftwareAnswer(answers, area.id);
 
     // Parse tools: handle array or comma-separated string
     const rawList: string[] = Array.isArray(raw)
