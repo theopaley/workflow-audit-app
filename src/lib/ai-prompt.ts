@@ -21,30 +21,48 @@ SCORING RULES:
 - Only calculate leakage for areas scoring below 70.
 
 FINANCIAL INPUTS:
-- Average transaction value: answers.fin_avg_sale_value
-- Monthly leads: answers.fin_monthly_leads_value
-- Close rate: answers.fin_close_rate_value
-- Monthly revenue: answers.fin_monthly_revenue_value
-- Baseline = Monthly Leads x Close Rate x Average Transaction Value
+- monthly_revenue = answers.fin_monthly_revenue_value
+- monthly_leads = answers.fin_monthly_leads_value
+- close_rate = answers.fin_close_rate_value (decimal, e.g. 0.30 for 30%)
+- avg_job_value = answers.fin_avg_sale_value
 
-LEAKAGE RATES (only apply if score below 70):
-1. Lead Follow-Up: 15% — stat: 78% of customers buy from first business to respond
-2. Lead Capture: 10% — stat: 68% of small businesses have no documented capture process
-3. Appointment Scheduling: 10% — stat: 40% of appointments booked outside business hours
-4. Proposals & Quoting: 10% — stat: 60% of deals lost to no decision
-5. Customer Onboarding: 8% — stat: 68% of customers leave because they felt ignored
-6. Job & Project Management: 10% — stat: replacing one employee costs 50-200% of annual salary
-7. Invoicing & Payment: 8% — stat: average small business has 24% of invoices paid late
-8. Customer Communication: 8% — stat: single unanswered complaint = 91% chance of permanent loss
-9. Reviews & Reputation: 10% — stat: 72% of customers will leave a review if simply asked
-10. Re-engagement: 10% — stat: 60% of lapsed customers left simply because nobody contacted them
-11. Referral Management: 10% — stat: 83% willing to refer, only 29% do — because nobody asked
-12. Business Visibility: MULTIPLIER ONLY — no direct leakage
-    - Score 0-40: multiply total leakage x 1.5
-    - Score 41-69: multiply total leakage x 1.25
-    - Score 70+: no multiplier
+These are the business owner's own reported numbers. Use them as literal inputs to the formulas below so the leakage figures are specific to their business, not generic percentages. The loss rates are derived from published industry research (Harvard Business Review, McKinsey, Nielsen, QuickBooks, Salesforce, and others).
 
-CAP total leakage at 40% of monthly revenue.
+LEAKAGE FORMULAS (only apply if area score is below 70):
+
+LEAD-RELATED AREAS — calculated from lead volume and avg job value because the loss happens before revenue is recognized:
+1. Lead Follow-Up:         monthly_leads × 0.15 × avg_job_value
+   Basis: HBR research — businesses that respond within 5 min are 100x more likely to convert; 15% of leads are lost to slow follow-up in the average service business
+2. Lead Capture:           monthly_leads × 0.10 × avg_job_value
+   Basis: 61% of small businesses have no lead tracking system; estimated 10% of inbound interest is never logged or followed up
+3. Appointment Scheduling: monthly_leads × close_rate × 0.10 × avg_job_value
+   Basis: 10to8/Financesonline — 19% no-show rate industry average; ~10% of closed jobs lost to scheduling friction or no-shows
+4. Proposals & Quoting:    monthly_leads × close_rate × 0.10 × avg_job_value
+   Basis: 50% of jobs go to the first company to respond; slow or inconsistent quoting loses ~10% of closeable deals
+
+REVENUE-BASED AREAS — calculated as a percentage of monthly revenue because the loss comes from inefficiency, churn, or missed capture on existing revenue:
+5.  Customer Onboarding:       monthly_revenue × 0.08
+    Basis: Wyzowl/Bain — structured onboarding improves retention by 50%; poor onboarding drives ~8% early churn
+6.  Job & Project Management:  monthly_revenue × 0.10
+    Basis: McKinsey/Asana — standardized project processes cut costly errors by 33%; rework and delays cost ~10% of job revenue
+7.  Invoicing & Payment:       monthly_revenue × 0.08
+    Basis: QuickBooks 2025 — 56% of small businesses carry unpaid invoices averaging $17,500; late/lost invoices represent ~8% of monthly revenue
+8.  Customer Communication:    monthly_revenue × 0.08
+    Basis: Verse.ai/LeadConnect — 78% of customers buy from the first business to respond; poor communication loses ~8% of potential revenue
+9.  Reviews & Reputation:      monthly_revenue × 0.10
+    Basis: HBR/SOCi — a 1-star increase = 5-9% revenue lift; weak review velocity suppresses new revenue by ~10%
+10. Re-engagement:             monthly_revenue × 0.10
+    Basis: Adobe/Bain — existing customers have 60-70% buy-again probability; no re-engagement system loses ~10% of potential repeat revenue
+11. Referral Management:       monthly_revenue × 0.10
+    Basis: Nielsen/Texas Tech — 83% willing to refer, only 29% do; structured referral programs recover ~10% of untapped word-of-mouth revenue
+12. Business Visibility: MULTIPLIER ONLY — no direct leakage dollar amount
+    - Score 0-40:  multiply sum of all other leakage × 1.5
+    - Score 41-69: multiply sum of all other leakage × 1.25
+    - Score 70+:   no multiplier (visibilityMultiplier = 1.0)
+
+CAP total leakage (after visibility multiplier) at 40% of monthly revenue.
+
+leakageExplanation for each area must show the actual arithmetic using the owner's numbers. Example: "You bring in roughly 40 leads per month. At your average job value of $850, each lead is worth $850 in potential revenue. A 15% loss rate on slow follow-up = 40 × 0.15 × $850 = $5,100 per month walking out the door."
 
 FINDING STRUCTURE for every area:
 1. Stat — normalize with industry data

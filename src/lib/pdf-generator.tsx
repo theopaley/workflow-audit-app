@@ -90,6 +90,18 @@ const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
     stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
     source: "Clutch SMB Survey / Dun & Bradstreet",
   },
+  lead_capture: {
+    stat: "Businesses that track lead sources grow 2x faster than those that don't. Yet 61% of small businesses have no system for capturing where their leads come from.",
+    source: "HubSpot / Salesforce SMB Report",
+  },
+  onboarding: {
+    stat: "A structured onboarding process improves customer retention by 50%. Customers who feel confused or ignored in the first 30 days are 3x more likely to churn.",
+    source: "Wyzowl / Bain & Company",
+  },
+  business_visibility: {
+    stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
+    source: "Clutch SMB Survey / Dun & Bradstreet",
+  },
 };
 
 // ─── Recommended platforms (static right column) ──────────────────────────────
@@ -168,26 +180,26 @@ function buildLeftColumnCards(
     );
 
     if (hasNone || platforms.length === 0) {
+      // Gap — no platform in use; use area name as card name
       entries.push({
         name: area.name,
         badge: "Deploy",
         description: "No platform in use for this workflow area",
         actionText: `Deploy ${area.name} — ${area.empower}`,
       });
+    } else if (area.score >= 70) {
+      // Healthy area — skip (no card needed)
+      continue;
     } else {
       const badge = resolveAreaBadge(area, false);
       const description =
-        badge === "Automate"
-          ? "Platform is set up — ready for automation layering"
-          : badge === "Deploy"
+        badge === "Deploy"
           ? "Full deployment needed — not yet active"
           : "Platform exists but needs setup or optimization";
 
       for (const platform of platforms) {
         const actionText =
-          badge === "Automate"
-            ? `Automate ${platform} — ${area.stackReasoning}`
-            : badge === "Deploy"
+          badge === "Deploy"
             ? `Deploy ${platform} — ${area.empower}`
             : `Configure ${platform} — ${area.stackReasoning}`;
 
@@ -406,7 +418,7 @@ const s = StyleSheet.create({
     borderBottomStyle: "solid",
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   findingCardBody: {
     paddingHorizontal: 16,
@@ -429,6 +441,7 @@ const s = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     color: C.ink,
     flex: 1,
+    flexWrap: "wrap",
   },
   findingLeakage: {
     fontSize: 18,
