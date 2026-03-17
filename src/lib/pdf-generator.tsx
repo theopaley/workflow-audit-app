@@ -180,9 +180,9 @@ function buildLeftColumnCards(
     );
 
     if (hasNone || platforms.length === 0) {
-      // Gap — no platform in use; use area name as card name
+      // Gap — no platform in use
       entries.push({
-        name: area.name,
+        name: `${area.name} — No platform in use`,
         badge: "Deploy",
         description: "No platform in use for this workflow area",
         actionText: `Deploy ${area.name} — ${area.empower}`,
@@ -764,7 +764,7 @@ function FindingCard({ area }: { area: AreaResult }) {
   const stat      = INDUSTRY_STATS[area.id];
 
   return (
-    <View style={s.findingCard}>
+    <View style={s.findingCard} wrap={false}>
       {/* Header */}
       <View style={s.findingCardHeader}>
         {actionCfg && (

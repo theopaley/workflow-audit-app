@@ -182,7 +182,6 @@ function FinAvgSaleSelect({
       <div className="grid grid-cols-2 gap-3">
         {question.options?.map((opt, i) => {
           const isCustomOpt = opt === "Enter exact amount";
-          const isFullWidth = opt === "I'm not sure" || opt === "Enter exact amount";
           const selected = isCustomOpt ? isCustom : value === opt;
           return (
             <button
@@ -192,7 +191,7 @@ function FinAvgSaleSelect({
                 selected
                   ? "border-indigo-500 bg-indigo-50 text-indigo-700"
                   : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
-              } ${isFullWidth ? "col-span-2" : ""}`}
+              }`}
             >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
                 {String.fromCharCode(65 + i)}
