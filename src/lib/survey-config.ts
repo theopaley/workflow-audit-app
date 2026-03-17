@@ -23,7 +23,7 @@ export interface SkipRule {
 export const SKIP_RULES: Record<string, SkipRule> = {
   // Lead Capture (software) — no software → skip workflow questions
   lead_capture_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
@@ -40,12 +40,12 @@ export const SKIP_RULES: Record<string, SkipRule> = {
   lead_capture_q2b: {
     triggers: ["We don't have a CRM or system"],
     mode: "any",
-    targetIds: ["lead_followup_software"],
+    targetIds: ["lead_followup_software", "lead_followup_q3"],
   },
 
   // Lead Follow Up (software) — no software → skip workflow questions
   lead_followup_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
@@ -57,37 +57,37 @@ export const SKIP_RULES: Record<string, SkipRule> = {
 
   // Appointment Scheduling (software) — no software → skip workflow questions
   scheduling_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Proposals & Quoting (software) — no software / don't send proposals → skip section
   proposals_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Customer Onboarding (software) — no software → skip workflow questions
   onboarding_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Job & Project Management (software) — no software → skip workflow questions
   project_mgmt_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Invoicing & Payments (software) — no software → skip workflow questions
   invoicing_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Customer Communication (software) — no software → skip workflow questions
   communication_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
@@ -99,19 +99,19 @@ export const SKIP_RULES: Record<string, SkipRule> = {
 
   // Reviews & Reputation (software) — no software → skip workflow questions
   reviews_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Re-engagement (software) — no software → skip workflow questions
   reengagement_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 
   // Referral Management (software) — only word-of-mouth / no software selected
   referrals_software: {
-    triggers: ["Word of mouth only", "None — We don't use any software for this"],
+    triggers: ["Word of mouth only", "None"],
     mode: "only",
   },
 
@@ -123,7 +123,7 @@ export const SKIP_RULES: Record<string, SkipRule> = {
 
   // Reporting & Analytics (software) — no software → skip workflow questions
   reporting_software: {
-    triggers: ["None — We don't use any software for this"],
+    triggers: ["None"],
     mode: "only",
   },
 };
@@ -384,7 +384,7 @@ export const QUESTIONS: Question[] = [
       "Typeform",
       "Unbounce",
       "WordPress forms",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -463,7 +463,7 @@ export const QUESTIONS: Question[] = [
       "Spreadsheets",
       "Zendesk Sell",
       "Zoho CRM",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
     glossary: { CRM: G.CRM },
@@ -525,7 +525,7 @@ export const QUESTIONS: Question[] = [
       "Setmore",
       "SimplyBook",
       "Square Appointments",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -583,7 +583,7 @@ export const QUESTIONS: Question[] = [
       "Proposify",
       "QuickBooks",
       "ServiceTitan",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -641,7 +641,7 @@ export const QUESTIONS: Question[] = [
       "Notion",
       "Paperbell",
       "Trello",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -698,7 +698,7 @@ export const QUESTIONS: Question[] = [
       "Smartsheet",
       "Trello",
       "Wrike",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -757,7 +757,7 @@ export const QUESTIONS: Question[] = [
       "Wave",
       "Xero",
       "Zelle Business",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -817,7 +817,7 @@ export const QUESTIONS: Question[] = [
       "Slack",
       "Text Message",
       "Zendesk",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -872,7 +872,7 @@ export const QUESTIONS: Question[] = [
       "ReviewTrackers",
       "Trustpilot",
       "Yelp",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -927,7 +927,7 @@ export const QUESTIONS: Question[] = [
       "HubSpot",
       "Klaviyo",
       "Mailchimp",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -981,7 +981,7 @@ export const QUESTIONS: Question[] = [
       "ReferralHero",
       "ReferralRock",
       "Word of mouth only",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },
@@ -1037,7 +1037,7 @@ export const QUESTIONS: Question[] = [
       "Power BI",
       "QuickBooks",
       "Spreadsheets only",
-      "None — We don't use any software for this",
+      "None",
       "Other",
     ],
   },

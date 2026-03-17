@@ -13,7 +13,7 @@ import type { SurveyAnswers } from "@/types/survey";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const NONE_OPTION = "None — We don't use any software for this";
+const NONE_OPTION = "None";
 const NONE_VALUE = "NONE: No software in place";
 
 const SCALE_LABELS: Record<number, string> = {
