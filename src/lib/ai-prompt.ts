@@ -55,12 +55,20 @@ REVENUE-BASED AREAS — calculated as a percentage of monthly revenue because th
     Basis: Adobe/Bain — existing customers have 60-70% buy-again probability; no re-engagement system loses ~10% of potential repeat revenue
 11. Referral Management:       monthly_revenue × 0.10
     Basis: Nielsen/Texas Tech — 83% willing to refer, only 29% do; structured referral programs recover ~10% of untapped word-of-mouth revenue
-12. Business Visibility: MULTIPLIER ONLY — no direct leakage dollar amount
-    - Score 0-40:  multiply sum of all other leakage × 1.5
-    - Score 41-69: multiply sum of all other leakage × 1.25
-    - Score 70+:   no multiplier (visibilityMultiplier = 1.0)
+12. Business Visibility: MULTIPLIER + CONTRIBUTION
+    First compute baseLeakageTotal = sum of all other areas' monthlyLeakage (areas 1–11).
+    - Score 0-40:  visibilityMultiplier = 1.5;  monthlyLeakage = baseLeakageTotal × 0.50
+    - Score 41-69: visibilityMultiplier = 1.25; monthlyLeakage = baseLeakageTotal × 0.25
+    - Score 70+:   visibilityMultiplier = 1.0;  monthlyLeakage = 0
+    The Business Visibility monthlyLeakage is the additional revenue lost because the
+    owner can't see where to focus. It is always non-zero when score < 70.
 
 CAP total leakage (after visibility multiplier) at 40% of monthly revenue.
+When the raw total exceeds the cap (cap_amount = monthly_revenue × 0.40):
+    scale_factor = cap_amount / raw_total
+    Apply scale_factor to EVERY area's monthlyLeakage, including Business Visibility.
+    totalMonthlyLeakage = sum of all scaled area leakages — this must exactly equal cap_amount.
+    This ensures individual card amounts add up to the cover page total.
 
 leakageExplanation for each area must show the actual arithmetic using the owner's numbers. Example: "You bring in roughly 40 leads per month. At your average job value of $850, each lead is worth $850 in potential revenue. A 15% loss rate on slow follow-up = 40 × 0.15 × $850 = $5,100 per month walking out the door."
 

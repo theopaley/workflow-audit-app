@@ -207,11 +207,12 @@ function buildLeftColumnCards(
 
     if (tools.length === 0) {
       // Gap — no platform in use
+      const empower = area.empower.split(". ")[0];
       entries.push({
-        name: "No platform in use",
+        name: area.name,
         badge: "Deploy",
-        description: area.name,
-        actionText: `Deploy — ${area.empower}`,
+        description: "No platform in use",
+        actionText: `Deploy — ${empower}`,
       });
     } else {
       // One consolidated card per area with all tool names joined
@@ -221,10 +222,12 @@ function buildLeftColumnCards(
         badge === "Deploy"
           ? "Full deployment needed — not yet active"
           : "Platform exists but needs setup or optimization";
+      const rawAction =
+        badge === "Deploy" ? area.empower : area.stackReasoning;
       const actionText =
         badge === "Deploy"
-          ? `Deploy — ${area.empower}`
-          : `Configure — ${area.stackReasoning}`;
+          ? `Deploy — ${rawAction.split(". ")[0]}`
+          : `Configure — ${rawAction.split(". ")[0]}`;
 
       entries.push({ name: toolsLabel, badge, description, actionText });
     }
@@ -256,6 +259,7 @@ function buildLeftColumnCards(
 // ─── Hardcoded area tool chips ────────────────────────────────────────────────
 
 const AREA_CHIPS: Record<string, string> = {
+  scheduling:   "Jobber scheduling with GoHighLevel calendar integration",
   proposals:    "Jobber proposal templates with standardized configurations",
   project_mgmt: "Jobber with standardized job templates and task dependencies",
   invoicing:    "Jobber automated payment reminders with milestone-based billing",
@@ -279,7 +283,7 @@ const TODAY = new Date().toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-const CIRC = 2 * Math.PI * 40; // SVG circle circumference for r=40
+const CIRC = 251.3; // 2π × 40 — used for strokeDasharray on the score ring
 
 function getScoreInterpretation(score: number): string {
   if (score <= 30) return "This score indicates your business has significant AI readiness gaps across most core workflow areas.";
@@ -663,20 +667,18 @@ const s = StyleSheet.create({
 // ─── Score ring (SVG) ─────────────────────────────────────────────────────────
 
 function ScoreRing({ score }: { score: number }) {
-  const dash      = CIRC * (score / 100);
+  const dash      = (score / 100) * CIRC;
   const gap       = CIRC - dash;
   const ringColor = score >= 70 ? C.green : score >= 40 ? C.warn : C.accent;
 
   return (
     <View style={{ width: 110, height: 110, position: "relative" }}>
-      {/* Rotate the SVG wrapper so the arc starts at the top.
-          transform on <Circle> is not supported in react-pdf — must rotate
-          the parent View instead. */}
-      <View style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)" }}>
+      {/* Rotate ONLY the Svg wrapper -90deg so arc starts at 12 o'clock.
+          react-pdf ignores transform on SVG child elements — must rotate
+          a parent View. Not absolute so it flows naturally in the 110×110 box. */}
+      <View style={{ transform: "rotate(-90deg)" }}>
         <Svg width="110" height="110" viewBox="0 0 100 100">
-          {/* Track */}
           <Circle cx="50" cy="50" r="40" fill="none" stroke="#333333" strokeWidth="8" />
-          {/* Arc — partial stroke driven by strokeDasharray */}
           <Circle
             cx="50"
             cy="50"
@@ -689,7 +691,7 @@ function ScoreRing({ score }: { score: number }) {
           />
         </Svg>
       </View>
-      {/* Score text — separate absolute layer so it stays upright */}
+      {/* Score number — absolute, outside the rotated wrapper so it stays upright */}
       <View
         style={{
           position: "absolute",
