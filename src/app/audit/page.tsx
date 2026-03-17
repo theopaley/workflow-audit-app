@@ -113,7 +113,7 @@ function TextInput({
   );
 }
 
-const TWO_COL_SINGLE = new Set(["fin_avg_sale", "fin_monthly_revenue"]);
+const TWO_COL_SINGLE = new Set(["fin_monthly_revenue"]);
 
 function SingleSelect({
   question,
@@ -149,6 +149,79 @@ function SingleSelect({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function FinAvgSaleSelect({
+  question,
+  value,
+  customInputValue,
+  onSelect,
+  onCustomInput,
+}: {
+  question: Question;
+  value: string;
+  customInputValue: string;
+  onSelect: (opt: string) => void;
+  onCustomInput: (numericStr: string) => void;
+}) {
+  const customInputRef = useRef<HTMLInputElement>(null);
+  const isCustom = value === "custom";
+
+  useEffect(() => {
+    if (isCustom) {
+      setTimeout(() => customInputRef.current?.focus(), 50);
+    }
+  }, [isCustom]);
+
+  return (
+    <div className="mt-8">
+      <p className="mb-4 text-sm text-slate-400">Select one</p>
+      <div className="grid grid-cols-2 gap-3">
+        {question.options?.map((opt, i) => {
+          const isCustomOpt = opt === "Enter exact amount";
+          const isFullWidth = opt === "I'm not sure" || opt === "Enter exact amount";
+          const selected = isCustomOpt ? isCustom : value === opt;
+          return (
+            <button
+              key={opt}
+              onClick={() => onSelect(opt)}
+              className={`flex items-center gap-4 rounded-xl border-2 px-5 py-4 text-left text-base font-medium transition-all ${
+                selected
+                  ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
+              } ${isFullWidth ? "col-span-2" : ""}`}
+            >
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
+                {String.fromCharCode(65 + i)}
+              </span>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-out ${
+          isCustom ? "mt-4 max-h-32 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="rounded-xl border-2 border-indigo-300 bg-indigo-50 px-4 py-3">
+          <label className="mb-2 block text-sm font-medium text-indigo-700">
+            Enter your average job value in dollars:
+          </label>
+          <input
+            ref={customInputRef}
+            type="number"
+            min="0"
+            value={customInputValue}
+            onChange={(e) => onCustomInput(e.target.value)}
+            placeholder="e.g. 8500"
+            className="w-full bg-transparent text-base font-medium text-indigo-900 placeholder-indigo-300 outline-none"
+          />
+        </div>
       </div>
     </div>
   );
@@ -391,6 +464,7 @@ export default function AuditPage() {
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [skipToast, setSkipToast] = useState<{ areaName: string; visible: boolean } | null>(null);
+  const [finAvgSaleCustom, setFinAvgSaleCustom] = useState("");
   const skipToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
 
@@ -404,6 +478,10 @@ export default function AuditPage() {
   const otherText = otherTexts[question.id] ?? "";
 
   const canAdvance = useCallback(() => {
+    if (question.id === "fin_avg_sale" && currentValue === "custom") {
+      const num = Number(finAvgSaleCustom);
+      return finAvgSaleCustom.trim().length > 0 && !isNaN(num) && num > 0;
+    }
     if (question.type === "text") return textValue.trim().length > 0;
     if (question.type === "single")
       return typeof currentValue === "string" && currentValue.length > 0;
@@ -421,7 +499,7 @@ export default function AuditPage() {
     if (question.type === "scale")
       return typeof currentValue === "string" && currentValue.length > 0;
     return false;
-  }, [question, textValue, currentValue, multiValue, otherText]);
+  }, [question, textValue, currentValue, multiValue, otherText, finAvgSaleCustom]);
 
   const showSkipToast = useCallback((areaId: string) => {
     const area = AREAS.find((a) => a.id === areaId);
@@ -591,6 +669,33 @@ export default function AuditPage() {
     setOtherTexts((prev) => ({ ...prev, [question.id]: val }));
   };
 
+  const handleFinAvgSaleSelect = useCallback((opt: string) => {
+    setAnswers((prev) => {
+      const q = QUESTIONS.find((q) => q.id === "fin_avg_sale")!;
+      if (opt === "Enter exact amount") {
+        return { ...prev, fin_avg_sale: "custom", fin_avg_sale_value: "", fin_avg_sale_label: "custom" };
+      }
+      const next: SurveyAnswers = { ...prev, fin_avg_sale: opt };
+      if (q.midpoints) {
+        const midpoint = q.midpoints[opt];
+        if (midpoint !== undefined) {
+          next["fin_avg_sale_value"] = String(midpoint);
+          next["fin_avg_sale_label"] = opt;
+        }
+      }
+      return next;
+    });
+    if (opt === "Enter exact amount") setFinAvgSaleCustom("");
+    setTimeout(() => {
+      continueRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 0);
+  }, []);
+
+  const handleFinAvgSaleCustomInput = useCallback((numericStr: string) => {
+    setFinAvgSaleCustom(numericStr);
+    setAnswers((prev) => ({ ...prev, fin_avg_sale_value: numericStr }));
+  }, []);
+
   const slideClass = animating
     ? direction === "forward"
       ? "opacity-0 translate-y-4"
@@ -643,11 +748,20 @@ export default function AuditPage() {
                 onSubmit={advance}
               />
             )}
-            {question.type === "single" && (
+            {question.type === "single" && question.id !== "fin_avg_sale" && (
               <SingleSelect
                 question={question}
                 value={textValue}
                 onChange={setAnswer}
+              />
+            )}
+            {question.id === "fin_avg_sale" && (
+              <FinAvgSaleSelect
+                question={question}
+                value={textValue}
+                customInputValue={finAvgSaleCustom}
+                onSelect={handleFinAvgSaleSelect}
+                onCustomInput={handleFinAvgSaleCustomInput}
               />
             )}
             {question.type === "multi" && (
