@@ -669,23 +669,27 @@ function ScoreRing({ score }: { score: number }) {
 
   return (
     <View style={{ width: 110, height: 110, position: "relative" }}>
-      <Svg width="110" height="110" viewBox="0 0 100 100">
-        {/* Track */}
-        <Circle cx="50" cy="50" r="40" fill="none" stroke="#333333" strokeWidth="8" />
-        {/* Arc — fills proportionally to score percentage */}
-        <Circle
-          cx="50"
-          cy="50"
-          r="40"
-          fill="none"
-          stroke={ringColor}
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${gap}`}
-          transform="rotate(-90, 50, 50)"
-        />
-      </Svg>
-      {/* Centered score text overlaid on SVG */}
+      {/* Rotate the SVG wrapper so the arc starts at the top.
+          transform on <Circle> is not supported in react-pdf — must rotate
+          the parent View instead. */}
+      <View style={{ position: "absolute", top: 0, left: 0, transform: "rotate(-90deg)" }}>
+        <Svg width="110" height="110" viewBox="0 0 100 100">
+          {/* Track */}
+          <Circle cx="50" cy="50" r="40" fill="none" stroke="#333333" strokeWidth="8" />
+          {/* Arc — partial stroke driven by strokeDasharray */}
+          <Circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke={ringColor}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={`${dash} ${gap}`}
+          />
+        </Svg>
+      </View>
+      {/* Score text — separate absolute layer so it stays upright */}
       <View
         style={{
           position: "absolute",
