@@ -222,16 +222,7 @@ function buildLeftColumnCards(
       );
     });
 
-    if (tools.length === 0) {
-      // Gap — no platform in use
-      const empower = area.empower.split(". ")[0];
-      entries.push({
-        name: area.name,
-        badge: "Deploy",
-        description: "No platform in use",
-        actionText: `Deploy — ${empower}`,
-      });
-    } else {
+    if (tools.length > 0) {
       // One consolidated card per area with all tool names joined
       const badge      = resolveAreaBadge(area, false);
       const toolsLabel = tools.join(", ");
@@ -285,9 +276,7 @@ const AREA_CHIPS: Record<string, string> = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatCurrency(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1).replace(".0", "")}M`;
-  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
-  return `$${n}`;
+  return "$" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function formatCurrencyFull(n: number): string {
