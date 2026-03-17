@@ -35,6 +35,14 @@ export const SKIP_RULES: Record<string, SkipRule> = {
     targetIds: ["lead_capture_q2b"],
   },
 
+  // Lead Capture Q2b — if owner admits no CRM/system exists, skip the Lead Follow-Up
+  // software question (they've already told us there's nothing in place)
+  lead_capture_q2b: {
+    triggers: ["We don't have a CRM or system"],
+    mode: "any",
+    targetIds: ["lead_followup_software"],
+  },
+
   // Lead Follow Up (software) — no software → skip workflow questions
   lead_followup_software: {
     triggers: ["None — We don't use any software for this"],

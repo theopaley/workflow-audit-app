@@ -130,8 +130,6 @@ function SingleSelect({
       <p className="mb-4 text-sm text-slate-400">Select one</p>
       <div className={twoCol ? "grid grid-cols-2 gap-3" : "flex flex-col gap-3"}>
         {question.options?.map((opt, i) => {
-          const isFullWidth =
-            twoCol && (opt === "None — We don't use any software for this" || opt === "Other");
           return (
             <button
               key={opt}
@@ -140,7 +138,7 @@ function SingleSelect({
                 value === opt
                   ? "border-indigo-500 bg-indigo-50 text-indigo-700"
                   : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
-              } ${isFullWidth ? "col-span-2" : ""}`}
+              }`}
             >
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
                 {String.fromCharCode(65 + i)}
@@ -280,7 +278,7 @@ function MultiSelect({
                     ? "border-amber-400 bg-amber-50 text-amber-800"
                     : "border-indigo-500 bg-indigo-50 text-indigo-700"
                   : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
-              } ${isNone ? "sm:col-span-2" : ""}`}
+              }`}
             >
               <span
                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
@@ -568,11 +566,11 @@ export default function AuditPage() {
       const rule = SKIP_RULES[question.id];
 
       if (rule?.targetIds) {
-        // Targeted conditional skip — silent, advance past the skipped question(s)
-        const lastSkippedIndex = Math.max(
-          ...rule.targetIds.map((id) => QUESTIONS.findIndex((q) => q.id === id))
-        );
-        const nextIndex = lastSkippedIndex + 1;
+        // Targeted conditional skip — mark targets as SKIPPED_VALUE then step
+        // forward one question.  The normal-advance auto-skip below handles
+        // jumping over any SKIPPED_VALUE question when we eventually reach it,
+        // so intermediate questions between here and the target still appear.
+        const nextIndex = index + 1;
         if (nextIndex >= total) {
           sessionStorage.setItem(
             "auditAnswers",
@@ -611,7 +609,20 @@ export default function AuditPage() {
       return;
     }
 
-    transition(index + 1, "forward");
+    // Auto-skip any questions pre-marked SKIPPED_VALUE by a targetIds rule
+    let nextIdx = index + 1;
+    while (nextIdx < total && answers[QUESTIONS[nextIdx].id] === SKIPPED_VALUE) {
+      nextIdx++;
+    }
+    if (nextIdx >= total) {
+      sessionStorage.setItem(
+        "auditAnswers",
+        JSON.stringify(buildFinalAnswers(answers))
+      );
+      router.push("/processing");
+      return;
+    }
+    transition(nextIdx, "forward");
   }, [
     index,
     total,
@@ -626,7 +637,12 @@ export default function AuditPage() {
 
   const back = () => {
     if (index === 0) return;
-    transition(index - 1, "back");
+    // Skip back over any questions pre-marked SKIPPED_VALUE
+    let prevIdx = index - 1;
+    while (prevIdx > 0 && answers[QUESTIONS[prevIdx].id] === SKIPPED_VALUE) {
+      prevIdx--;
+    }
+    transition(prevIdx, "back");
   };
 
   useEffect(() => {
