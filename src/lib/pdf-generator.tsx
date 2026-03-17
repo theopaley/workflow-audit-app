@@ -82,17 +82,9 @@ const INDUSTRY_STATS: Record<string, { stat: string; source: string }> = {
     stat: "53% of people will switch to a competitor if response time is too slow. 78% of customers buy from the first business that responds — regardless of price.",
     source: "Verse.ai / LeadConnect",
   },
-  lead_capture: {
-    stat: "Businesses that track lead sources grow 2x faster than those that don't. Yet 61% of small businesses have no system for capturing where their leads come from.",
-    source: "HubSpot / Salesforce SMB Report",
-  },
-  onboarding: {
-    stat: "A structured onboarding process improves customer retention by 50%. Customers who feel confused or ignored in the first 30 days are 3x more likely to churn.",
-    source: "Wyzowl / Bain & Company",
-  },
   project_mgmt: {
-    stat: "Businesses using dedicated job management software report 23% higher on-time completion rates and spend 40% less time on administrative coordination.",
-    source: "Jobber / ServiceTitan Industry Report",
+    stat: "Businesses that standardize their project management processes complete jobs 28% faster and report 33% fewer costly errors.",
+    source: "McKinsey / Asana State of Work Report",
   },
   reporting: {
     stat: "Only 23% of small business owners review performance data weekly. Businesses that track key metrics monthly grow revenue 30% faster than those flying blind.",
@@ -227,6 +219,14 @@ function buildLeftColumnCards(
   return rest;
 }
 
+// ─── Hardcoded area tool chips ────────────────────────────────────────────────
+
+const AREA_CHIPS: Record<string, string> = {
+  proposals:    "Jobber proposal templates with standardized configurations",
+  project_mgmt: "Jobber with standardized job templates and task dependencies",
+  invoicing:    "Jobber automated payment reminders with milestone-based billing",
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatCurrency(n: number): string {
@@ -246,6 +246,13 @@ const TODAY = new Date().toLocaleDateString("en-US", {
 });
 
 const CIRC = 2 * Math.PI * 40; // SVG circle circumference for r=40
+
+function getScoreInterpretation(score: number): string {
+  if (score <= 30) return "This score indicates your business has significant AI readiness gaps across most core workflow areas.";
+  if (score <= 60) return "This score indicates your business has some foundational systems in place but critical gaps remain.";
+  if (score <= 80) return "This score indicates your business is partially AI-ready with a few key areas to tighten up.";
+  return "This score indicates your business is well-positioned to deploy AI across your operations.";
+}
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -325,13 +332,11 @@ const s = StyleSheet.create({
     marginBottom: 8,
   },
   leakageBanner: {
-    flex: 1,
     backgroundColor: C.accent,
     borderRadius: 6,
     paddingHorizontal: 20,
     paddingVertical: 14,
-    marginLeft: 20,
-    justifyContent: "center",
+    marginTop: 16,
   },
   leakageBannerLabel: {
     fontSize: 9,
@@ -339,18 +344,25 @@ const s = StyleSheet.create({
     color: "#f5a098",
     textTransform: "uppercase",
     letterSpacing: 1,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   leakageBannerValue: {
-    fontSize: 32,
+    fontSize: 28,
     fontFamily: "Helvetica-Bold",
     color: C.white,
     lineHeight: 1,
   },
   leakageBannerSub: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#f5a098",
-    marginTop: 4,
+    marginTop: 5,
+  },
+  scoreInterpretation: {
+    fontSize: 10,
+    color: C.inkMuted,
+    lineHeight: 1.5,
+    marginTop: 8,
+    maxWidth: 200,
   },
 
   // ── Section header ──
@@ -657,11 +669,14 @@ function ScoreRing({ score }: { score: number }) {
 
 // ─── Page footer ──────────────────────────────────────────────────────────────
 
-function PageFooter({ page, businessName }: { page: number; businessName: string }) {
+function PageFooter({ businessName }: { businessName: string }) {
   return (
     <View style={s.footer} fixed>
       <Text style={s.footerText}>RevRep — {businessName}</Text>
-      <Text style={s.footerText}>{page}</Text>
+      <Text
+        style={s.footerText}
+        render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
+      />
     </View>
   );
 }
@@ -698,28 +713,31 @@ function CoverPage({
         </Text>
       </View>
 
-      {/* Bottom — score ring + leakage banner */}
+      {/* Bottom — score ring + interpretation + full-width leakage banner */}
       <View>
-        <View style={s.row}>
-          {/* Score ring */}
-          <View>
-            <Text style={s.scoreLabel}>Workflow Health Score</Text>
-            <ScoreRing score={result.overallScore} />
-          </View>
-
-          {/* Leakage banner */}
-          {result.totalMonthlyLeakage > 0 && (
-            <View style={s.leakageBanner}>
-              <Text style={s.leakageBannerLabel}>Est. Monthly Leakage</Text>
-              <Text style={s.leakageBannerValue}>
-                {formatCurrency(result.totalMonthlyLeakage)}/mo
-              </Text>
-              <Text style={s.leakageBannerSub}>
-                {formatCurrencyFull(result.totalAnnualLeakage)} per year
-              </Text>
-            </View>
-          )}
+        {/* Score ring + plain-language interpretation */}
+        <View>
+          <Text style={s.scoreLabel}>Workflow Health Score</Text>
+          <ScoreRing score={result.overallScore} />
+          <Text style={s.scoreInterpretation}>
+            {getScoreInterpretation(result.overallScore)}
+          </Text>
         </View>
+
+        {/* Full-width leakage banner */}
+        {result.totalMonthlyLeakage > 0 && (
+          <View style={s.leakageBanner}>
+            <Text style={s.leakageBannerLabel}>
+              Estimated Monthly Revenue Leakage
+            </Text>
+            <Text style={s.leakageBannerValue}>
+              {`${formatCurrencyFull(result.totalMonthlyLeakage)} per month`}
+            </Text>
+            <Text style={s.leakageBannerSub}>
+              {`· ${formatCurrencyFull(result.totalAnnualLeakage)} per year`}
+            </Text>
+          </View>
+        )}
       </View>
     </Page>
   );
@@ -775,10 +793,12 @@ function FindingCard({ area }: { area: AreaResult }) {
         </View>
 
         {/* 4. Tool chips */}
-        {area.replacementTool && (
+        {(AREA_CHIPS[area.id] ?? area.replacementTool) && (
           <View style={s.toolChipsRow}>
             <View style={s.toolChip}>
-              <Text style={s.toolChipText}>{area.replacementTool}</Text>
+              <Text style={s.toolChipText}>
+                {AREA_CHIPS[area.id] ?? area.replacementTool}
+              </Text>
             </View>
           </View>
         )}
@@ -801,7 +821,7 @@ function FindingsPage({ result }: { result: AnalysisResult }) {
         <FindingCard key={area.id} area={area} />
       ))}
 
-      <PageFooter page={2} businessName={result.businessName} />
+      <PageFooter businessName={result.businessName} />
     </Page>
   );
 }
@@ -868,7 +888,7 @@ function PlatformPage({
         </View>
       ))}
 
-      <PageFooter page={3} businessName={result.businessName} />
+      <PageFooter businessName={result.businessName} />
     </Page>
   );
 }
