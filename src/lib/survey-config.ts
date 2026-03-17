@@ -109,9 +109,9 @@ export const SKIP_RULES: Record<string, SkipRule> = {
     mode: "only",
   },
 
-  // Referral Management (software) — only word-of-mouth / no software selected
+  // Referral Management (software) — no software selected
   referrals_software: {
-    triggers: ["Word of mouth only", "None"],
+    triggers: ["None"],
     mode: "only",
   },
 
@@ -980,7 +980,6 @@ export const QUESTIONS: Question[] = [
       "Referral Factory",
       "ReferralHero",
       "ReferralRock",
-      "Word of mouth only",
       "None",
       "Other",
     ],

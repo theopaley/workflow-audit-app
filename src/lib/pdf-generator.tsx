@@ -208,10 +208,10 @@ function buildLeftColumnCards(
     if (tools.length === 0) {
       // Gap — no platform in use
       entries.push({
-        name: area.name,
+        name: "No platform in use",
         badge: "Deploy",
-        description: "No platform in use",
-        actionText: `Deploy ${area.name} — ${area.empower}`,
+        description: area.name,
+        actionText: `Deploy — ${area.empower}`,
       });
     } else {
       // One consolidated card per area with all tool names joined
@@ -950,7 +950,7 @@ function ClosingPage({ result }: { result: AnalysisResult }) {
         </Text>
         <Text style={s.closingSubtext}>{encouragement}</Text>
         <View style={s.ctaButton}>
-          <Text style={s.ctaText}>Schedule Your Implementation Call →</Text>
+          <Text style={s.ctaText}>Schedule Your Implementation Call</Text>
         </View>
         <Text style={s.ctaUrl}>https://workflow-audit-app.vercel.app</Text>
       </View>
