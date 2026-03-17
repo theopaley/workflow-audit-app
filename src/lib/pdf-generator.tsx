@@ -8,6 +8,7 @@ import {
   Font,
   Svg,
   Circle,
+  Path,
 } from "@react-pdf/renderer";
 import type { AnalysisResult, AreaResult, StackAction } from "./ai-analysis";
 import type { SurveyAnswers } from "@/types/survey";
@@ -299,7 +300,6 @@ const TODAY = new Date().toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-const CIRC = 251.3; // 2π × 40 — used for strokeDasharray on the score ring
 
 function getScoreInterpretation(score: number): string {
   if (score <= 30) return "This score indicates your business has significant AI readiness gaps across most core workflow areas.";
@@ -682,32 +682,31 @@ const s = StyleSheet.create({
 
 // ─── Score ring (SVG) ─────────────────────────────────────────────────────────
 
+function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function describeArc(score: number): string {
+  const cx = 50, cy = 50, r = 38;
+  const startAngle = -90;
+  const endAngle = -90 + (score / 100) * 360;
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const largeArc = score > 50 ? 1 : 0;
+  return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
+}
+
 function ScoreRing({ score }: { score: number }) {
-  const dash      = (score / 100) * CIRC;
-  const gap       = CIRC - dash;
-  const ringColor = score >= 70 ? C.green : score >= 40 ? C.warn : C.accent;
+  const arcColor = score >= 70 ? "#2a6b3c" : score >= 40 ? "#e07b20" : "#c8402e";
 
   return (
     <View style={{ width: 110, height: 110, position: "relative" }}>
-      {/* Rotate ONLY the Svg wrapper -90deg so arc starts at 12 o'clock.
-          react-pdf ignores transform on SVG child elements — must rotate
-          a parent View. Not absolute so it flows naturally in the 110×110 box. */}
-      <View style={{ transform: "rotate(-90deg)" }}>
-        <Svg width="110" height="110" viewBox="0 0 100 100">
-          <Circle cx="50" cy="50" r="40" fill="none" stroke="#333333" strokeWidth="8" />
-          <Circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke={ringColor}
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={`${dash} ${gap}`}
-          />
-        </Svg>
-      </View>
-      {/* Score number — absolute, outside the rotated wrapper so it stays upright */}
+      <Svg width="110" height="110" viewBox="0 0 100 100">
+        <Circle cx="50" cy="50" r="38" fill="none" stroke="#333333" strokeWidth="6" />
+        <Path d={describeArc(score)} stroke={arcColor} strokeWidth="6" fill="none" />
+      </Svg>
+      {/* Score number — absolute, centered on top of the SVG */}
       <View
         style={{
           position: "absolute",
@@ -803,7 +802,7 @@ function CoverPage({
 
 // ─── Page 2: Findings ─────────────────────────────────────────────────────────
 
-function FindingCard({ area }: { area: AreaResult }) {
+function FindingCard({ area, scaleFactor }: { area: AreaResult; scaleFactor: number }) {
   const action    = area.stackAction;
   const actionCfg = action ? STACK_ACTION_CONFIG[action] : null;
   const stat      = getStatForArea(area.id);
@@ -822,7 +821,7 @@ function FindingCard({ area }: { area: AreaResult }) {
         <Text style={s.findingAreaName}>{area.name}</Text>
         {area.monthlyLeakage > 0 && (
           <Text style={s.findingLeakage}>
-            {formatCurrency(area.monthlyLeakage)}/mo
+            {formatCurrency(Math.round(area.monthlyLeakage * scaleFactor))}/mo
           </Text>
         )}
       </View>
@@ -865,7 +864,7 @@ function FindingCard({ area }: { area: AreaResult }) {
   );
 }
 
-function FindingsPage({ result }: { result: AnalysisResult }) {
+function FindingsPage({ result, scaleFactor }: { result: AnalysisResult; scaleFactor: number }) {
   const flaggedAreas = result.areas.filter((a) => a.score < 70);
 
   return (
@@ -876,7 +875,7 @@ function FindingsPage({ result }: { result: AnalysisResult }) {
       </View>
 
       {flaggedAreas.map((area) => (
-        <FindingCard key={area.id} area={area} />
+        <FindingCard key={area.id} area={area} scaleFactor={scaleFactor} />
       ))}
 
       <PageFooter businessName={result.businessName} />
@@ -1002,6 +1001,11 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
       ? answers.intro_company_name.trim()
       : result.businessName;
 
+  const cardTotal = result.areas
+    .filter((a: AreaResult) => (a.monthlyLeakage ?? 0) > 0)
+    .reduce((sum: number, a: AreaResult) => sum + a.monthlyLeakage, 0);
+  const scaleFactor = cardTotal > 0 ? result.totalMonthlyLeakage / cardTotal : 1;
+
   return (
     <Document
       title={`RevRep Audit — ${companyName}`}
@@ -1009,7 +1013,7 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
       subject="AI Readiness Audit Report"
     >
       <CoverPage result={result} businessName={companyName} />
-      <FindingsPage result={result} />
+      <FindingsPage result={result} scaleFactor={scaleFactor} />
       <PlatformPage result={result} answers={answers} />
       <ClosingPage result={result} />
     </Document>
