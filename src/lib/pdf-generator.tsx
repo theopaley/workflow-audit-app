@@ -878,7 +878,7 @@ function FindingsPage({ result, scaleFactor }: { result: AnalysisResult; scaleFa
 
       <View style={{ marginBottom: 20, padding: 14, backgroundColor: '#f7f4ef', borderRadius: 6, borderLeftWidth: 3, borderLeftColor: '#1a1a1a', borderLeftStyle: 'solid' }}>
         <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: '#1a1a1a', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>How We Calculate Leakage</Text>
-        <Text style={{ fontSize: 11, color: '#4a4a4a', lineHeight: 1.6 }}>Every number in this report is based on your answers — your revenue, lead volume, close rate, and average job value. We apply industry-researched loss rates to each workflow area, then cap the total at 40% of your monthly revenue to keep estimates conservative. Each card shows what fixing that area is worth to your business.</Text>
+        <Text style={{ fontSize: 11, color: '#4a4a4a', lineHeight: 1.6 }}>Every number in this report is based on your answers — your revenue, lead volume, close rate, and average job value. We apply industry-researched loss rates to each workflow area, then cap the total at 40% of your monthly revenue to keep estimates conservative. The real cost of these gaps could be higher — we'd rather understate and over-deliver. Each card shows what fixing that area is conservatively worth to your business.</Text>
       </View>
 
       {flaggedAreas.map((area, index) => (
