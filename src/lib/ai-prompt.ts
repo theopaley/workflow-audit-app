@@ -70,7 +70,7 @@ When the raw total exceeds the cap (cap_amount = monthly_revenue × 0.40):
     totalMonthlyLeakage = sum of all scaled area leakages — this must exactly equal cap_amount.
     This ensures individual card amounts add up to the cover page total.
 
-leakageExplanation for each area must be one sentence showing the actual arithmetic using the owner's numbers. Lead-based example: "20 leads × 15% loss rate × $8,750 avg job value = $1,750 raw estimate, scaled to $871/mo after applying your revenue cap." Revenue-based example: "$87,500 monthly revenue × 8% loss rate = $7,000 raw estimate, scaled to $3,483/mo after applying your revenue cap."
+leakageExplanation for each area must be one sentence showing the actual arithmetic using the owner's numbers. Never use the phrase "loss rate" anywhere in leakageExplanation — instead describe what is actually happening in plain English (leads going cold, jobs falling through, invoices going unpaid, customers not hearing back). Make it feel like a real observation, not a formula. Lead-based example: "Out of your estimated 20 leads per month, roughly 2 never get captured before going cold. At $8,750 per job, that's 2 lost jobs = $17,500 raw estimate, scaled to $834/mo after applying your revenue cap." Revenue-based example: "With $87,500 coming in monthly, about $1 in every $12 slips through the cracks from poor onboarding — that's $87,500 × 8% = $7,000 raw estimate, scaled to $3,336/mo after applying your revenue cap."
 
 FINDING STRUCTURE for every area:
 1. Stat — normalize with industry data
