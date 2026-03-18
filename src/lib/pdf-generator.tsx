@@ -836,8 +836,7 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
         {area.monthlyLeakage > 0 && area.leakageExplanation && (
           <View style={s.mt12}>
             <Text style={s.yourResultLabel}>How We Calculated This</Text>
-            <Text style={s.findingBodyMuted}>{area.leakageExplanation}</Text>
-            <Text style={s.findingBodyMuted}>{`Your adjusted figure for this area: ${formatCurrency(displayLeakage)}/mo`}</Text>
+            <Text style={s.findingBodyMuted}>{`${area.leakageExplanation} Scaled to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
           </View>
         )}
 

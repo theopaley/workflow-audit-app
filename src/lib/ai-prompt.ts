@@ -70,7 +70,15 @@ When the raw total exceeds the cap (cap_amount = monthly_revenue × 0.40):
     totalMonthlyLeakage = sum of all scaled area leakages — this must exactly equal cap_amount.
     This ensures individual card amounts add up to the cover page total.
 
-leakageExplanation for each area must be one sentence showing the actual arithmetic using the owner's numbers. Never use the phrase "loss rate" anywhere in leakageExplanation — instead describe what is actually happening in plain English (leads going cold, jobs falling through, invoices going unpaid, customers not hearing back). Make it feel like a real observation, not a formula. Lead-based example: "Out of your estimated 20 leads per month, roughly 2 never get captured before going cold. At $8,750 per job, that's 2 lost jobs = $17,500 raw estimate, scaled to $834/mo after applying your revenue cap." Revenue-based example: "With $87,500 coming in monthly, poor customer onboarding costs an estimated 8% in early churn and customer frustration — that's $87,500 × 8% = $7,000 raw estimate, scaled to $3,336/mo after applying your revenue cap." For revenue-based areas, always use this format: "With [monthly_revenue] coming in monthly, [specific plain-English description of what is going wrong] costs an estimated [percentage]% — that's [monthly_revenue] × [percentage]% = [raw amount] raw estimate, scaled to [scaled amount] after applying your revenue cap." Never use "$1 in every $X" ratio language. Always name the specific problem in plain English — not "inefficiency" or "gaps" but the actual thing happening: late payments sitting uncollected, customers left confused after signing, reviews never getting requested.
+leakageExplanation for each area must show the actual arithmetic using the owner's numbers and end with the raw estimate only — do NOT include "scaled to X/mo" or any scaled figure. The scaled figure will be appended separately by the report system. Never use the phrase "loss rate" — describe what is actually happening in plain English. Make it feel like a real observation, not a formula. Never use "$1 in every $X" ratio language. Always name the specific problem — not "inefficiency" or "gaps" but the actual thing: leads going cold, invoices sitting unpaid, customers left confused after signing, reviews never requested.
+
+Lead-based format: "Out of your estimated [monthly_leads] leads, roughly [N] per month [specific problem]. At $[avg_job_value] per job, that's [N] lost jobs = $[raw_estimate] raw estimate."
+Lead-based example: "Out of your estimated 20 leads per month, roughly 2 never get captured before going cold. At $8,750 per job, that's 2 lost jobs = $17,500 raw estimate."
+
+Revenue-based format: "With $[monthly_revenue] coming in monthly, [specific plain-English problem] costs an estimated [X]% — that's $[monthly_revenue] × [X]% = $[raw_estimate] raw estimate."
+Revenue-based example: "With $87,500 coming in monthly, poor customer onboarding costs an estimated 8% in early churn and customer frustration — that's $87,500 × 8% = $7,000 raw estimate."
+
+If any financial input was unknown/defaulted, add at the end: "We've used a conservative baseline since you weren't sure of the exact figure."
 
 FINDING STRUCTURE for every area:
 1. Stat — normalize with industry data
