@@ -9,6 +9,15 @@ import type { AnalysisResult } from "@/lib/ai-analysis";
 
 type Status = "Critical" | "Needs Improvement" | "Healthy";
 
+import type { StackAction } from "@/lib/ai-analysis";
+
+const STACK_ACTION_CONFIG: Record<NonNullable<StackAction>, { color: string; bg: string; border: string; label: string }> = {
+  DEPLOY:    { color: "text-red-700",     bg: "bg-red-50",     border: "border-red-100",     label: "Deploy"    },
+  REPLACE:   { color: "text-orange-700",  bg: "bg-orange-50",  border: "border-orange-100",  label: "Replace"   },
+  CONNECT:   { color: "text-amber-700",   bg: "bg-amber-50",   border: "border-amber-100",   label: "Connect"   },
+  CONFIGURE: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100", label: "Configure" },
+};
+
 const STATUS_CONFIG: Record<Status, { color: string; bg: string; dot: string; label: string }> = {
   Critical: {
     color: "text-red-700",
@@ -351,11 +360,147 @@ export default function ResultsPage() {
                     </span>
                   </div>
                   <p className="text-xs leading-relaxed text-slate-500">{area.scoreReasoning}</p>
+
+                  {/* Stack action */}
+                  {area.stackAction && (() => {
+                    const sa = STACK_ACTION_CONFIG[area.stackAction];
+                    return (
+                      <div className={`mt-3 rounded-xl border p-3 ${sa.bg} ${sa.border}`}>
+                        <div className="mb-1.5 flex items-center gap-2">
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${sa.bg} ${sa.border} ${sa.color}`}>
+                            {sa.label}
+                          </span>
+                          {area.replacementTool && (
+                            <span className="text-[10px] font-medium text-slate-500">
+                              Recommended: {area.replacementTool}
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-xs leading-relaxed ${sa.color}`}>{area.stackReasoning}</p>
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })}
           </div>
         </div>
+
+        {/* Stack summary */}
+        {(() => {
+          const ss = result.stackSummary;
+          const replaceAreas = result.areas.filter((a) => a.stackAction === "REPLACE" || a.stackAction === "DEPLOY");
+          const configureAreas = result.areas.filter((a) => a.stackAction === "CONFIGURE" || a.stackAction === "CONNECT");
+          return (
+            <div className="rounded-2xl border border-slate-200 bg-white p-8">
+              <h2 className="mb-1 text-xl font-bold text-slate-900">Your Technology Stack</h2>
+              <p className="mb-6 text-sm text-slate-500">
+                Based on the tools you described and how each area is performing.
+              </p>
+
+              {/* Action count pills */}
+              <div className="mb-6 flex flex-wrap gap-2">
+                {ss.configureCount > 0 && (
+                  <span className="flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                    Configure {ss.configureCount}
+                  </span>
+                )}
+                {ss.connectCount > 0 && (
+                  <span className="flex items-center gap-1.5 rounded-full border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+                    Connect {ss.connectCount}
+                  </span>
+                )}
+                {ss.replaceCount > 0 && (
+                  <span className="flex items-center gap-1.5 rounded-full border border-orange-100 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-700">
+                    Replace {ss.replaceCount}
+                  </span>
+                )}
+                {ss.deployCount > 0 && (
+                  <span className="flex items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700">
+                    Deploy {ss.deployCount}
+                  </span>
+                )}
+                <span className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
+                  ~{ss.estimatedImplementationHours}h to implement
+                </span>
+              </div>
+
+              {/* Two column grid */}
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Left — platforms to optimise (Configure / Connect) */}
+                <div>
+                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+                    Platforms You Have
+                  </p>
+                  {configureAreas.length === 0 ? (
+                    <p className="text-xs text-slate-400">No existing platforms flagged for optimisation.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {configureAreas.map((area) => {
+                        const sa = STACK_ACTION_CONFIG[area.stackAction!];
+                        return (
+                          <div
+                            key={area.id}
+                            className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3"
+                          >
+                            <span className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${sa.bg} ${sa.border} ${sa.color}`}>
+                              {sa.label}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-slate-800">{area.name}</p>
+                              <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">{area.stackReasoning}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Right — platforms we recommend (Replace / Deploy) */}
+                <div>
+                  <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">
+                    Platforms We Recommend
+                  </p>
+                  {replaceAreas.length === 0 ? (
+                    <p className="text-xs text-slate-400">No replacement tools flagged — focus on optimising what you have.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {replaceAreas.map((area) => {
+                        const sa = STACK_ACTION_CONFIG[area.stackAction!];
+                        return (
+                          <div
+                            key={area.id}
+                            className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3"
+                          >
+                            <span className={`mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${sa.bg} ${sa.border} ${sa.color}`}>
+                              {sa.label}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-slate-800">{area.name}</p>
+                              {area.replacementTool && (
+                                <p className="mt-0.5 text-[11px] font-medium text-indigo-600">
+                                  Recommended: {area.replacementTool}
+                                </p>
+                              )}
+                              <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">{area.stackReasoning}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {ss.topStackIssue && (
+                <p className="mt-5 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">
+                  <span className="font-semibold text-slate-700">Top issue: </span>{ss.topStackIssue}
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Team follow-up banner */}
         <div className="rounded-2xl bg-slate-900 px-8 py-8 text-center">
