@@ -75,7 +75,7 @@ export async function analyzeWorkflows(
   const unknownInputs: string[] = [];
   if (answers.fin_monthly_leads === "I honestly don't know") unknownInputs.push("monthly_leads (defaulted to 20 — owner does not know their lead volume)");
   if (answers.fin_avg_sale === "I'm not sure") unknownInputs.push("avg_job_value (defaulted to 5000 — owner does not know their average sale)");
-  if (answers.fin_close_rate === "I honestly don't know") unknownInputs.push("close_rate (defaulted to 0.35 — owner does not know their close rate)");
+  if (answers.fin_close_rate === "I honestly don't know") unknownInputs.push("close_rate (defaulted to 0.20 — owner does not know their close rate)");
   if (answers.fin_monthly_revenue === "I honestly don't know") unknownInputs.push("monthly_revenue (defaulted — owner does not know their monthly revenue)");
 
   const unknownNote = unknownInputs.length > 0

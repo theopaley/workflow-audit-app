@@ -307,7 +307,7 @@ export const QUESTIONS: Question[] = [
       "5–6 out of 10 (50–60%)": 0.55,
       "7–8 out of 10 (70–80%)": 0.75,
       "9–10 out of 10 (90%+)": 0.95,
-      "I honestly don't know": 0.35,
+      "I honestly don't know": 0.20,
     },
   },
   {
