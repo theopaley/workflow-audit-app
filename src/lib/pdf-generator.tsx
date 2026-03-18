@@ -837,6 +837,7 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
           <View style={s.mt12}>
             <Text style={s.yourResultLabel}>How We Calculated This</Text>
             <Text style={s.findingBodyMuted}>{area.leakageExplanation}</Text>
+            <Text style={s.findingBodyMuted}>{`After proportional adjustment across all workflow areas, this comes to ${formatCurrency(displayLeakage)}/mo.`}</Text>
           </View>
         )}
 
