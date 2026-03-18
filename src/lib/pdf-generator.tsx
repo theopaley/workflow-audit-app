@@ -836,7 +836,11 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
         {area.monthlyLeakage > 0 && area.leakageExplanation && (
           <View style={s.mt12}>
             <Text style={s.yourResultLabel}>How We Calculated This</Text>
-            <Text style={s.findingBodyMuted}>{`${area.leakageExplanation} Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
+            <Text style={s.findingBodyMuted}>{`${
+              area.name === "Business Visibility"
+                ? "Without a reporting system, problems in other workflow areas go undetected and unresolved longer — compounding the cost of every other gap in this report. Not knowing your numbers means you can't see where to focus, which costs you more every month you fly blind."
+                : area.leakageExplanation
+            } Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
           </View>
         )}
 
