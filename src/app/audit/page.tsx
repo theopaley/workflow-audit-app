@@ -462,6 +462,7 @@ export default function AuditPage() {
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [skipToast, setSkipToast] = useState<{ areaName: string; visible: boolean } | null>(null);
   const [finAvgSaleCustom, setFinAvgSaleCustom] = useState("");
+  const [emailError, setEmailError] = useState("");
   const skipToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
 
@@ -551,6 +552,15 @@ export default function AuditPage() {
   const advance = useCallback(() => {
     if (!canAdvance()) return;
 
+    if (question.id === "intro_email") {
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(textValue.trim());
+      if (!valid) {
+        setEmailError("Please enter a valid email address — we'll send your report here.");
+        return;
+      }
+      setEmailError("");
+    }
+
     const answer = answers[question.id];
     const skippedIds = getSkippedQuestionIds(question.id, answer, index);
 
@@ -628,6 +638,7 @@ export default function AuditPage() {
     total,
     answers,
     question,
+    textValue,
     canAdvance,
     transition,
     router,
@@ -662,6 +673,7 @@ export default function AuditPage() {
   }, []);
 
   const setAnswer = (val: string | string[]) => {
+    if (question.id === "intro_email") setEmailError("");
     setAnswers((prev) => {
       const next: SurveyAnswers = { ...prev, [question.id]: val };
       // For financial baseline questions, also store the numeric midpoint
@@ -756,12 +768,17 @@ export default function AuditPage() {
 
             {/* Input */}
             {question.type === "text" && (
-              <TextInput
-                question={question}
-                value={textValue}
-                onChange={setAnswer}
-                onSubmit={advance}
-              />
+              <>
+                <TextInput
+                  question={question}
+                  value={textValue}
+                  onChange={setAnswer}
+                  onSubmit={advance}
+                />
+                {question.id === "intro_email" && emailError && (
+                  <p className="mt-2 text-sm text-red-500">{emailError}</p>
+                )}
+              </>
             )}
             {question.type === "single" && question.id !== "fin_avg_sale" && (
               <SingleSelect
