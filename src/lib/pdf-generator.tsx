@@ -791,7 +791,7 @@ function CoverPage({
 
 // ─── Page 2: Findings ─────────────────────────────────────────────────────────
 
-function FindingCard({ area, scaleFactor }: { area: AreaResult; scaleFactor: number }) {
+function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakage: number }) {
   const action    = area.stackAction;
   const actionCfg = action ? STACK_ACTION_CONFIG[action] : null;
   const stat      = getStatForArea(area.id);
@@ -810,7 +810,7 @@ function FindingCard({ area, scaleFactor }: { area: AreaResult; scaleFactor: num
         <Text style={s.findingAreaName}>{area.name}</Text>
         {area.monthlyLeakage > 0 && (
           <Text style={s.findingLeakage}>
-            {formatCurrency(Math.round(area.monthlyLeakage * scaleFactor))}/mo
+            {formatCurrency(displayLeakage)}/mo
           </Text>
         )}
       </View>
@@ -863,6 +863,11 @@ function FindingCard({ area, scaleFactor }: { area: AreaResult; scaleFactor: num
 
 function FindingsPage({ result, scaleFactor }: { result: AnalysisResult; scaleFactor: number }) {
   const flaggedAreas = result.areas.filter((a) => a.score < 70);
+  const rawScaled = flaggedAreas.map((a) => Math.round(a.monthlyLeakage * scaleFactor));
+  const scaledSum = rawScaled.reduce((s, v) => s + v, 0);
+  const remainder = Math.round(result.totalMonthlyLeakage) - scaledSum;
+  const maxIdx = rawScaled.indexOf(Math.max(...rawScaled));
+  const displayValues = rawScaled.map((v, i) => i === maxIdx ? v + remainder : v);
 
   return (
     <Page size="A4" style={s.paperPage}>
@@ -871,8 +876,8 @@ function FindingsPage({ result, scaleFactor }: { result: AnalysisResult; scaleFa
         <View style={s.sectionRule} />
       </View>
 
-      {flaggedAreas.map((area) => (
-        <FindingCard key={area.id} area={area} scaleFactor={scaleFactor} />
+      {flaggedAreas.map((area, index) => (
+        <FindingCard key={area.id} area={area} displayLeakage={displayValues[index]} />
       ))}
 
       <PageFooter businessName={result.businessName} />
