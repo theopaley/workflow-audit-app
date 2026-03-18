@@ -294,32 +294,42 @@ export async function sendReportEmails(
   if (!ownerEmail) throw new Error("Owner email is missing from survey answers");
   if (!teamEmail) throw new Error("TEAM_NOTIFICATION_EMAIL env var is not set");
 
-  const [ownerRes, teamRes] = await Promise.all([
-    resend.emails.send({
-      from: fromEmail,
-      to: ownerEmail,
-      subject: `Your WorkflowAudit Report is Ready — ${result.businessName}`,
-      html: buildOwnerEmail(result),
-      attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
-    }),
-    resend.emails.send({
-      from: fromEmail,
-      to: teamEmail,
-      subject: `New Audit — ${result.businessName} | Score: ${result.overallScore} | Leakage: ${fmt(result.totalMonthlyLeakage)}/mo`,
-      html: buildTeamEmail(result, answers),
-      attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
-    }),
-  ]);
+  // Send owner email first — validate before sending team notification
+  const ownerRes = await resend.emails.send({
+    from: fromEmail,
+    to: ownerEmail,
+    subject: `Your WorkflowAudit Report is Ready — ${result.businessName}`,
+    html: buildOwnerEmail(result),
+    attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
+  });
 
   // Resend SDK v2+ returns { data, error } instead of throwing — check explicitly
   if (ownerRes.error) {
     console.error("[email] Owner email failed:", ownerRes.error);
+    const isValidationError =
+      (ownerRes.error as { statusCode?: number }).statusCode === 422 ||
+      ownerRes.error.message?.toLowerCase().includes("invalid");
+    if (isValidationError) {
+      throw new Error("We couldn't deliver your report — please check your email address and try again.");
+    }
     throw new Error(`Owner email failed: ${JSON.stringify(ownerRes.error)}`);
   }
+
+  console.log("[email] Owner email sent — id:", ownerRes.data?.id);
+
+  // Send team notification
+  const teamRes = await resend.emails.send({
+    from: fromEmail,
+    to: teamEmail,
+    subject: `New Audit — ${result.businessName} | Score: ${result.overallScore} | Leakage: ${fmt(result.totalMonthlyLeakage)}/mo`,
+    html: buildTeamEmail(result, answers),
+    attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
+  });
+
   if (teamRes.error) {
     console.error("[email] Team email failed:", teamRes.error);
     throw new Error(`Team email failed: ${JSON.stringify(teamRes.error)}`);
   }
 
-  console.log("[email] Both emails sent — owner id:", ownerRes.data?.id, "| team id:", teamRes.data?.id);
+  console.log("[email] Team email sent — id:", teamRes.data?.id);
 }
