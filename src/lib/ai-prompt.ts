@@ -62,11 +62,14 @@ REVENUE-BASED AREAS — calculated as a percentage of monthly revenue because th
     - Score 70+:   visibilityMultiplier = 1.0;  monthlyLeakage = 0
     The Business Visibility monthlyLeakage is the additional revenue lost because the
     owner can't see where to focus. It is always non-zero when score < 70.
-    For leakageExplanation, use the revenue-based format ONLY — never mention multipliers,
-    visibilityMultiplier, baseLeakageTotal, or any internal mechanic. Write it as:
-    "Without a clear reporting system, you can't see where revenue is leaking or where your
-    team is losing time — that's an estimated [X]% drag on your monthly revenue. With
-    $[monthly_revenue] coming in monthly, that's $[monthly_revenue] × [X]% = $[raw] raw estimate."
+    For leakageExplanation, use this exact format — do NOT invent a percentage, do NOT
+    mention multipliers, compounding rates, or any internal mechanic. Business Visibility
+    does not follow the percentage-of-revenue pattern. End the explanation with the raw
+    estimate only — the "Adjusted to X/mo" suffix is appended separately by the renderer:
+    "Without a reporting system, problems in other workflow areas go undetected and unresolved
+    longer — compounding the cost of every other gap in this report. On top of that, not
+    knowing your numbers costs an estimated $[monthlyLeakage] per month in missed opportunities
+    and slow decisions."
 
 CAP total leakage (after visibility multiplier) at 40% of monthly revenue.
 When the raw total exceeds the cap (cap_amount = monthly_revenue × 0.40):
