@@ -832,13 +832,21 @@ function FindingCard({ area, scaleFactor }: { area: AreaResult; scaleFactor: num
           <Text style={s.findingBodyMuted}>{area.scoreReasoning}</Text>
         </View>
 
-        {/* 3. What to do */}
+        {/* 3. Leakage explanation */}
+        {area.monthlyLeakage > 0 && area.leakageExplanation && (
+          <View style={s.mt12}>
+            <Text style={s.yourResultLabel}>How We Calculated This</Text>
+            <Text style={s.findingBodyMuted}>{area.leakageExplanation}</Text>
+          </View>
+        )}
+
+        {/* 4. What to do */}
         <View style={s.mt12}>
           <Text style={s.whatToDoLabel}>What To Do</Text>
           <Text style={s.findingBodyDark}>{area.empower}</Text>
         </View>
 
-        {/* 4. Tool chips */}
+        {/* 5. Tool chips */}
         {(AREA_CHIPS[area.id] ?? area.replacementTool) && (
           <View style={s.toolChipsRow}>
             <View style={s.toolChip}>

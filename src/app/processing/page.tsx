@@ -277,7 +277,7 @@ export default function ProcessingPage() {
         </div>
 
         <p className="mt-4 text-sm text-slate-400">
-          This usually takes under a minute
+          This usually takes 1–3 minutes
         </p>
 
         {/* Progress dots */}
