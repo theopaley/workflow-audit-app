@@ -838,7 +838,7 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
             <Text style={s.yourResultLabel}>How We Calculated This</Text>
             <Text style={s.findingBodyMuted}>{`${
               area.name === "Business Visibility"
-                ? "Without a reporting system, problems in other workflow areas go undetected and unresolved longer — compounding the cost of every other gap in this report. Not knowing your numbers means you can't see where to focus, which costs you more every month you fly blind."
+                ? `Every other gap in this report costs you money. Without a reporting system, those problems go undetected longer — which means each one costs more than our conservative estimates suggest. We apply a compounding factor to reflect that reality. On top of that, flying blind on metrics like lead sources, conversion rates, and project profitability has its own direct cost in slow decisions and missed opportunities. Combined, that\u2019s ${formatCurrency(area.monthlyLeakage)} per month before applying your revenue cap.`
                 : area.leakageExplanation
             } Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
           </View>
