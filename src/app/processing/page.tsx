@@ -184,7 +184,7 @@ export default function ProcessingPage() {
       <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <span className="text-base font-semibold tracking-tight text-slate-900">
-            WorkflowAudit
+            RevRep.ai Workflow Audit
           </span>
         </div>
         <div className="w-full max-w-md text-center">
@@ -225,7 +225,7 @@ export default function ProcessingPage() {
       {/* Wordmark */}
       <div className="absolute top-0 left-0 right-0 flex justify-between items-center border-b border-slate-100 px-6 py-4">
         <span className="text-base font-semibold tracking-tight text-slate-900">
-          WorkflowAudit
+          RevRep.ai Workflow Audit
         </span>
       </div>
 

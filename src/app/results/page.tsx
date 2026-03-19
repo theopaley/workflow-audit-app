@@ -158,7 +158,7 @@ export default function ResultsPage() {
       <header className="border-b border-slate-100 bg-white px-6 py-4">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
           <span className="text-base font-semibold tracking-tight text-slate-900">
-            WorkflowAudit
+            RevRep.ai Workflow Audit
           </span>
           <Link
             href="/"

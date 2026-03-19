@@ -734,7 +734,7 @@ export default function AuditPage() {
       {/* Top bar */}
       <header className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
         <span className="text-base font-semibold tracking-tight text-slate-900">
-          WorkflowAudit
+          RevRep.ai Workflow Audit
         </span>
         <span className="text-sm text-slate-400">
           {index + 1} / {total}

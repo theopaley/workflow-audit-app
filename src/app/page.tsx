@@ -43,7 +43,7 @@ export default function Home() {
       <header className="border-b border-slate-100 px-6 py-4">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <span className="text-lg font-semibold tracking-tight">
-            WorkflowAudit
+            RevRep.ai Workflow Audit
           </span>
           <Link
             href="/audit"
