@@ -356,9 +356,6 @@ function ScaleInput({
                   : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
               }`}
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-sm font-bold">
-                {n}
-              </span>
               {SCALE_LABELS[n]}
             </button>
           );
@@ -372,9 +369,6 @@ function ScaleInput({
                 : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
             }`}
           >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
-              ?
-            </span>
             I honestly don&apos;t know
           </button>
         )}
