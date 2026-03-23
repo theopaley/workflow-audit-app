@@ -140,9 +140,6 @@ function SingleSelect({
                   : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
               }`}
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
-                {String.fromCharCode(65 + i)}
-              </span>
               {opt}
             </button>
           );
@@ -191,9 +188,6 @@ function FinAvgSaleSelect({
                   : "border-slate-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-slate-50"
               }`}
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 border-current text-xs font-bold">
-                {String.fromCharCode(65 + i)}
-              </span>
               {opt}
             </button>
           );
