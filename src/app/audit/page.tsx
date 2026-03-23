@@ -80,7 +80,7 @@ function AreaBadge({ areaId }: { areaId: string | null }) {
   const area = AREAS.find((a) => a.id === areaId);
   if (!area) return null;
   return (
-    <span className="inline-block rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-indigo-500">
+    <span className="inline-block rounded-full border border-indigo-300 bg-indigo-100 px-3 py-1 text-sm font-bold uppercase tracking-widest text-indigo-700">
       {area.name}
     </span>
   );
