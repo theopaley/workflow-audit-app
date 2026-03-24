@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { NextRequest, NextResponse } from "next/server";
 import { generateAuditPDF } from "@/lib/pdf-generator";
 import type { AnalysisResult } from "@/lib/ai-analysis";

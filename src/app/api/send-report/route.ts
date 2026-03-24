@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { NextRequest, NextResponse } from "next/server";
 import { sendReportEmails } from "@/lib/email";
 import type { AnalysisResult } from "@/lib/ai-analysis";

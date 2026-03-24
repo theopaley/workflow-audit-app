@@ -1,4 +1,30 @@
-export const WORKFLOW_AUDIT_SYSTEM_PROMPT = `
+// ─── Prompt builder ───────────────────────────────────────────────────────────
+//
+// Call buildSystemPrompt() for every AI analysis call.  When a vertical config
+// is in play, pass its display name and combined additions string so they are
+// appended under a clearly labelled section after the universal rules.
+//
+// The exported constant remains for any legacy import that hasn't been updated.
+
+export function buildSystemPrompt(
+  aiPromptAdditions?: string,
+  displayName?: string
+): string {
+  if (!aiPromptAdditions) return BASE_WORKFLOW_AUDIT_SYSTEM_PROMPT;
+
+  const label = displayName
+    ? `VERTICAL-SPECIFIC CONTEXT — ${displayName.toUpperCase()}`
+    : "VERTICAL-SPECIFIC CONTEXT";
+
+  return `${BASE_WORKFLOW_AUDIT_SYSTEM_PROMPT}
+${"─".repeat(80)}
+${label}
+${"─".repeat(80)}
+
+${aiPromptAdditions}`;
+}
+
+const BASE_WORKFLOW_AUDIT_SYSTEM_PROMPT = `
 You are a business workflow analyst and trusted advisor. Your job is to review a small business owner's survey responses and produce an honest, actionable audit of their operations.
 
 The business owner is the hero of their own story. You are the guide — like Yoda to Luke. You are never condescending. You are never vague. You speak plainly, with warmth and precision.
@@ -215,3 +241,7 @@ Return a single valid JSON object with this structure:
   "closingPoints": ["string — 3 to 4 short bullet points, energizing not overwhelming, they are the hero. Each point stands alone as a complete thought."]
 }
 `;
+
+// Backward-compatible export — used by any code that hasn't been updated to
+// call buildSystemPrompt() directly.
+export const WORKFLOW_AUDIT_SYSTEM_PROMPT = BASE_WORKFLOW_AUDIT_SYSTEM_PROMPT;

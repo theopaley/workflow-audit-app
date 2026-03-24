@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { WORKFLOW_AUDIT_SYSTEM_PROMPT } from "./ai-prompt";
+import { buildSystemPrompt } from "./ai-prompt";
 import type { SurveyAnswers } from "@/types/survey";
+import type { VerticalConfig, VerticalArea } from "@/lib/verticals/types";
 
 // ─── Response types ───────────────────────────────────────────────────────────
 
@@ -61,16 +62,99 @@ export interface AnalysisResult {
   closingPoints: string[];
 }
 
+// ─── Vertical leakage rate section ───────────────────────────────────────────
+
+/**
+ * Builds a structured leakage rate override block from a vertical config's
+ * workflowAreas and leakageFormula.  This section is appended to the system
+ * prompt so Claude uses the vertical-specific rates instead of the universal
+ * percentages defined in the base prompt.
+ */
+function buildLeakageRateSection(
+  workflowAreas: VerticalArea[],
+  leakageFormula: Record<string, number>
+): string {
+  const leadBased = workflowAreas.filter((a) => a.leakageType === "lead-based");
+  const revBased = workflowAreas.filter((a) => a.leakageType === "revenue-based");
+  const multiplier = workflowAreas.filter((a) => a.leakageType === "multiplier");
+
+  const lines: string[] = [
+    "VERTICAL LEAKAGE RATES — use these rates instead of the universal rates in the LEAKAGE FORMULAS section above. The calculation structure (lead-based vs revenue-based, CAP rules, output format) is unchanged; only the percentages differ.",
+    "",
+  ];
+
+  if (leadBased.length > 0) {
+    lines.push(
+      "Lead-based (calculated from lead volume and average job value):"
+    );
+    for (const area of leadBased) {
+      const rate = leakageFormula[area.id] ?? 0;
+      lines.push(`  • ${area.name} (${area.id}): monthly_leads × avg_job_value × ${rate}`);
+    }
+    lines.push("");
+  }
+
+  if (revBased.length > 0) {
+    lines.push(
+      "Revenue-based (calculated as a percentage of monthly revenue):"
+    );
+    for (const area of revBased) {
+      const rate = leakageFormula[area.id] ?? 0;
+      lines.push(`  • ${area.name} (${area.id}): monthly_revenue × ${rate}`);
+    }
+    lines.push("");
+  }
+
+  if (multiplier.length > 0) {
+    lines.push(
+      "Multiplier areas (amplify the summed leakage of all other areas):"
+    );
+    for (const area of multiplier) {
+      const increment = leakageFormula[area.id] ?? 0;
+      const highX = (1 + increment).toFixed(2);
+      const midX = (1 + increment / 2).toFixed(2);
+      lines.push(
+        `  • ${area.name} (${area.id}): ${highX}× when score < 40 | ${midX}× when score 40–69 | 1.00× when score 70+`
+      );
+    }
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
 // ─── Analysis function ────────────────────────────────────────────────────────
 
 /**
  * Sends survey answers to Claude and returns the structured audit analysis.
  * Must be called server-side only — requires ANTHROPIC_API_KEY env var.
+ *
+ * Pass a VerticalConfig when the answers came from a vertical survey.  This
+ * causes the system prompt to include (a) the vertical's leakage rate
+ * overrides derived from config.leakageFormula, and (b) the vertical's
+ * narrative additions from config.aiPromptAdditions.
  */
 export async function analyzeWorkflows(
-  answers: SurveyAnswers
+  answers: SurveyAnswers,
+  verticalConfig?: VerticalConfig
 ): Promise<AnalysisResult> {
   const client = new Anthropic();
+
+  // Build vertical-specific additions: leakage rate overrides first (structured,
+  // machine-generated from leakageFormula), followed by the narrative additions
+  // from the vertical config.  Both are appended under a single labeled section.
+  let additions: string | undefined;
+  if (verticalConfig) {
+    const rateSection = buildLeakageRateSection(
+      verticalConfig.workflowAreas,
+      verticalConfig.leakageFormula
+    );
+    additions = verticalConfig.aiPromptAdditions
+      ? `${rateSection}\n${verticalConfig.aiPromptAdditions}`
+      : rateSection;
+  }
+
+  const systemPrompt = buildSystemPrompt(additions, verticalConfig?.displayName);
 
   const unknownInputs: string[] = [];
   if (answers.fin_monthly_leads === "I honestly don't know") unknownInputs.push("monthly_leads (defaulted to 20 — owner does not know their lead volume)");
@@ -92,7 +176,7 @@ Please analyse these responses thoroughly and return the complete audit report a
   const stream = client.messages.stream({
     model: "claude-sonnet-4-20250514",
     max_tokens: 8000,
-    system: WORKFLOW_AUDIT_SYSTEM_PROMPT,
+    system: systemPrompt,
     messages: [{ role: "user", content: userMessage }],
   });
 
