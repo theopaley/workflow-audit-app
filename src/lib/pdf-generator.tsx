@@ -791,10 +791,18 @@ function CoverPage({
 
 // ─── Page 2: Findings ─────────────────────────────────────────────────────────
 
-function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakage: number }) {
+function FindingCard({ area, displayLeakage, verticalId }: { area: AreaResult; displayLeakage: number; verticalId?: string }) {
   const action    = area.stackAction;
   const actionCfg = action ? STACK_ACTION_CONFIG[action] : null;
-  const stat      = getStatForArea(area.id);
+  const isBizVis  = area.name.toLowerCase().startsWith("business visibility");
+
+  // For universal surveys (no verticalId), fall back to the curated static
+  // table which includes source citations.  For vertical surveys the locked
+  // industryBenchmarkStat strings are already in area.stat and carry no
+  // separate source line, so staticStat is intentionally null.
+  const staticStat = verticalId ? null : getStatForArea(area.id);
+  const statText   = area.stat || staticStat?.stat || null;
+  const statSource = staticStat?.source ?? null;
 
   return (
     <View style={s.findingCard} wrap={false}>
@@ -808,7 +816,7 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
           </View>
         )}
         <Text style={s.findingAreaName}>{area.name}</Text>
-        {area.monthlyLeakage > 0 && (
+        {(isBizVis ? displayLeakage > 0 : area.monthlyLeakage > 0) && (
           <Text style={s.findingLeakage}>
             {formatCurrency(displayLeakage)}/mo
           </Text>
@@ -818,11 +826,13 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
       {/* Body */}
       <View style={s.findingCardBody}>
         {/* 1. Industry stat callout */}
-        {stat && area.score < 70 && (
+        {statText && area.score < 70 && (
           <View style={s.statCallout}>
             <Text style={s.statCalloutLabel}>Industry Data</Text>
-            <Text style={s.statCalloutText}>{stat.stat}</Text>
-            <Text style={s.statCalloutSource}>— {stat.source}</Text>
+            <Text style={s.statCalloutText}>{statText}</Text>
+            {statSource && (
+              <Text style={s.statCalloutSource}>— {statSource}</Text>
+            )}
           </View>
         )}
 
@@ -833,12 +843,12 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
         </View>
 
         {/* 3. Leakage explanation */}
-        {area.monthlyLeakage > 0 && area.leakageExplanation && (
+        {(isBizVis ? displayLeakage > 0 : area.monthlyLeakage > 0) && (area.leakageExplanation || isBizVis) && (
           <View style={s.mt12}>
             <Text style={s.yourResultLabel}>How We Calculated This</Text>
             <Text style={s.findingBodyMuted}>{`${
-              area.name === "Business Visibility"
-                ? `Every other gap in this report costs you money. Without a reporting system, those problems go undetected longer — which means each one costs more than our conservative estimates suggest. We apply a compounding factor to reflect that reality. On top of that, flying blind on metrics like lead sources, conversion rates, and project profitability has its own direct cost in slow decisions and missed opportunities. Combined, that\u2019s ${formatCurrency(area.monthlyLeakage)} per month before applying your revenue cap.`
+              isBizVis
+                ? `Every other gap in this report costs you money. Without a reporting system, those problems go undetected longer — which means each one costs more than our conservative estimates suggest. We apply a compounding factor to reflect that reality. On top of that, flying blind on metrics like lead sources, conversion rates, and project profitability has its own direct cost in slow decisions and missed opportunities. Combined, that\u2019s ${formatCurrency(area.monthlyLeakage > 0 ? area.monthlyLeakage : displayLeakage)} per month before applying your revenue cap.`
                 : area.leakageExplanation
             } Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
           </View>
@@ -865,13 +875,23 @@ function FindingCard({ area, displayLeakage }: { area: AreaResult; displayLeakag
   );
 }
 
-function FindingsPage({ result, scaleFactor }: { result: AnalysisResult; scaleFactor: number }) {
+function FindingsPage({ result, scaleFactor, verticalId }: { result: AnalysisResult; scaleFactor: number; verticalId?: string }) {
   const flaggedAreas = result.areas.filter((a) => a.score < 70);
   const rawScaled = flaggedAreas.map((a) => Math.round(a.monthlyLeakage * scaleFactor));
   const scaledSum = rawScaled.reduce((s, v) => s + v, 0);
   const remainder = Math.round(result.totalMonthlyLeakage) - scaledSum;
-  const maxIdx = rawScaled.indexOf(Math.max(...rawScaled));
-  const displayValues = rawScaled.map((v, i) => i === maxIdx ? v + remainder : v);
+
+  // Prefer allocating the rounding remainder to Business Visibility when its
+  // rawScaled is 0 (AI returned monthlyLeakage=0 for that area) so its card
+  // still shows a dollar amount derived from the cover-page total.
+  const bizVisIdx = flaggedAreas.findIndex((a) =>
+    a.name.toLowerCase().startsWith("business visibility")
+  );
+  const fallbackIdx =
+    bizVisIdx !== -1 && rawScaled[bizVisIdx] === 0
+      ? bizVisIdx
+      : rawScaled.indexOf(Math.max(...rawScaled));
+  const displayValues = rawScaled.map((v, i) => i === fallbackIdx ? v + remainder : v);
 
   return (
     <Page size="A4" style={s.paperPage}>
@@ -886,7 +906,7 @@ function FindingsPage({ result, scaleFactor }: { result: AnalysisResult; scaleFa
       </View>
 
       {flaggedAreas.map((area, index) => (
-        <FindingCard key={area.id} area={area} displayLeakage={displayValues[index]} />
+        <FindingCard key={area.id} area={area} displayLeakage={displayValues[index]} verticalId={verticalId} />
       ))}
 
       <PageFooter businessName={result.businessName} />
@@ -940,21 +960,23 @@ function PlatformPage({
       })}
 
       {/* Section 2 — recommended additions */}
-      <Text style={[s.colHeader, { marginTop: 20, marginBottom: 10 }]}>
-        Platforms We Recommend Adding
-      </Text>
-      {RECOMMENDED_PLATFORMS.map((rec, i) => (
-        <View key={i} style={s.platformCard} wrap={false}>
-          <View style={s.platformCardRow}>
-            <Text style={s.platformCardName}>{rec.name}</Text>
-            <View style={[s.statusBadge, { backgroundColor: C.greenLight }]}>
-              <Text style={[s.statusBadgeText, { color: C.green }]}>Recommended</Text>
+      <View wrap={false}>
+        <Text style={[s.colHeader, { marginTop: 20, marginBottom: 10 }]}>
+          Platforms We Recommend Adding
+        </Text>
+        {RECOMMENDED_PLATFORMS.map((rec, i) => (
+          <View key={i} style={s.platformCard}>
+            <View style={s.platformCardRow}>
+              <Text style={s.platformCardName}>{rec.name}</Text>
+              <View style={[s.statusBadge, { backgroundColor: C.greenLight }]}>
+                <Text style={[s.statusBadgeText, { color: C.green }]}>Recommended</Text>
+              </View>
             </View>
+            <Text style={s.platformCardDesc}>{rec.description}</Text>
+            <Text style={s.platformCardAction}>{rec.actionText}</Text>
           </View>
-          <Text style={s.platformCardDesc}>{rec.description}</Text>
-          <Text style={s.platformCardAction}>{rec.actionText}</Text>
-        </View>
-      ))}
+        ))}
+      </View>
 
       <PageFooter businessName={result.businessName} />
     </Page>
@@ -1024,7 +1046,7 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
       subject="AI Readiness Audit Report"
     >
       <CoverPage result={result} businessName={companyName} />
-      <FindingsPage result={result} scaleFactor={scaleFactor} />
+      <FindingsPage result={result} scaleFactor={scaleFactor} verticalId={typeof answers.verticalId === "string" ? answers.verticalId : undefined} />
       <PlatformPage result={result} answers={answers} />
       <ClosingPage result={result} />
     </Document>
