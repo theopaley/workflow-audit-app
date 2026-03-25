@@ -45,12 +45,20 @@ export default function Home() {
           <span className="text-lg font-semibold tracking-tight">
             RevRep.ai Workflow Audit
           </span>
-          <Link
-            href="/audit"
-            className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
-          >
-            Start Free Audit
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/home-services"
+              className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+            >
+              Home Services
+            </Link>
+            <Link
+              href="/audit"
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+            >
+              Start Free Audit
+            </Link>
+          </div>
         </div>
       </header>
 
