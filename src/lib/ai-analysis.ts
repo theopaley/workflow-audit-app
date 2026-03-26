@@ -123,6 +123,10 @@ function buildLeakageRateSection(
   return lines.join("\n");
 }
 
+// ─── Anthropic client (module-scoped — reused across requests) ────────────────
+
+const client = new Anthropic();
+
 // ─── Analysis function ────────────────────────────────────────────────────────
 
 /**
@@ -138,7 +142,6 @@ export async function analyzeWorkflows(
   answers: SurveyAnswers,
   verticalConfig?: VerticalConfig
 ): Promise<AnalysisResult> {
-  const client = new Anthropic();
 
   // Build vertical-specific additions: leakage rate overrides first (structured,
   // machine-generated from leakageFormula), followed by the narrative additions
@@ -185,7 +188,9 @@ ${JSON.stringify(trimmedAnswers, null, 2)}
 
 Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}`;
 
-  // Stream the response — output can be large (12 areas × multiple text fields)
+  // Stream the response and accumulate text chunks as they arrive.
+  // Using for-await keeps the connection actively consuming data throughout
+  // the call, preventing the runtime from treating it as a stalled request.
   const stream = client.messages.stream({
     model: "claude-sonnet-4-20250514",
     max_tokens: 2000,
@@ -193,14 +198,20 @@ Please analyse these responses thoroughly and return the complete audit report a
     messages: [{ role: "user", content: userMessage }],
   });
 
-  const message = await stream.finalMessage();
-
-  const textBlock = message.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("AI analysis returned no text content");
+  let accumulated = "";
+  for await (const chunk of stream) {
+    if (
+      chunk.type === "content_block_delta" &&
+      chunk.delta.type === "text_delta"
+    ) {
+      accumulated += chunk.delta.text;
+    }
   }
 
-  const raw = textBlock.text.trim();
+  const raw = accumulated.trim();
+  if (!raw) {
+    throw new Error("AI analysis returned no text content");
+  }
 
   // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
   const fenceMatch = raw.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
