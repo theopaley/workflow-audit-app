@@ -75,45 +75,44 @@ export default function ProcessingPage() {
           throw new Error("The analysis service returned an unexpected response. Please try again.");
         });
       })
-      .then(async (result) => {
+      .then((result) => {
         sessionStorage.setItem("auditResult", JSON.stringify(result));
 
-        // Step 2: generate PDF
-        const pdfRes = await fetch("/api/generate-report", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ auditResult: result, auditAnswers: answers }),
-        });
-        if (!pdfRes.ok) {
-          const body = await pdfRes.json().catch(() => ({}));
-          throw new Error(body?.error ?? `PDF generation failed (${pdfRes.status})`);
-        }
-
-        const pdfArrayBuffer = await pdfRes.arrayBuffer();
-        const uint8 = new Uint8Array(pdfArrayBuffer);
-        const chunks: string[] = [];
-        const chunkSize = 32768;
-        for (let i = 0; i < uint8.length; i += chunkSize) {
-          chunks.push(String.fromCharCode(...Array.from(uint8.subarray(i, i + chunkSize))));
-        }
-        const pdfBase64 = btoa(chunks.join(""));
-
-        // PDF is ready — advance message to "Sending your report..."
+        // Unblock the animation immediately — PDF and email finish in the background.
+        // Note: /api/send-report requires PDF bytes, so PDF must complete before email
+        // can be sent. Both run as a fire-and-forget background task so the user
+        // navigates to /results as soon as analysis is done.
         setPdfDone(true);
-
-        // Step 3: send emails
-        const sendRes = await fetch("/api/send-report", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers, result, pdf: pdfBase64 }),
-        });
-        if (!sendRes.ok) {
-          const body = await sendRes.json().catch(() => ({}));
-          throw new Error(body?.error ?? `Email delivery failed (${sendRes.status})`);
-        }
-
-        // Step 4: all done
         setApiDone(true);
+
+        // Background: generate PDF then send email (silent failures acceptable)
+        ;(async () => {
+          try {
+            const pdfRes = await fetch("/api/generate-report", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ auditResult: result, auditAnswers: answers }),
+            });
+            if (!pdfRes.ok) return;
+
+            const pdfArrayBuffer = await pdfRes.arrayBuffer();
+            const uint8 = new Uint8Array(pdfArrayBuffer);
+            const chunks: string[] = [];
+            const chunkSize = 32768;
+            for (let i = 0; i < uint8.length; i += chunkSize) {
+              chunks.push(String.fromCharCode(...Array.from(uint8.subarray(i, i + chunkSize))));
+            }
+            const pdfBase64 = btoa(chunks.join(""));
+
+            await fetch("/api/send-report", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ answers, result, pdf: pdfBase64 }),
+            });
+          } catch {
+            // silent — user is already on the results page
+          }
+        })();
       })
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
