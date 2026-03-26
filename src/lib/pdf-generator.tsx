@@ -231,7 +231,7 @@ function buildLeftColumnCards(
           ? "Full deployment needed — not yet active"
           : "Platform exists but needs setup or optimization";
       const rawAction =
-        badge === "Deploy" ? area.empower : area.stackReasoning;
+        badge === "Deploy" ? (area.recommendation ?? area.stackReasoning) : area.stackReasoning;
       const actionText =
         badge === "Deploy"
           ? `Deploy — ${rawAction.split(". ")[0]}`
@@ -857,7 +857,7 @@ function FindingCard({ area, displayLeakage, verticalId }: { area: AreaResult; d
         {/* 4. What to do */}
         <View style={s.mt12}>
           <Text style={s.whatToDoLabel}>What To Do</Text>
-          <Text style={s.findingBodyDark}>{area.empower}</Text>
+          <Text style={s.findingBodyDark}>{area.recommendation}</Text>
         </View>
 
         {/* 5. Tool chips */}

@@ -513,7 +513,7 @@ export default function ResultsPage() {
             Our team has been notified and will be in touch shortly
           </h2>
           <ul className="mx-auto max-w-md space-y-2 text-left">
-            {result.closingPoints.map((point, i) => (
+            {(result.closingPoints ?? []).map((point, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed text-slate-400">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
                 {point}

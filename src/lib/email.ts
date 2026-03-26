@@ -253,8 +253,7 @@ function buildTeamEmail(result: AnalysisResult, answers: SurveyAnswers): string 
                 <tr>
                   <td style="padding: 18px 20px;">
                     <p style="margin: 0 0 4px 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #3b82f6;">Recommended Tier</p>
-                    <p style="margin: 0 0 6px 0; font-size: 17px; font-weight: 700; color: #1e3a8a;">${result.recommendedTier}</p>
-                    <p style="margin: 0; font-size: 13px; color: #3b5bdb;">${result.tierRationale}</p>
+                    <p style="margin: 0; font-size: 17px; font-weight: 700; color: #1e3a8a;">${result.recommendedTier}</p>
                   </td>
                 </tr>
               </table>

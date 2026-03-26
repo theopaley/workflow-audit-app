@@ -110,13 +110,9 @@ Revenue-based example: "With $87,500 coming in monthly, poor customer onboarding
 If any financial input was unknown/defaulted, add at the end: "We've used a conservative baseline since you weren't sure of the exact figure."
 
 FINDING STRUCTURE for every area:
-1. Stat — normalize with industry data
-2. Score — honest with 1-2 sentence reasoning
-3. Leakage — plain English math
-4. Fix — three parts:
-   NORMALIZE: this is a knowledge gap not a character flaw
-   REFRAME: winning businesses aren't smarter, they have better systems
-   EMPOWER: here is exactly what to do, specific and actionable
+1. Score — honest with 1-2 sentence reasoning
+2. Leakage — plain English math
+3. Recommendation — 1-2 sentences: normalise (knowledge gap not a character flaw), then give the exact specific action to take
 
 REPORT OPENING (before any scores):
 Write 2-3 sentences that normalize their situation before they see a single score. Disarm the shame reflex before the numbers land.
@@ -201,7 +197,6 @@ Return a single valid JSON object with this structure:
   "totalAnnualLeakage": number,
   "visibilityMultiplier": number,
   "recommendedTier": "string",
-  "tierRationale": "string",
   "stackSummary": {
     "configureCount": number,
     "connectCount": number,
@@ -217,12 +212,9 @@ Return a single valid JSON object with this structure:
       "score": number,
       "grade": "Red|Amber|Green",
       "scoreReasoning": "string",
-      "stat": "string",
       "monthlyLeakage": number,
       "leakageExplanation": "string",
-      "normalize": "string",
-      "reframe": "string",
-      "empower": "string",
+      "recommendation": "string — 1-2 sentences combining normalise + specific action",
       "priority": "number 1-3 or null",
       "stackAction": "CONFIGURE|CONNECT|REPLACE|DEPLOY|null",
       "stackReasoning": "string — plain English, name the specific tool(s) and why",
@@ -237,8 +229,7 @@ Return a single valid JSON object with this structure:
       "impact": "Low|Medium|High",
       "firstStep": "string"
     }
-  ],
-  "closingPoints": ["string — 3 to 4 short bullet points, energizing not overwhelming, they are the hero. Each point stands alone as a complete thought."]
+  ]
 }
 `;
 

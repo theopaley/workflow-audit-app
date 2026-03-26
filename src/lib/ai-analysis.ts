@@ -15,12 +15,10 @@ export interface AreaResult {
   score: number;
   grade: Grade;
   scoreReasoning: string;
-  stat: string;
+  stat?: string;
   monthlyLeakage: number;
   leakageExplanation: string;
-  normalize: string;
-  reframe: string;
-  empower: string;
+  recommendation: string;
   priority: 1 | 2 | 3 | null;
   stackAction: StackAction;
   stackReasoning: string;
@@ -55,11 +53,10 @@ export interface AnalysisResult {
   totalAnnualLeakage: number;
   visibilityMultiplier: number;
   recommendedTier: string;
-  tierRationale: string;
   stackSummary: StackSummary;
   areas: AreaResult[];
   topThreePriorities: Priority[];
-  closingPoints: string[];
+  closingPoints?: string[];
 }
 
 // ─── Vertical leakage rate section ───────────────────────────────────────────
