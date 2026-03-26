@@ -188,9 +188,9 @@ ${JSON.stringify(trimmedAnswers, null, 2)}
 
 Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}`;
 
-  // Stream the response and accumulate text chunks as they arrive.
-  // Using for-await keeps the connection actively consuming data throughout
-  // the call, preventing the runtime from treating it as a stalled request.
+  // Use the SDK's stream().finalMessage() pattern — stream() keeps the SSE
+  // connection alive (beating the Vercel timeout) while finalMessage() waits
+  // for the guaranteed-complete response before resolving.
   const stream = client.messages.stream({
     model: "claude-sonnet-4-20250514",
     max_tokens: 2000,
@@ -198,18 +198,10 @@ Please analyse these responses thoroughly and return the complete audit report a
     messages: [{ role: "user", content: userMessage }],
   });
 
-  let accumulated = "";
-  for await (const chunk of stream) {
-    if (
-      chunk.type === "content_block_delta" &&
-      chunk.delta.type === "text_delta"
-    ) {
-      accumulated += chunk.delta.text;
-    }
-  }
+  const message = await stream.finalMessage();
+  const raw = message.content[0].type === "text" ? message.content[0].text : "";
 
-  const raw = accumulated.trim();
-  if (!raw) {
+  if (!raw.trim()) {
     throw new Error("AI analysis returned no text content");
   }
 
