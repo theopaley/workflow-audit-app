@@ -214,12 +214,11 @@ Please analyse these responses thoroughly and return the complete audit report a
   }
 
   // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
-  const fenceMatch = raw.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
-  const jsonStr = fenceMatch ? fenceMatch[1] : raw;
+  const clean = raw.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
 
   let result: AnalysisResult;
   try {
-    result = JSON.parse(jsonStr) as AnalysisResult;
+    result = JSON.parse(clean) as AnalysisResult;
   } catch {
     throw new Error(
       `Failed to parse AI response as JSON. Raw response:\n${raw.slice(0, 500)}`
