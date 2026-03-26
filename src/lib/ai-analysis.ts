@@ -188,6 +188,7 @@ Please analyse these responses thoroughly and return the complete audit report a
   // Use the SDK's stream().finalMessage() pattern — stream() keeps the SSE
   // connection alive (beating the Vercel timeout) while finalMessage() waits
   // for the guaranteed-complete response before resolving.
+  let message: Awaited<ReturnType<typeof stream.finalMessage>>;
   const stream = client.messages.stream({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4000,
@@ -195,7 +196,15 @@ Please analyse these responses thoroughly and return the complete audit report a
     messages: [{ role: "user", content: userMessage }],
   });
 
-  const message = await stream.finalMessage();
+  try {
+    message = await stream.finalMessage();
+  } catch (err) {
+    // Log the full Anthropic SDK error (includes status code, error type,
+    // and request ID) before re-throwing so Vercel logs capture it.
+    console.error("[ai-analysis] Anthropic API call failed:", err);
+    throw err;
+  }
+
   const raw = message.content[0].type === "text" ? message.content[0].text : "";
 
   if (!raw.trim()) {

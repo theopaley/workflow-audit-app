@@ -6,6 +6,16 @@ import { verticalRegistry } from "@/lib/verticals";
 import type { SurveyAnswers } from "@/types/survey";
 
 export async function POST(req: NextRequest) {
+  // Fail fast with a clear message if the API key is missing — avoids a
+  // confusing Anthropic SDK error surfacing as a generic 500.
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error("[/api/analyze] ANTHROPIC_API_KEY is not set");
+    return NextResponse.json(
+      { error: "Server configuration error: AI service not configured" },
+      { status: 500 }
+    );
+  }
+
   let answers: SurveyAnswers;
 
   try {
@@ -35,8 +45,10 @@ export async function POST(req: NextRequest) {
     const result = await analyzeWorkflows(answers, verticalConfig);
     return NextResponse.json(result);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[/api/analyze] Analysis failed:", message);
+    // Log the full error object so Vercel logs capture status codes, error
+    // types, and stack traces — not just the message string.
+    console.error("[/api/analyze] Analysis failed:", err);
+    const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
       { error: "Analysis failed", detail: message },
       { status: 500 }
