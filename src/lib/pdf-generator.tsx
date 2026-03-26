@@ -1065,9 +1065,17 @@ export async function generateAuditPDF(
   answers: SurveyAnswers
 ): Promise<ReadableStream> {
   const { renderToStream } = await import("@react-pdf/renderer");
-  const { Readable } = await import("stream");
   const nodeStream = await renderToStream(
     <AuditReportDocument result={result} answers={answers} />
   );
-  return Readable.toWeb(nodeStream) as ReadableStream;
+  // Wrap the Node.js stream in a Web ReadableStream without relying on
+  // Readable.toWeb(), which requires the exact stream.Readable type that
+  // @react-pdf/renderer's NodeJS.ReadableStream does not satisfy.
+  return new ReadableStream({
+    start(controller) {
+      nodeStream.on("data", (chunk: Buffer) => controller.enqueue(chunk));
+      nodeStream.on("end", () => controller.close());
+      nodeStream.on("error", (err: Error) => controller.error(err));
+    },
+  });
 }
