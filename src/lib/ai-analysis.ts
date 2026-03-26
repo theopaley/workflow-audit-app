@@ -166,16 +166,29 @@ export async function analyzeWorkflows(
     ? `\n\nIMPORTANT — the following financial inputs are estimates because the owner said they don't know:\n${unknownInputs.map(s => `- ${s}`).join("\n")}\nWhen writing leakageExplanation for these areas, say "We've estimated X as a conservative baseline since you weren't sure of the exact figure" instead of stating it as a fact the owner provided.`
     : "";
 
+  // Strip empty, skipped, and unknown-sentinel values before sending to the AI.
+  // "I honestly don't know" / "I'm not sure" answers are already captured in
+  // unknownNote above — sending them again in the payload wastes tokens.
+  const UNKNOWN_SENTINELS = new Set(["I honestly don't know", "I'm not sure"]);
+  const trimmedAnswers = Object.fromEntries(
+    Object.entries(answers).filter(([, v]) => {
+      if (v === null || v === undefined) return false;
+      if (Array.isArray(v)) return v.length > 0 && v.some((s) => String(s).trim().length > 0);
+      if (typeof v === "string") return v.trim().length > 0 && !UNKNOWN_SENTINELS.has(v);
+      return true;
+    })
+  );
+
   const userMessage = `Here are the survey responses for this workflow audit:
 
-${JSON.stringify(answers, null, 2)}
+${JSON.stringify(trimmedAnswers, null, 2)}
 
 Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}`;
 
   // Stream the response — output can be large (12 areas × multiple text fields)
   const stream = client.messages.stream({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 8000,
+    max_tokens: 2000,
     system: systemPrompt,
     messages: [{ role: "user", content: userMessage }],
   });
