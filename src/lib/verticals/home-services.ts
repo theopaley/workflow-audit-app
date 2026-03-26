@@ -1009,64 +1009,12 @@ VERTICAL CONTEXT: Home Services
 This audit is for an owner-operated home service business (5–25 employees). All analysis, framing, and recommendations must use home services terminology throughout.
 
 TERMINOLOGY SUBSTITUTIONS — apply these consistently in all output:
-- "sale" or "transaction" → "job" or "service call"
-- "lead" → "estimate request" or "inquiry" (context-dependent)
-- "prospect" → "homeowner" or "potential customer"
-- "customer" → "homeowner" or "customer" (use "homeowner" when discussing relationship)
-- "close rate" → "estimate-to-job conversion rate" or "booking rate"
-- "product" → "service"
-- "store" or "office" → "business" or "company"
-- "CRM pipeline" → "job pipeline" or "estimate pipeline"
-- "deal" → "job" or "booked job"
-- "onboarding" (client) → "pre-job prep" or "booking confirmation process"
-- "churn" → "customer loss" or "customers who don't call back"
-- "upsell" → "additional work" or "presenting additional recommendations on-site"
-- "re-engagement campaign" → "maintenance reminder campaign" or "seasonal outreach"
-- "drip sequence" → "follow-up sequence" or "automated reminder series"
-- "dispatch" → "routing" or "crew deployment"
-- "technician" → "tech", "technician", or "crew member" (use all naturally)
-- "field team" → "crew" or "techs in the field"
-- "callback" → "return visit" or "warranty call"
-
-LEAKAGE CALCULATION GUIDANCE:
-- Lead Capture leakage = monthly_leads × avg_job_value × 0.20
-  Rationale: 20% of leads are typically lost due to slow or no response.
-- Estimate & Quoting leakage = monthly_leads × close_rate × avg_job_value × 0.12
-  Rationale: 12% of bookable jobs are lost to unstructured follow-up after estimates are sent.
-  Apply after close_rate to avoid double-counting with Lead Capture.
-- Job Scheduling & Dispatch leakage = monthly_revenue × 0.08
-  Rationale: Routing inefficiencies, double-bookings, and cancellations without deposits waste 8% of available revenue.
-- Technician / Crew Communication leakage = monthly_revenue × 0.05
-  Rationale: Job errors, rework, and callbacks from miscommunication cost approximately 5% of revenue.
-- Customer Onboarding & Prep leakage = monthly_revenue × 0.05
-  Rationale: No-shows, cancellations, and unprepared sites (8–12% industry average) cost approximately 5% of revenue.
-- Job Completion & Sign-off leakage = monthly_revenue × 0.07
-  Rationale: Missed upsell opportunities at job completion and inconsistent close-out processes cost 7% of revenue.
-- Invoicing & Payment Collection leakage = monthly_revenue × 0.09
-  Rationale: Delayed invoicing, late payment, and uncollected revenue average 9% of monthly revenue.
-- Customer Communication & Updates leakage = monthly_revenue × 0.06
-  Rationale: Poor mid-job communication drives 6% of revenue loss through customer churn and reduced repeat bookings.
-- Reviews & Reputation leakage = monthly_revenue × 0.10
-  Rationale: Lower review volume and ratings cost businesses 10% of potential revenue from unconverted inbound inquiries.
-- Re-engagement & Maintenance Reminders leakage = monthly_revenue × 0.12
-  Rationale: The average home service business loses 25–40% of customers annually to passive churn; 12% of revenue is recoverable through systematic re-engagement.
-- Referral Management leakage = monthly_revenue × 0.11
-  Rationale: Without a formal referral program, businesses miss 11% of potential revenue from referrals that never happen.
-- Business Visibility & Reporting (MULTIPLIER):
-  - Score 1–2 (no system / gut feel): multiply total calculated leakage × 1.40
-  - Score 3 (inconsistent): multiply total calculated leakage × 1.20
-  - Score 4–5 (solid visibility): no multiplier applied
-  Rationale: Owners who can't see their numbers can't fix them. Poor visibility amplifies all other leakage by 20–40%.
-
-PAIN POINT FRAMING — home services specific:
-- Lead response time is the single highest-leverage area. Home service customers are comparison shopping in real time; the first responder wins disproportionately.
-- Estimate follow-up is invisible leakage. Most owners assume a non-response means the customer went elsewhere; in reality, many customers are waiting for a nudge.
-- No-shows and cancellations feel like a customer problem but are almost always a process problem — businesses with reminder automation and deposit requirements report up to 70% fewer no-shows.
-- The job completion moment is the highest-trust point in the customer relationship and the most under-leveraged sales opportunity in home services.
-- Invoicing delay is a cash flow tax the owner pays every month without realizing it. Frame this in terms of working capital trapped in the gap between job completion and payment.
-- Maintenance reminders and seasonal outreach are the closest thing home service businesses have to recurring revenue — and most don't have a system for either.
-- Online reviews are the home services equivalent of a storefront on Google Maps. For a homeowner searching "HVAC repair near me", 50 reviews at 4.8 stars beats a premium website every time.
-- Referral leakage is silent — owners often feel their referral business is strong because referrals do come in. The issue is the referrals that never happened because no one asked.
+- "sale" or "transaction" → "job"
+- "close rate" → "estimate-to-job conversion rate"
+- "onboarding" (client) → "pre-job prep"
+- "upsell" → "additional work"
+- "re-engagement campaign" → "maintenance reminder campaign"
+- "dispatch" → "routing or crew deployment"
 
 REPORT VOICE:
 - Write to a business owner sitting alone at night, not a boardroom executive.
