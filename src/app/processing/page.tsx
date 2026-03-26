@@ -67,11 +67,13 @@ export default function ProcessingPage() {
     })
       .then((res) => {
         if (!res.ok) {
-          return res.json().then((body) => {
+          return res.json().catch(() => ({})).then((body) => {
             throw new Error(body?.detail ?? body?.error ?? `Analysis failed (${res.status})`);
           });
         }
-        return res.json();
+        return res.json().catch(() => {
+          throw new Error("The analysis service returned an unexpected response. Please try again.");
+        });
       })
       .then(async (result) => {
         sessionStorage.setItem("auditResult", JSON.stringify(result));
