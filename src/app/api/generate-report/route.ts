@@ -73,20 +73,19 @@ export async function POST(req: NextRequest) {
     };
   }
 
-  let pdf: Uint8Array;
+  let pdfStream: ReadableStream;
   try {
-    pdf = await generateAuditPDF(auditResult, auditAnswers);
+    pdfStream = await generateAuditPDF(auditResult, auditAnswers);
   } catch (err) {
     console.error("[generate-report] PDF generation failed:", err);
     return NextResponse.json({ error: "PDF generation failed" }, { status: 500 });
   }
 
-  return new NextResponse(Buffer.from(pdf), {
+  return new NextResponse(pdfStream, {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="workflowaudit-report.pdf"',
-      "Content-Length": String(pdf.byteLength),
     },
   });
 }

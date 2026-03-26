@@ -1063,7 +1063,11 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
 export async function generateAuditPDF(
   result: AnalysisResult,
   answers: SurveyAnswers
-): Promise<Uint8Array> {
-  const { renderToBuffer } = await import("@react-pdf/renderer");
-  return renderToBuffer(<AuditReportDocument result={result} answers={answers} />);
+): Promise<ReadableStream> {
+  const { renderToStream } = await import("@react-pdf/renderer");
+  const { Readable } = await import("stream");
+  const nodeStream = await renderToStream(
+    <AuditReportDocument result={result} answers={answers} />
+  );
+  return Readable.toWeb(nodeStream) as ReadableStream;
 }
