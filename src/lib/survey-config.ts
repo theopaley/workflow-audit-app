@@ -172,6 +172,12 @@ export interface Question {
   dynamicOptions?: Record<string, string[]>;
   /** Per-source-answer midpoint maps — parallel structure to dynamicOptions. */
   dynamicMidpoints?: Record<string, Record<string, number>>;
+  /** When set, this question is automatically skipped if the referenced prior
+   *  question has the specified answer at the time the survey advances to it. */
+  skipIf?: {
+    questionId: string;
+    answer: string;
+  };
   /** Partial override applied when the survey detects a recurring service type.
    *  Any field present here replaces the corresponding base field at render time. */
   recurringVariant?: {

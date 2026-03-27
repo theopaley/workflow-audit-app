@@ -768,12 +768,16 @@ export default function VerticalSurvey({ config }: Props) {
       return;
     }
 
-    // Auto-skip any questions pre-marked SKIPPED_VALUE by an earlier skip
+    // Auto-skip questions that are pre-marked SKIPPED_VALUE or whose skipIf
+    // condition is satisfied by a previously-recorded answer.
     let nextIdx = index + 1;
-    while (
-      nextIdx < total &&
-      answers[allQuestions[nextIdx].id] === SKIPPED_VALUE
-    ) {
+    while (nextIdx < total) {
+      const nextQ = allQuestions[nextIdx];
+      const preSkipped = answers[nextQ.id] === SKIPPED_VALUE;
+      const condSkipped =
+        nextQ.skipIf != null &&
+        answers[nextQ.skipIf.questionId] === nextQ.skipIf.answer;
+      if (!preSkipped && !condSkipped) break;
       nextIdx++;
     }
     if (nextIdx >= total) {

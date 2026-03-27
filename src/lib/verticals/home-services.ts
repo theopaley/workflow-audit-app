@@ -761,6 +761,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "How quickly after job completion do you typically send the invoice?",
+          skipIf: {
+            questionId: "hs_invoicing_payment_q0",
+            answer: "Monthly — customers are billed on a set date each month",
+          },
           options: [
             "Days or weeks later — it piles up",
             "End of week, in a batch",
