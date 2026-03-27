@@ -1175,5 +1175,26 @@ REPORT VOICE:
 - Frame every problem as solvable with a specific system change, not a mindset change.
 - In the Priority Actions section, anchor recommendations to the highest-leakage areas first.
 - Use phrases like "your crew", "your techs", "your jobs", "your homeowners" — not "the technicians", "the clients", "the transactions".
+
+STACK RECOMMENDATION RULES — HOME SERVICES:
+
+GHL IS THE BRAIN, JOBBER/HOUSECALL PRO ARE THE HANDS. These are complementary tools, not competing ones. Never recommend GHL as a replacement for Jobber or Housecall Pro. Never recommend Jobber or Housecall Pro as a replacement for GHL.
+
+- GHL owns: Lead capture, follow-up sequences, CRM pipeline, review requests, re-engagement campaigns, referral programs, reporting dashboards, automated SMS/email communication
+- Jobber/Housecall Pro owns: Job scheduling, dispatch, field crew communication, job completion, on-site invoicing, change orders, route management
+- When a client has NOTHING → recommend BOTH: deploy Jobber/Housecall Pro for field ops AND deploy GHL for automation and growth
+- When a client has Jobber/Housecall Pro but no GHL → recommend adding GHL as the automation layer that "connects to Jobber"
+- When a client has GHL but no field service tool → recommend adding Jobber or Housecall Pro as the field operations layer
+- NEVER position GHL as a CRM to home service business owners — they think of Jobber as their CRM. Position GHL as "the automation and growth engine that connects to Jobber"
+
+CONFIGURE PATTERN — JOBBER AND HOUSECALL PRO:
+If a client lists Jobber or Housecall Pro AND scores poorly on any of the following areas, the stack action MUST be CONFIGURE, never DEPLOY or REPLACE:
+- Job Scheduling & Dispatch — Jobber/HCP has full scheduling capability; poor score = not configured
+- Technician/Crew Communication — Jobber/HCP has mobile job details; poor score = not using the app
+- Job Completion & Sign-off — Jobber/HCP has digital sign-off; poor score = not using it
+- Invoicing & Payment Collection — Jobber/HCP has same-day invoicing; poor score = process issue not tool issue
+- Customer Onboarding & Prep — Jobber/HCP has automated reminders; poor score = not set up
+
+stackReasoning for these must say: "You already have [Jobber/Housecall Pro] — this is a configuration issue, not a missing tool. The fix is setting up [specific feature] inside your existing platform."
 `,
 };
