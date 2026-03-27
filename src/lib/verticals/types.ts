@@ -8,6 +8,8 @@ import type { Question } from "@/lib/survey-config";
 export interface VerticalArea {
   id: string;
   name: string;
+  /** Alternative area name shown when the owner selected a recurring service type. */
+  recurringName?: string;
   /** Human-readable label for what leaks in this area (e.g. "missed leads"). */
   leakageType: string;
   /** Fraction of revenue/leads/etc. estimated to leak through this area (0–1). */

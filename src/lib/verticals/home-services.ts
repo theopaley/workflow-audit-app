@@ -236,6 +236,7 @@ export const homeServicesConfig: VerticalConfig = {
     {
       id: "hs_estimate_quoting",
       name: "Estimate & Quoting",
+      recurringName: "Service Agreements & Pricing",
       leakageType: "lead-based",
       leakageRate: 0.12,
       industryBenchmarkStat:
@@ -265,6 +266,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "How long does it typically take to get an estimate to a prospect after first contact?",
+          recurringVariant: {
+            question:
+              "How long does it typically take to send a service agreement or pricing proposal to a new prospect?",
+          },
           options: [
             "More than a week",
             "3–5 business days",
@@ -279,6 +284,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "Do you follow up on estimates that have been sent but not yet accepted?",
+          recurringVariant: {
+            question:
+              "Do you follow up with prospects who have received your pricing but haven't signed up yet?",
+          },
           options: [
             "Never — we send the estimate and wait",
             "Occasionally — when we think of it",
@@ -293,6 +302,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "How much time does it take your team to prepare a typical estimate?",
+          recurringVariant: {
+            question:
+              "How much time does it take your team to prepare a service agreement or pricing proposal?",
+          },
           options: [
             "Half a day or more — it's very manual",
             "A few hours",
@@ -310,6 +323,10 @@ export const homeServicesConfig: VerticalConfig = {
           scaleMin: "Basic and inconsistent — Word docs or verbal quotes",
           scaleMax: "Polished and on-brand every time",
           allowDontKnow: true,
+          recurringVariant: {
+            question:
+              "How professional and consistent is your service agreement process compared to competitors a homeowner might be comparing you against?",
+          },
         },
       ],
     },
@@ -318,6 +335,7 @@ export const homeServicesConfig: VerticalConfig = {
     {
       id: "hs_scheduling_dispatch",
       name: "Job Scheduling & Dispatch",
+      recurringName: "Route & Schedule Management",
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
@@ -345,6 +363,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "How often do scheduling gaps, double-bookings, or routing inefficiencies cost your team billable time?",
+          recurringVariant: {
+            question:
+              "How often do route gaps, missed visits, or scheduling conflicts cost your team billable time?",
+          },
           options: [
             "Very often — it's a constant source of lost time and stress",
             "Regularly — it's a known problem",
@@ -373,6 +395,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "How often do no-shows or last-minute cancellations disrupt your day and cost you revenue?",
+          recurringVariant: {
+            question:
+              "How often do missed visits or last-minute cancellations disrupt your day and cost you revenue?",
+          },
           options: [
             "Very often — it's a major revenue problem",
             "Regularly — at least a few times a week",
@@ -389,6 +415,12 @@ export const homeServicesConfig: VerticalConfig = {
             "How efficiently are your crews or technicians routed — do they spend most of their day working or driving?",
           scaleMin: "Lots of windshield time — routing is inefficient",
           scaleMax: "Tightly optimised — maximum jobs completed per day",
+          recurringVariant: {
+            question:
+              "How efficiently is your weekly route structured — are you maximizing stops per day?",
+            scaleMin: "Inefficient — too much drive time between stops",
+            scaleMax: "Tightly optimised — maximum stops completed per day",
+          },
         },
       ],
     },
@@ -459,6 +491,7 @@ export const homeServicesConfig: VerticalConfig = {
     {
       id: "hs_customer_prep",
       name: "Customer Onboarding & Prep",
+      recurringName: "Client Onboarding & Service Setup",
       leakageType: "revenue-based",
       leakageRate: 0.05,
       industryBenchmarkStat:
@@ -483,6 +516,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "What does a customer receive between booking and the day of the job?",
+          recurringVariant: {
+            question:
+              "What does a customer receive when they first sign up for recurring service?",
+          },
           options: [
             "Nothing — they just wait",
             "A confirmation only",
@@ -511,6 +548,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "How consistent is the pre-job experience — does every customer get the same quality of communication and preparation?",
+          recurringVariant: {
+            question:
+              "How consistent is the onboarding experience — does every customer get the same quality of communication and preparation?",
+          },
           options: [
             "Completely inconsistent — it depends on who booked them",
             "Quite variable — some customers are well-prepared, others not at all",
@@ -535,6 +576,7 @@ export const homeServicesConfig: VerticalConfig = {
     {
       id: "hs_job_completion",
       name: "Job Completion & Sign-off",
+      recurringName: "Service Quality & Check-ins",
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
@@ -559,6 +601,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "When a job is finished, do your technicians walk the customer through the completed work and get a formal sign-off?",
+          recurringVariant: {
+            question:
+              "Do your technicians or crew check in with the customer periodically to confirm satisfaction with the ongoing service?",
+          },
           options: [
             "Rarely or never — they finish and leave",
             "Occasionally — when the customer is home and asks",
@@ -573,6 +619,10 @@ export const homeServicesConfig: VerticalConfig = {
           type: "single",
           question:
             "Do your technicians present additional recommended work or service opportunities at the end of a job?",
+          recurringVariant: {
+            question:
+              "Do your technicians flag and follow up on additional service opportunities they spot during visits?",
+          },
           options: [
             "Never — we do the job and go",
             "Occasionally — if they notice something obvious",
@@ -603,6 +653,10 @@ export const homeServicesConfig: VerticalConfig = {
             "How professional and consistent is the experience a customer has in the final 15 minutes of a job?",
           scaleMin: "Inconsistent — fully depends on the individual technician",
           scaleMax: "Always professional — same great experience every time",
+          recurringVariant: {
+            question:
+              "How professional and consistent is the experience a customer has during ongoing service visits?",
+          },
         },
       ],
     },

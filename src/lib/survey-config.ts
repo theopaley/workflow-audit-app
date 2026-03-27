@@ -172,6 +172,15 @@ export interface Question {
   dynamicOptions?: Record<string, string[]>;
   /** Per-source-answer midpoint maps — parallel structure to dynamicOptions. */
   dynamicMidpoints?: Record<string, Record<string, number>>;
+  /** Partial override applied when the survey detects a recurring service type.
+   *  Any field present here replaces the corresponding base field at render time. */
+  recurringVariant?: {
+    question?: string;
+    options?: string[];
+    scaleMin?: string;
+    scaleMax?: string;
+    placeholder?: string;
+  };
 }
 
 export interface Area {

@@ -39,20 +39,44 @@ const FIN_IDS = [
 
 // ─── Dynamic option resolution ────────────────────────────────────────────────
 
+const RECURRING_SERVICE_TYPES = new Set([
+  "Cleaning or Janitorial Services",
+  "Pool, Pressure Washing, or Specialty Exterior",
+  "Landscaping, Lawn Care, or Tree Service",
+]);
+
 /**
- * Returns the question with options (and midpoints) substituted based on a
- * previously-answered source question, when the question declares
- * dynamicOptionsSource + dynamicOptions.  Falls back to the base question
- * unchanged if no match is found.
+ * Returns the question with any dynamic fields resolved against current answers:
+ *   1. dynamicOptions / dynamicMidpoints — tier-based option substitution
+ *      driven by a named source question answer (e.g. fin_avg_sale tiers).
+ *   2. recurringVariant — vocabulary swap applied when the owner selected a
+ *      recurring service type (Cleaning, Pool, Landscaping).
+ * Falls back to the base question unchanged when no conditions are met.
  */
 function resolveQuestion(q: Question, answers: SurveyAnswers): Question {
-  if (!q.dynamicOptionsSource || !q.dynamicOptions) return q;
-  const sourceAnswer = answers[q.dynamicOptionsSource];
-  if (typeof sourceAnswer !== "string") return q;
-  const options = q.dynamicOptions[sourceAnswer];
-  if (!options) return q;
-  const midpoints = q.dynamicMidpoints?.[sourceAnswer];
-  return { ...q, options, ...(midpoints !== undefined ? { midpoints } : {}) };
+  let resolved = q;
+
+  // 1. Dynamic options (tier-based)
+  if (q.dynamicOptionsSource && q.dynamicOptions) {
+    const sourceAnswer = answers[q.dynamicOptionsSource];
+    if (typeof sourceAnswer === "string") {
+      const options = q.dynamicOptions[sourceAnswer];
+      if (options) {
+        const midpoints = q.dynamicMidpoints?.[sourceAnswer];
+        resolved = { ...resolved, options, ...(midpoints !== undefined ? { midpoints } : {}) };
+      }
+    }
+  }
+
+  // 2. Recurring vocabulary swap
+  if (q.recurringVariant) {
+    const serviceType = answers.hs_service_type;
+    if (typeof serviceType === "string" && RECURRING_SERVICE_TYPES.has(serviceType)) {
+      resolved = { ...resolved, ...q.recurringVariant };
+    }
+  }
+
+  return resolved;
 }
 
 // ─── Question assembly ────────────────────────────────────────────────────────
@@ -563,16 +587,19 @@ export default function VerticalSurvey({ config }: Props) {
 
   const allQuestions = useMemo(() => buildQuestions(config), [config]);
 
-  const areaNames = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const area of config.workflowAreas) {
-      map.set(area.id, area.name);
-    }
-    return map;
-  }, [config]);
-
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<SurveyAnswers>({});
+
+  const areaNames = useMemo(() => {
+    const serviceType = answers.hs_service_type;
+    const recurring =
+      typeof serviceType === "string" && RECURRING_SERVICE_TYPES.has(serviceType);
+    const map = new Map<string, string>();
+    for (const area of config.workflowAreas) {
+      map.set(area.id, recurring && area.recurringName ? area.recurringName : area.name);
+    }
+    return map;
+  }, [config.workflowAreas, answers.hs_service_type]);
   const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
