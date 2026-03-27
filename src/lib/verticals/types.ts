@@ -43,6 +43,12 @@ export interface VerticalConfig {
    * Add new keys here to inject extra intro questions unique to this vertical.
    */
   introQuestions?: IntroQuestionOverrides;
+  /**
+   * IDs of base intro questions to omit from this vertical's survey.
+   * Use when a standard intro question is irrelevant or replaced by a
+   * vertical-specific equivalent injected via introQuestions.
+   */
+  skipQuestions?: string[];
   workflowAreas: VerticalArea[];
   /**
    * Maps each area id to the leakage rate used in the financial calculation.

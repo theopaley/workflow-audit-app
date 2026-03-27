@@ -161,6 +161,9 @@ export interface Question {
   glossary?: Record<string, string>;
   /** When true, renders an "I honestly don't know" escape option below the scale. */
   allowDontKnow?: boolean;
+  /** When true on a single-select question, shows a text input when the selected
+   *  option starts with "Other", requiring the user to describe their answer. */
+  allowOtherInput?: boolean;
 }
 
 export interface Area {

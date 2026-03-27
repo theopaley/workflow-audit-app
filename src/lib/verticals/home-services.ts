@@ -4,6 +4,11 @@ export const homeServicesConfig: VerticalConfig = {
   verticalId: "home-services",
   displayName: "Home Services Audit",
 
+  // ─── Skip base intro questions not relevant to home services ────────────────
+  // intro_business is replaced by hs_service_type (more specific).
+  // intro_size is replaced by hs_admin_count + hs_field_count (split by role).
+  skipQuestions: ["intro_business", "intro_size"],
+
   // ─── Intro question overrides ────────────────────────────────────────────────
   introQuestions: {
     // Reframe "sale/transaction" as "job" throughout the financial baseline
@@ -16,9 +21,9 @@ export const homeServicesConfig: VerticalConfig = {
       question:
         "Out of every 10 estimates you send, roughly how many become booked jobs?",
     },
-    // ── New question — inserted after intro_business ─────────────────────────
-    // The VerticalSurvey shell is responsible for positioning this after
-    // intro_business in the question sequence.
+    // ── New questions — inserted at the intro_business position ─────────────
+    // The VerticalSurvey shell injects all non-base keys here after
+    // (or in place of) intro_business in the question sequence.
     hs_service_type: {
       id: "hs_service_type",
       areaId: null,
@@ -34,6 +39,21 @@ export const homeServicesConfig: VerticalConfig = {
         "Pool, Pressure Washing, or Specialty Exterior",
         "Other home services",
       ],
+      allowOtherInput: true,
+    },
+    hs_admin_count: {
+      id: "hs_admin_count",
+      areaId: null,
+      type: "single",
+      question: "How many office or admin staff do you have?",
+      options: ["Just me", "1–2", "3–5", "6–10", "More than 10"],
+    },
+    hs_field_count: {
+      id: "hs_field_count",
+      areaId: null,
+      type: "single",
+      question: "How many field technicians or crew members do you have?",
+      options: ["Just me", "1–2", "3–5", "6–10", "11–20", "More than 20"],
     },
   },
 

@@ -42,6 +42,7 @@ const FIN_IDS = [
 function buildQuestions(config: VerticalConfig): Question[] {
   const baseIndex = new Map(QUESTIONS.map((q) => [q.id, q]));
   const baseAndFinIds = new Set([...BASE_INTRO_IDS, ...FIN_IDS]);
+  const skipSet = new Set(config.skipQuestions ?? []);
 
   const applyOverride = (q: Question): Question => {
     const override = config.introQuestions?.[q.id];
@@ -51,11 +52,13 @@ function buildQuestions(config: VerticalConfig): Question[] {
 
   const result: Question[] = [];
 
-  // 1. Base intro questions, with vertical additions injected after intro_business
+  // 1. Base intro questions, with vertical additions injected at the intro_business
+  //    position (regardless of whether intro_business itself is skipped).
   for (const id of BASE_INTRO_IDS) {
-    const q = baseIndex.get(id);
-    if (!q) continue;
-    result.push(applyOverride(q));
+    if (!skipSet.has(id)) {
+      const q = baseIndex.get(id);
+      if (q) result.push(applyOverride(q));
+    }
 
     if (id === "intro_business") {
       // Inject any new questions whose IDs are not in the base or financial sets
@@ -178,11 +181,25 @@ function SingleSelect({
   question,
   value,
   onChange,
+  otherText,
+  onOtherChange,
 }: {
   question: Question;
   value: string;
   onChange: (v: string) => void;
+  otherText?: string;
+  onOtherChange?: (v: string) => void;
 }) {
+  const otherInputRef = useRef<HTMLInputElement>(null);
+  const showOtherInput =
+    !!question.allowOtherInput && value.startsWith("Other") && !!onOtherChange;
+
+  useEffect(() => {
+    if (showOtherInput) {
+      setTimeout(() => otherInputRef.current?.focus(), 50);
+    }
+  }, [showOtherInput]);
+
   const twoCol = TWO_COL_SINGLE.has(question.id);
   return (
     <div className="mt-8">
@@ -202,6 +219,33 @@ function SingleSelect({
           </button>
         ))}
       </div>
+
+      {question.allowOtherInput && onOtherChange && (
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-out ${
+            showOtherInput ? "mt-4 max-h-24 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="flex items-center gap-3 rounded-xl border-2 border-indigo-300 bg-indigo-50 px-4 py-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 w-4 shrink-0 text-indigo-400"
+            >
+              <path d="M2.695 14.763l-1.262 3.154a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.885L17.5 5.5a2.121 2.121 0 0 0-3-3L3.58 13.42a4 4 0 0 0-.885 1.343Z" />
+            </svg>
+            <input
+              ref={otherInputRef}
+              type="text"
+              value={otherText ?? ""}
+              onChange={(e) => onOtherChange(e.target.value)}
+              placeholder="Please describe your service type"
+              className="flex-1 bg-transparent text-sm font-medium text-indigo-900 placeholder-indigo-300 outline-none"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -538,8 +582,16 @@ export default function VerticalSurvey({ config }: Props) {
       return finAvgSaleCustom.trim().length > 0 && !isNaN(num) && num > 0;
     }
     if (question.type === "text") return textValue.trim().length > 0;
-    if (question.type === "single")
-      return typeof currentValue === "string" && currentValue.length > 0;
+    if (question.type === "single") {
+      if (typeof currentValue !== "string" || currentValue.length === 0) return false;
+      if (
+        question.allowOtherInput &&
+        currentValue.startsWith("Other") &&
+        otherText.trim().length === 0
+      )
+        return false;
+      return true;
+    }
     if (question.type === "multi") {
       if (multiValue.length === 0) return false;
       if (
@@ -595,6 +647,12 @@ export default function VerticalSurvey({ config }: Props) {
               v === "Other" ? `Other: ${text.trim()}` : v
             );
           }
+        } else if (typeof val === "string") {
+          const q = allQuestions.find((aq) => aq.id === qId);
+          if (q?.allowOtherInput && val.startsWith("Other")) {
+            const text = otherTexts[qId];
+            if (text?.trim()) final[qId] = `Other: ${text.trim()}`;
+          }
         }
       });
 
@@ -604,7 +662,7 @@ export default function VerticalSurvey({ config }: Props) {
 
       return final;
     },
-    [otherTexts, config.verticalId]
+    [otherTexts, config.verticalId, allQuestions]
   );
 
   const advance = useCallback(() => {
@@ -841,6 +899,8 @@ export default function VerticalSurvey({ config }: Props) {
                 question={question}
                 value={textValue}
                 onChange={setAnswer}
+                otherText={question.allowOtherInput ? otherText : undefined}
+                onOtherChange={question.allowOtherInput ? setOtherText : undefined}
               />
             )}
             {question.id === "fin_avg_sale" && (
