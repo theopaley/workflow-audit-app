@@ -1,5 +1,78 @@
 import type { VerticalConfig } from "./types";
 
+// ─── Job value tiers ─────────────────────────────────────────────────────────
+// Three option + midpoint sets for fin_avg_sale, selected dynamically based on
+// the service type the owner chose in hs_service_type.
+
+const LOW_TICKET_OPTIONS = [
+  "Under $100",
+  "$100–$250",
+  "$250–$500",
+  "$500–$1,000",
+  "$1,000–$2,500",
+  "$2,500–$5,000",
+  "Over $5,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const LOW_TICKET_MIDPOINTS: Record<string, number> = {
+  "Under $100": 50,
+  "$100–$250": 175,
+  "$250–$500": 375,
+  "$500–$1,000": 750,
+  "$1,000–$2,500": 1750,
+  "$2,500–$5,000": 3750,
+  "Over $5,000": 7500,
+  "I'm not sure": 750,
+  "Enter exact amount": 0,
+};
+
+const MID_TICKET_OPTIONS = [
+  "Under $250",
+  "$250–$500",
+  "$500–$1,500",
+  "$1,500–$3,500",
+  "$3,500–$7,500",
+  "$7,500–$15,000",
+  "Over $15,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const MID_TICKET_MIDPOINTS: Record<string, number> = {
+  "Under $250": 150,
+  "$250–$500": 375,
+  "$500–$1,500": 1000,
+  "$1,500–$3,500": 2500,
+  "$3,500–$7,500": 5500,
+  "$7,500–$15,000": 11250,
+  "Over $15,000": 22500,
+  "I'm not sure": 3000,
+  "Enter exact amount": 0,
+};
+
+const HIGH_TICKET_OPTIONS = [
+  "Under $1,000",
+  "$1,000–$3,500",
+  "$3,500–$7,500",
+  "$7,500–$15,000",
+  "$15,000–$30,000",
+  "$30,000–$75,000",
+  "Over $75,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const HIGH_TICKET_MIDPOINTS: Record<string, number> = {
+  "Under $1,000": 750,
+  "$1,000–$3,500": 2250,
+  "$3,500–$7,500": 5500,
+  "$7,500–$15,000": 11250,
+  "$15,000–$30,000": 22500,
+  "$30,000–$75,000": 52500,
+  "Over $75,000": 110000,
+  "I'm not sure": 15000,
+  "Enter exact amount": 0,
+};
+
 export const homeServicesConfig: VerticalConfig = {
   verticalId: "home-services",
   displayName: "Home Services Audit",
@@ -11,10 +84,31 @@ export const homeServicesConfig: VerticalConfig = {
 
   // ─── Intro question overrides ────────────────────────────────────────────────
   introQuestions: {
-    // Reframe "sale/transaction" as "job" throughout the financial baseline
+    // Reframe "sale/transaction" as "job" and use service-type-specific ranges.
     fin_avg_sale: {
       question:
         "What is the average value of a single job or service call for your business?",
+      dynamicOptionsSource: "hs_service_type",
+      dynamicOptions: {
+        "HVAC, Plumbing, or Electrical":               MID_TICKET_OPTIONS,
+        "Landscaping, Lawn Care, or Tree Service":     MID_TICKET_OPTIONS,
+        "Painting, Flooring, or Interior Work":        MID_TICKET_OPTIONS,
+        "Cleaning or Janitorial Services":             LOW_TICKET_OPTIONS,
+        "Roofing, Siding, or Exterior Work":           HIGH_TICKET_OPTIONS,
+        "Remodeling or General Contracting":           HIGH_TICKET_OPTIONS,
+        "Pool, Pressure Washing, or Specialty Exterior": LOW_TICKET_OPTIONS,
+        "Other home services":                         MID_TICKET_OPTIONS,
+      },
+      dynamicMidpoints: {
+        "HVAC, Plumbing, or Electrical":               MID_TICKET_MIDPOINTS,
+        "Landscaping, Lawn Care, or Tree Service":     MID_TICKET_MIDPOINTS,
+        "Painting, Flooring, or Interior Work":        MID_TICKET_MIDPOINTS,
+        "Cleaning or Janitorial Services":             LOW_TICKET_MIDPOINTS,
+        "Roofing, Siding, or Exterior Work":           HIGH_TICKET_MIDPOINTS,
+        "Remodeling or General Contracting":           HIGH_TICKET_MIDPOINTS,
+        "Pool, Pressure Washing, or Specialty Exterior": LOW_TICKET_MIDPOINTS,
+        "Other home services":                         MID_TICKET_MIDPOINTS,
+      },
     },
     // Reframe "leads/inquiries" as "estimates" for home services close rate
     fin_close_rate: {

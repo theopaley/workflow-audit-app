@@ -164,6 +164,14 @@ export interface Question {
   /** When true on a single-select question, shows a text input when the selected
    *  option starts with "Other", requiring the user to describe their answer. */
   allowOtherInput?: boolean;
+  /** ID of a previously-answered question whose value selects which entry from
+   *  dynamicOptions (and dynamicMidpoints) to use for this question. */
+  dynamicOptionsSource?: string;
+  /** Maps a source question's answer value to a replacement options array.
+   *  Requires dynamicOptionsSource. Falls back to options if no match. */
+  dynamicOptions?: Record<string, string[]>;
+  /** Per-source-answer midpoint maps — parallel structure to dynamicOptions. */
+  dynamicMidpoints?: Record<string, Record<string, number>>;
 }
 
 export interface Area {

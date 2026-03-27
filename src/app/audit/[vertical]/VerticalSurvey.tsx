@@ -37,6 +37,24 @@ const FIN_IDS = [
   "financial_platform",
 ];
 
+// ─── Dynamic option resolution ────────────────────────────────────────────────
+
+/**
+ * Returns the question with options (and midpoints) substituted based on a
+ * previously-answered source question, when the question declares
+ * dynamicOptionsSource + dynamicOptions.  Falls back to the base question
+ * unchanged if no match is found.
+ */
+function resolveQuestion(q: Question, answers: SurveyAnswers): Question {
+  if (!q.dynamicOptionsSource || !q.dynamicOptions) return q;
+  const sourceAnswer = answers[q.dynamicOptionsSource];
+  if (typeof sourceAnswer !== "string") return q;
+  const options = q.dynamicOptions[sourceAnswer];
+  if (!options) return q;
+  const midpoints = q.dynamicMidpoints?.[sourceAnswer];
+  return { ...q, options, ...(midpoints !== undefined ? { midpoints } : {}) };
+}
+
 // ─── Question assembly ────────────────────────────────────────────────────────
 
 function buildQuestions(config: VerticalConfig): Question[] {
@@ -568,6 +586,9 @@ export default function VerticalSurvey({ config }: Props) {
   const continueRef = useRef<HTMLButtonElement>(null);
 
   const question = allQuestions[index];
+  // Question with dynamic options resolved against current answers (e.g. fin_avg_sale
+  // picks the tier-appropriate ranges based on the hs_service_type answer).
+  const resolvedQuestion = resolveQuestion(question, answers);
   const total = allQuestions.length;
   const progress = Math.round((index / total) * 100);
 
@@ -802,7 +823,7 @@ export default function VerticalSurvey({ config }: Props) {
 
   const handleFinAvgSaleSelect = useCallback(
     (opt: string) => {
-      const finQ = allQuestions.find((q) => q.id === "fin_avg_sale");
+      const finQBase = allQuestions.find((q) => q.id === "fin_avg_sale");
       setAnswers((prev) => {
         if (opt === "Enter exact amount") {
           return {
@@ -813,6 +834,9 @@ export default function VerticalSurvey({ config }: Props) {
           };
         }
         const next: SurveyAnswers = { ...prev, fin_avg_sale: opt };
+        // Resolve dynamic midpoints inside the functional updater so we always
+        // use the tier that matches the currently-answered hs_service_type.
+        const finQ = finQBase ? resolveQuestion(finQBase, prev) : null;
         if (finQ?.midpoints) {
           const midpoint = finQ.midpoints[opt];
           if (midpoint !== undefined) {
@@ -867,63 +891,63 @@ export default function VerticalSurvey({ config }: Props) {
           <div className={`transition-all duration-200 ease-out ${slideClass}`}>
             {/* Area badge */}
             <div className="mb-4 h-7">
-              <AreaBadge areaId={question.areaId} areaNames={areaNames} />
+              <AreaBadge areaId={resolvedQuestion.areaId} areaNames={areaNames} />
             </div>
 
             {/* Question text */}
             <h2 className="text-2xl font-bold leading-snug text-slate-900 sm:text-3xl">
-              {question.question}
+              {resolvedQuestion.question}
             </h2>
 
             {/* Glossary tooltips */}
-            {question.glossary && (
-              <GlossaryTooltips glossary={question.glossary} />
+            {resolvedQuestion.glossary && (
+              <GlossaryTooltips glossary={resolvedQuestion.glossary} />
             )}
 
             {/* Input */}
-            {question.type === "text" && (
+            {resolvedQuestion.type === "text" && (
               <>
                 <TextInput
-                  question={question}
+                  question={resolvedQuestion}
                   value={textValue}
                   onChange={setAnswer}
                   onSubmit={advance}
                 />
-                {question.id === "intro_email" && emailError && (
+                {resolvedQuestion.id === "intro_email" && emailError && (
                   <p className="mt-2 text-sm text-red-500">{emailError}</p>
                 )}
               </>
             )}
-            {question.type === "single" && question.id !== "fin_avg_sale" && (
+            {resolvedQuestion.type === "single" && resolvedQuestion.id !== "fin_avg_sale" && (
               <SingleSelect
-                question={question}
+                question={resolvedQuestion}
                 value={textValue}
                 onChange={setAnswer}
-                otherText={question.allowOtherInput ? otherText : undefined}
-                onOtherChange={question.allowOtherInput ? setOtherText : undefined}
+                otherText={resolvedQuestion.allowOtherInput ? otherText : undefined}
+                onOtherChange={resolvedQuestion.allowOtherInput ? setOtherText : undefined}
               />
             )}
-            {question.id === "fin_avg_sale" && (
+            {resolvedQuestion.id === "fin_avg_sale" && (
               <FinAvgSaleSelect
-                question={question}
+                question={resolvedQuestion}
                 value={textValue}
                 customInputValue={finAvgSaleCustom}
                 onSelect={handleFinAvgSaleSelect}
                 onCustomInput={handleFinAvgSaleCustomInput}
               />
             )}
-            {question.type === "multi" && (
+            {resolvedQuestion.type === "multi" && (
               <MultiSelect
-                question={question}
+                question={resolvedQuestion}
                 value={multiValue}
                 otherText={otherText}
                 onChange={setAnswer}
                 onOtherChange={setOtherText}
               />
             )}
-            {question.type === "scale" && (
+            {resolvedQuestion.type === "scale" && (
               <ScaleInput
-                question={question}
+                question={resolvedQuestion}
                 value={textValue}
                 onChange={setAnswer}
               />
