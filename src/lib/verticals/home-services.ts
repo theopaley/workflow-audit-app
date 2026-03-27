@@ -744,6 +744,18 @@ export const homeServicesConfig: VerticalConfig = {
       ],
       questions: [
         {
+          id: "hs_invoicing_payment_q0",
+          areaId: "hs_invoicing_payment",
+          type: "single",
+          question: "How do you typically bill your customers?",
+          options: [
+            "Per job — each completed job gets its own invoice",
+            "Monthly — customers are billed on a set date each month",
+            "Both — depends on the customer or service type",
+            "I honestly don't know",
+          ],
+        },
+        {
           id: "hs_invoicing_payment_q1",
           areaId: "hs_invoicing_payment",
           type: "single",
@@ -752,6 +764,7 @@ export const homeServicesConfig: VerticalConfig = {
           options: [
             "Days or weeks later — it piles up",
             "End of week, in a batch",
+            "Monthly on a set date — all customers billed together",
             "End of day",
             "Same day — invoices go out before the tech leaves or immediately after",
             "I honestly don't know",
