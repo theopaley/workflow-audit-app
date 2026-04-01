@@ -575,11 +575,12 @@ export default function AuditPage() {
         body: JSON.stringify({ businessDescription: description }),
       })
         .then((r) => r.json())
-        .then((data: { slug: string; confidence: string; serviceType: string | null }) => {
+        .then((data: { slug: string; confidence: string; serviceType: string | null; serviceTypeKey: string | null }) => {
           if (data.slug !== "universal" && data.confidence === "high") {
-            const prefill = data.serviceType
-              ? { ...answersSnapshot, hs_service_type: data.serviceType }
-              : answersSnapshot;
+            const prefill =
+              data.serviceType && data.serviceTypeKey
+                ? { ...answersSnapshot, [data.serviceTypeKey]: data.serviceType }
+                : answersSnapshot;
             router.push(
               `/audit/${data.slug}?prefill=${encodeURIComponent(JSON.stringify(prefill))}`
             );
