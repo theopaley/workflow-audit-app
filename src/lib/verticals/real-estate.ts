@@ -21,6 +21,16 @@ export const realEstateConfig: VerticalConfig = {
     fin_monthly_revenue: {
       question: "What is your average monthly commission income?",
     },
+    intro_size: {
+      question: "How would you describe the size of your real estate practice?",
+      options: [
+        "Solo agent — just me",
+        "Me plus an assistant or transaction coordinator",
+        "Small team — 2 to 5 agents",
+        "Mid-size team — 6 to 15 agents",
+        "Large team or brokerage — 16 or more agents",
+      ],
+    },
     // ── New question — injected at the intro_business position ─────────────────
     re_focus_type: {
       id: "re_focus_type",

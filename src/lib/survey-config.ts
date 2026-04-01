@@ -237,7 +237,7 @@ export const QUESTIONS: Question[] = [
     areaId: null,
     type: "single",
     question: "How many people are on your team?",
-    options: ["5–9", "10–14", "15–19", "20–25"],
+    options: ["Just me", "2–4", "5–9", "10–14", "15–19", "20–25"],
   },
   {
     id: "intro_email",
