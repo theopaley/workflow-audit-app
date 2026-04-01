@@ -648,6 +648,23 @@ const s = StyleSheet.create({
     fontSize: 9,
     color: C.inkMuted,
   },
+  closingBulletRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  closingBulletDot: {
+    fontSize: 13,
+    color: C.accent,
+    marginRight: 10,
+    lineHeight: 1.5,
+  },
+  closingBulletText: {
+    fontSize: 13,
+    color: "#8e8e8e",
+    lineHeight: 1.5,
+    flex: 1,
+  },
 
   // ── Utilities ──
   row: { display: "flex", flexDirection: "row", alignItems: "center" },
@@ -986,9 +1003,16 @@ function PlatformPage({
 // ─── Page 4: Closing CTA ──────────────────────────────────────────────────────
 
 function ClosingPage({ result }: { result: AnalysisResult }) {
-  const encouragement =
-    result.closingPoints?.[0] ??
-    "Your business has everything it needs to run better — the systems just need to catch up with the team.";
+  const topPriorityArea =
+    result.topThreePriorities?.[0]?.areaName ??
+    result.areas.find((a) => a.priority === 1)?.name ??
+    "your highest-impact workflow";
+
+  const bullets = [
+    "Fully deployed in 2 hours — not weeks",
+    "Flat monthly fee — no long-term contract",
+    "Managed by RevRep — you just approve the work",
+  ];
 
   return (
     <Page size="A4" style={s.coverPage}>
@@ -1000,21 +1024,26 @@ function ClosingPage({ result }: { result: AnalysisResult }) {
       {/* Main content */}
       <View>
         <Text style={s.closingHeading}>
-          Ready to{"\n"}fix this?
+          Meet your first{"\n"}digital employee
         </Text>
-        <Text style={s.closingSubtext}>{encouragement}</Text>
+        <Text style={s.closingSubtext}>
+          {`Based on your audit, the first system we'd bring in handles ${topPriorityArea}. This isn't software you manage — it's an AI employee that runs the workflow for you, reports to you weekly, and costs less than minimum wage.`}
+        </Text>
+
+        {/* Bullet points */}
+        <View style={{ marginBottom: 32 }}>
+          {bullets.map((bullet) => (
+            <View key={bullet} style={s.closingBulletRow}>
+              <Text style={s.closingBulletDot}>→</Text>
+              <Text style={s.closingBulletText}>{bullet}</Text>
+            </View>
+          ))}
+        </View>
+
         <View style={s.ctaButton}>
-          <Text style={s.ctaText}>Schedule Your Implementation Call</Text>
+          <Text style={s.ctaText}>Meet Your New Hire</Text>
         </View>
         <Text style={s.ctaUrl}>https://workflow-audit-app.vercel.app</Text>
-      </View>
-
-      {/* Footer strip — value-based pricing */}
-      <View>
-        <View style={{ height: 1, backgroundColor: "#2e2e2e", marginBottom: 12 }} />
-        <Text style={[s.footerText, { color: "#4e4e4e", lineHeight: 1.6 }]}>
-          {`Based on your estimated annual leakage of ${formatCurrencyFull(result.totalAnnualLeakage)}, your implementation investment range is ${formatCurrencyFull(result.totalAnnualLeakage * 0.20)} – ${formatCurrencyFull(result.totalAnnualLeakage * 0.25)}.`}
-        </Text>
       </View>
     </Page>
   );
