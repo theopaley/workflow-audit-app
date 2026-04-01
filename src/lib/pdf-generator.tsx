@@ -1034,7 +1034,7 @@ function ClosingPage({ result }: { result: AnalysisResult }) {
         <View style={{ marginBottom: 32 }}>
           {bullets.map((bullet) => (
             <View key={bullet} style={s.closingBulletRow}>
-              <Text style={s.closingBulletDot}>→</Text>
+              <Text style={s.closingBulletDot}>-</Text>
               <Text style={s.closingBulletText}>{bullet}</Text>
             </View>
           ))}
