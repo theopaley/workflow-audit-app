@@ -45,22 +45,33 @@ export async function POST(req: NextRequest) {
 
     // Returns the locked stat for an AI-produced area name using:
     //   1. Exact match (lowercased + trimmed)
-    //   2. Fuzzy fallback — any word ≥4 chars from either name appears in the other
+    //   2. Best-score fuzzy fallback — counts word overlaps (≥4 chars) across
+    //      all config entries and returns the highest-scoring match.
+    //      Returning the first match instead caused false positives: common words
+    //      like "management" matched an earlier area in the Map before the correct
+    //      one was reached (e.g. "Route & Schedule Management" was returned for
+    //      "Reviews & Reputation Management" because "management" hit first).
     const findLockedStat = (aiName: string): string | undefined => {
       const norm = aiName.toLowerCase().trim();
 
       if (statByName.has(norm)) return statByName.get(norm);
 
+      const aiWords = norm.split(/\W+/).filter((w) => w.length >= 4);
+      let bestStat: string | undefined;
+      let bestScore = 0;
+
       for (const [configName, stat] of statByName) {
         const configWords = configName.split(/\W+/).filter((w) => w.length >= 4);
-        const aiWords = norm.split(/\W+/).filter((w) => w.length >= 4);
-        const matched =
-          configWords.some((w) => norm.includes(w)) ||
-          aiWords.some((w) => configName.includes(w));
-        if (matched) return stat;
+        const score =
+          configWords.filter((w) => norm.includes(w)).length +
+          aiWords.filter((w) => configName.includes(w)).length;
+        if (score > bestScore) {
+          bestScore = score;
+          bestStat = stat;
+        }
       }
 
-      return undefined;
+      return bestScore >= 1 ? bestStat : undefined;
     };
 
     auditResult = {
