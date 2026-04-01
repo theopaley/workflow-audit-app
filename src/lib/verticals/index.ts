@@ -1,5 +1,6 @@
 import type { VerticalConfig } from "./types";
 import { homeServicesConfig } from "./home-services";
+import { propertyMaintenanceConfig } from "./property-maintenance";
 
 /**
  * Registry of all supported verticals.
@@ -12,4 +13,5 @@ import { homeServicesConfig } from "./home-services";
  */
 export const verticalRegistry: Record<string, VerticalConfig> = {
   "home-services": homeServicesConfig,
+  "property-maintenance": propertyMaintenanceConfig,
 };
