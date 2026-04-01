@@ -608,8 +608,9 @@ export default function VerticalSurvey({ config }: Props) {
       // logic below treats it as already answered and doesn't re-show the question.
       const mappedPrefill: SurveyAnswers = { ...rawPrefill };
       const allQIdSet = new Set(allQuestions.map((q) => q.id));
+      const baseFinIdSet = new Set([...BASE_INTRO_IDS, ...FIN_IDS]);
+
       if ("intro_business" in rawPrefill && !allQIdSet.has("intro_business")) {
-        const baseFinIdSet = new Set([...BASE_INTRO_IDS, ...FIN_IDS]);
         // The replacement is the first question in allQuestions whose ID is not
         // in the base/financial set — i.e. the first vertical-injected intro question.
         const replacementQ = allQuestions.find((q) => !baseFinIdSet.has(q.id));
@@ -618,6 +619,23 @@ export default function VerticalSurvey({ config }: Props) {
           // with a valid option value) over the raw intro_business free text. Only fall
           // back to the free text if the prefill somehow lacks the service type entirely.
           mappedPrefill[replacementQ.id] = rawPrefill["intro_business"];
+        }
+      }
+
+      // Injected non-base questions pre-answered by the classify API (e.g.
+      // re_focus_type for real-estate) would otherwise be silently skipped.
+      // Only keep a classify-injected answer if that question ID is referenced
+      // as a dynamicOptionsSource by another intro override — e.g. hs_service_type
+      // drives fin_avg_sale tier selection and must stay. Questions with no
+      // downstream dependency are cleared so the user sees and confirms them.
+      const dynamicSourceIds = new Set(
+        Object.values(config.introQuestions ?? {})
+          .map((q) => (q as Partial<Question>).dynamicOptionsSource)
+          .filter((id): id is string => typeof id === "string")
+      );
+      for (const key of Object.keys(mappedPrefill)) {
+        if (!baseFinIdSet.has(key) && !dynamicSourceIds.has(key) && allQIdSet.has(key)) {
+          delete mappedPrefill[key];
         }
       }
 
