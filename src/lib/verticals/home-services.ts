@@ -150,6 +150,7 @@ export const homeServicesConfig: VerticalConfig = {
         "Painting, Flooring, or Interior Work":        MID_TICKET_OPTIONS,
         "Roofing, Siding, or Exterior Work":           HIGH_TICKET_OPTIONS,
         "Remodeling or General Contracting":           HIGH_TICKET_OPTIONS,
+        "Other specialty or high-value work":          HIGH_TICKET_OPTIONS,
         "Other home services":                         MID_TICKET_OPTIONS,
       },
       dynamicMidpoints: {
@@ -157,6 +158,7 @@ export const homeServicesConfig: VerticalConfig = {
         "Painting, Flooring, or Interior Work":        MID_TICKET_MIDPOINTS,
         "Roofing, Siding, or Exterior Work":           HIGH_TICKET_MIDPOINTS,
         "Remodeling or General Contracting":           HIGH_TICKET_MIDPOINTS,
+        "Other specialty or high-value work":          HIGH_TICKET_MIDPOINTS,
         "Other home services":                         MID_TICKET_MIDPOINTS,
       },
     },
@@ -178,6 +180,7 @@ export const homeServicesConfig: VerticalConfig = {
         "Painting, Flooring, or Interior Work",
         "Roofing, Siding, or Exterior Work",
         "Remodeling or General Contracting",
+        "Other specialty or high-value work",
         "Other home services",
       ],
       allowOtherInput: true,
