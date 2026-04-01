@@ -910,6 +910,24 @@ function FindingsPage({ result, scaleFactor, verticalId }: { result: AnalysisRes
       : rawScaled.indexOf(Math.max(...rawScaled));
   const displayValues = rawScaled.map((v, i) => i === fallbackIdx ? v + remainder : v);
 
+  // Cap Business Visibility to the highest single-area value among all other
+  // cards. BizVis is a multiplier on the rest of the report — letting it dwarf
+  // every other card makes the report read as though visibility is the only
+  // problem. If the cap reduces BizVis, redistribute the excess to the largest
+  // other card so the card sum still equals result.totalMonthlyLeakage.
+  if (bizVisIdx !== -1 && displayValues.length > 1) {
+    const otherMax = Math.max(...displayValues.filter((_, i) => i !== bizVisIdx));
+    if (displayValues[bizVisIdx] > otherMax) {
+      const excess = displayValues[bizVisIdx] - otherMax;
+      displayValues[bizVisIdx] = otherMax;
+      const largestOtherIdx = displayValues.reduce(
+        (best, v, i) => (i !== bizVisIdx && v >= (displayValues[best] ?? 0) ? i : best),
+        displayValues.findIndex((_, i) => i !== bizVisIdx)
+      );
+      if (largestOtherIdx !== -1) displayValues[largestOtherIdx] += excess;
+    }
+  }
+
   return (
     <Page size="A4" style={s.paperPage}>
       <View style={s.sectionRow}>
