@@ -451,6 +451,7 @@ export default function AuditPage() {
   const [skipToast, setSkipToast] = useState<{ areaName: string; visible: boolean } | null>(null);
   const [finAvgSaleCustom, setFinAvgSaleCustom] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [classifying, setClassifying] = useState(false);
   const skipToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
 
@@ -547,6 +548,48 @@ export default function AuditPage() {
         return;
       }
       setEmailError("");
+    }
+
+    if (question.id === "intro_business") {
+      setClassifying(true);
+      const description = textValue;
+      const answersSnapshot = { ...answers };
+
+      const continueNormally = () => {
+        setClassifying(false);
+        let nextIdx = index + 1;
+        while (nextIdx < total && answers[QUESTIONS[nextIdx].id] === SKIPPED_VALUE) {
+          nextIdx++;
+        }
+        if (nextIdx >= total) {
+          sessionStorage.setItem("auditAnswers", JSON.stringify(buildFinalAnswers(answers)));
+          router.push("/processing");
+          return;
+        }
+        transition(nextIdx, "forward");
+      };
+
+      fetch("/api/classify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessDescription: description }),
+      })
+        .then((r) => r.json())
+        .then((data: { slug: string; confidence: string; serviceType: string | null }) => {
+          if (data.slug !== "universal" && data.confidence === "high") {
+            const prefill = data.serviceType
+              ? { ...answersSnapshot, hs_service_type: data.serviceType }
+              : answersSnapshot;
+            router.push(
+              `/audit/${data.slug}?prefill=${encodeURIComponent(JSON.stringify(prefill))}`
+            );
+          } else {
+            continueNormally();
+          }
+        })
+        .catch(() => continueNormally());
+
+      return;
     }
 
     const answer = answers[question.id];
@@ -755,7 +798,10 @@ export default function AuditPage() {
             {question.glossary && <GlossaryTooltips glossary={question.glossary} />}
 
             {/* Input */}
-            {question.type === "text" && (
+            {classifying && (
+              <p className="mt-8 text-sm text-slate-400">Setting up your audit...</p>
+            )}
+            {!classifying && question.type === "text" && (
               <>
                 <TextInput
                   question={question}
@@ -768,14 +814,14 @@ export default function AuditPage() {
                 )}
               </>
             )}
-            {question.type === "single" && question.id !== "fin_avg_sale" && (
+            {!classifying && question.type === "single" && question.id !== "fin_avg_sale" && (
               <SingleSelect
                 question={question}
                 value={textValue}
                 onChange={setAnswer}
               />
             )}
-            {question.id === "fin_avg_sale" && (
+            {!classifying && question.id === "fin_avg_sale" && (
               <FinAvgSaleSelect
                 question={question}
                 value={textValue}
@@ -784,7 +830,7 @@ export default function AuditPage() {
                 onCustomInput={handleFinAvgSaleCustomInput}
               />
             )}
-            {question.type === "multi" && (
+            {!classifying && question.type === "multi" && (
               <MultiSelect
                 question={question}
                 value={multiValue}
@@ -793,7 +839,7 @@ export default function AuditPage() {
                 onOtherChange={setOtherText}
               />
             )}
-            {question.type === "scale" && (
+            {!classifying && question.type === "scale" && (
               <ScaleInput
                 question={question}
                 value={textValue}
@@ -827,7 +873,7 @@ export default function AuditPage() {
             <button
               ref={continueRef}
               onClick={advance}
-              disabled={!canAdvance()}
+              disabled={!canAdvance() || classifying}
               className="flex items-center gap-2 rounded-full bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {index === total - 1 ? "Submit" : "Continue"}

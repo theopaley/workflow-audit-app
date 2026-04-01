@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { QUESTIONS, SKIPPED_VALUE } from "@/lib/survey-config";
 import type { Question } from "@/lib/survey-config";
 import type { VerticalConfig } from "@/lib/verticals/types";
@@ -584,11 +584,51 @@ interface Props {
 
 export default function VerticalSurvey({ config }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const allQuestions = useMemo(() => buildQuestions(config), [config]);
 
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<SurveyAnswers>({});
+
+  const prefillApplied = useRef(false);
+  useEffect(() => {
+    if (prefillApplied.current) return;
+    const raw = searchParams.get("prefill");
+    if (!raw) return;
+    try {
+      const rawPrefill: SurveyAnswers = JSON.parse(decodeURIComponent(raw));
+      prefillApplied.current = true;
+
+      // The universal survey records the business description under 'intro_business'.
+      // Some verticals skip that question and replace it with a vertical-specific one
+      // (e.g. 'hs_service_type' in home-services). If 'intro_business' is in the
+      // prefill but is NOT one of this vertical's questions (meaning it was replaced),
+      // carry the value forward under the replacement question's ID so the skip-past
+      // logic below treats it as already answered and doesn't re-show the question.
+      const mappedPrefill: SurveyAnswers = { ...rawPrefill };
+      const allQIdSet = new Set(allQuestions.map((q) => q.id));
+      if ("intro_business" in rawPrefill && !allQIdSet.has("intro_business")) {
+        const baseFinIdSet = new Set([...BASE_INTRO_IDS, ...FIN_IDS]);
+        // The replacement is the first question in allQuestions whose ID is not
+        // in the base/financial set — i.e. the first vertical-injected intro question.
+        const replacementQ = allQuestions.find((q) => !baseFinIdSet.has(q.id));
+        if (replacementQ && !(replacementQ.id in mappedPrefill)) {
+          // Prefer the classify API's serviceType (already in prefill as hs_service_type
+          // with a valid option value) over the raw intro_business free text. Only fall
+          // back to the free text if the prefill somehow lacks the service type entirely.
+          mappedPrefill[replacementQ.id] = rawPrefill["intro_business"];
+        }
+      }
+
+      setAnswers(mappedPrefill);
+      // Land on the first question whose ID is not present in the (mapped) prefill.
+      const firstUnanswered = allQuestions.findIndex((q) => !(q.id in mappedPrefill));
+      if (firstUnanswered > 0) setIndex(firstUnanswered);
+    } catch {
+      // Ignore malformed prefill — start survey from the beginning
+    }
+  }, [searchParams, allQuestions]);
 
   const areaNames = useMemo(() => {
     const serviceType = answers.hs_service_type;

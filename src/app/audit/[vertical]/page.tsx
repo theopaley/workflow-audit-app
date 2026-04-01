@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { verticalRegistry } from "@/lib/verticals";
 import type { VerticalConfig } from "@/lib/verticals/types";
@@ -15,5 +16,9 @@ export default async function VerticalAuditPage({ params }: Props) {
     redirect("/audit");
   }
 
-  return <VerticalSurvey config={config} />;
+  return (
+    <Suspense>
+      <VerticalSurvey config={config} />
+    </Suspense>
+  );
 }
