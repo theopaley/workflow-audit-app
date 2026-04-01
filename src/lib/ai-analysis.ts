@@ -120,6 +120,42 @@ function buildLeakageRateSection(
   return lines.join("\n");
 }
 
+// ─── Property-maintenance leakage formula overrides ──────────────────────────
+//
+// Areas 1 (pm_lead_capture) and 2 (pm_service_agreement) use an LTV multiplier
+// (× 18 months) instead of a single-job value.  Area 10 (pm_retention_churn)
+// uses a churn-based formula.  Neither can be expressed by the generic
+// buildLeakageRateSection() output, so we inject explicit override instructions
+// that appear after the standard rate section and take precedence.
+
+const PROPERTY_MAINTENANCE_LEAKAGE_OVERRIDE = `
+PROPERTY-MAINTENANCE LEAKAGE FORMULA OVERRIDES — these three area IDs use formulas that differ from the standard section above. Apply them exactly for these IDs only; all other areas use the rates listed above.
+
+Note: avg_visit_value = answers.fin_avg_sale_value (same field — renamed for clarity in this vertical).
+
+AREA: pm_lead_capture (Lead Capture)
+Formula: monthly_leads × 0.20 × avg_visit_value × 18
+Rationale: Lost leads in a recurring business represent lost LTV, not a single visit. The ×18 factor represents an 18-month average customer lifetime for a property maintenance account.
+leakageExplanation format: "Out of your estimated [monthly_leads] leads per month, roughly [N] never get captured or followed up before going cold. At $[avg_visit_value] per visit with an 18-month average client lifetime, each lost lead represents $[avg_visit_value × 18] in LTV — that's [N] lost accounts × $[LTV] = $[raw_estimate] raw estimate."
+
+AREA: pm_service_agreement (Service Agreement & Proposal)
+Formula: monthly_leads × close_rate × 0.12 × avg_visit_value × 18
+Rationale: These are leads who reached the proposal stage but didn't convert. Each lost proposal is a lost recurring account — apply the same LTV multiplier.
+leakageExplanation format: "Of the roughly [monthly_leads × close_rate] leads who reach the proposal stage each month, about [N] fall through due to friction or slow follow-up. At $[avg_visit_value] per visit × 18-month LTV = $[LTV] per account — that's [N] lost accounts × $[LTV] = $[raw_estimate] raw estimate."
+
+AREA: pm_retention_churn (Retention & Churn Prevention)
+Formula (churn-based):
+  estimated_active_accounts = monthly_revenue / avg_visit_value
+  assumed_monthly_churn_rate = 0.05
+  lost_accounts_per_month = estimated_active_accounts × 0.05
+  monthly_leakage = lost_accounts_per_month × avg_visit_value × 12
+  Fallback if avg_visit_value is unavailable: monthly_revenue × 0.20
+Rationale: 5% monthly churn is the industry average for recurring property services. Each cancelled account loses 12 months of future visits at their average visit value.
+leakageExplanation format: "With an estimated [estimated_active_accounts] active accounts and a 5% industry-average monthly churn rate, roughly [lost_accounts_per_month] accounts cancel each month. At $[avg_visit_value] per visit × 12 annual visits, each cancellation costs $[avg_visit_value × 12] per year — that's [lost_accounts_per_month] accounts × $[annual_value] = $[monthly_leakage] monthly raw estimate."
+
+The 40% monthly revenue cap still applies as the ceiling on total leakage across all areas.
+`;
+
 // ─── Anthropic client (module-scoped — reused across requests) ────────────────
 
 const client = new Anthropic();
@@ -134,10 +170,14 @@ const client = new Anthropic();
  * causes the system prompt to include (a) the vertical's leakage rate
  * overrides derived from config.leakageFormula, and (b) the vertical's
  * narrative additions from config.aiPromptAdditions.
+ *
+ * Pass verticalId to enable vertical-specific formula injection (e.g.
+ * LTV-based and churn-based formulas for property-maintenance).
  */
 export async function analyzeWorkflows(
   answers: SurveyAnswers,
-  verticalConfig?: VerticalConfig
+  verticalConfig?: VerticalConfig,
+  verticalId?: string
 ): Promise<AnalysisResult> {
 
   // Build vertical-specific additions: leakage rate overrides first (structured,
@@ -149,9 +189,20 @@ export async function analyzeWorkflows(
       verticalConfig.workflowAreas,
       verticalConfig.leakageFormula
     );
-    additions = verticalConfig.aiPromptAdditions
-      ? `${rateSection}\n${verticalConfig.aiPromptAdditions}`
-      : rateSection;
+
+    // Property-maintenance has two non-standard formula types (LTV-based and
+    // churn-based) that the generic rate section cannot express.  Inject an
+    // explicit override block so Claude uses the correct formulas for those
+    // three areas regardless of what the generic section says about them.
+    const formulaOverride =
+      verticalId === "property-maintenance"
+        ? PROPERTY_MAINTENANCE_LEAKAGE_OVERRIDE
+        : "";
+
+    const parts = [rateSection, formulaOverride, verticalConfig.aiPromptAdditions]
+      .filter(Boolean)
+      .join("\n");
+    additions = parts || undefined;
   }
 
   const systemPrompt = buildSystemPrompt(additions, verticalConfig?.displayName);

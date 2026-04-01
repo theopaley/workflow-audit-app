@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   const verticalConfig = verticalId ? verticalRegistry[verticalId] : undefined;
 
   try {
-    const result = await analyzeWorkflows(answers, verticalConfig);
+    const result = await analyzeWorkflows(answers, verticalConfig, verticalId);
     return NextResponse.json(result);
   } catch (err) {
     // Log the full error object so Vercel logs capture status codes, error
