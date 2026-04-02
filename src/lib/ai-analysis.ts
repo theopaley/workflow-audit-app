@@ -156,6 +156,37 @@ leakageExplanation format: "With an estimated [estimated_active_accounts] active
 The 40% monthly revenue cap still applies as the ceiling on total leakage across all areas.
 `;
 
+// ─── Med-spa leakage formula overrides ───────────────────────────────────────
+//
+// Areas 1 (hw_lead_capture) and 2 (hw_lead_nurture) use a conditional LTV
+// multiplier (× 8) when the practice runs memberships or a mixed model.
+// This cannot be expressed by the generic buildLeakageRateSection() output, so
+// we inject an explicit override block that takes precedence for those two areas.
+
+const MED_SPA_LEAKAGE_OVERRIDE = `
+MED-SPA LEAKAGE FORMULA OVERRIDES — Areas 1 and 2 use a conditional LTV multiplier that depends on the hw_revenue_model answer. Apply the correct formula for these IDs; all other areas use the standard rates listed above.
+
+Note: avg_treatment_value = answers.fin_avg_sale_value (same field — relabeled for this vertical).
+
+AREA: hw_lead_capture (Lead Capture & Response Time)
+Base formula: monthly_leads × 0.20 × avg_treatment_value
+LTV-adjusted formula (use when hw_revenue_model = "Primarily memberships or prepaid packages — clients commit upfront" OR "Mixed — roughly split between memberships and one-time treatments"):
+  monthly_leads × 0.20 × avg_treatment_value × 8
+Rationale: In a membership-based practice, each lost lead represents lost LTV, not a single treatment. The ×8 factor represents 8 treatments over the average client lifetime for an aesthetic membership client.
+leakageExplanation format (LTV model): "Out of your estimated [monthly_leads] leads per month, roughly [N] never get captured or followed up before going cold. At $[avg_treatment_value] per treatment × 8 visits over the average client lifetime, each lost lead represents $[avg_treatment_value × 8] in LTV — that's [N] lost leads × $[LTV] = $[raw_estimate] raw estimate."
+leakageExplanation format (one-time model): "Out of your estimated [monthly_leads] leads per month, roughly [N] are lost before ever becoming clients. At $[avg_treatment_value] per treatment, that's [N] × $[avg_treatment_value] = $[raw_estimate] raw estimate."
+
+AREA: hw_lead_nurture (Lead Nurture & Consultation Booking)
+Base formula: monthly_leads × 0.15 × avg_treatment_value
+LTV-adjusted formula (use when hw_revenue_model = "Primarily memberships or prepaid packages — clients commit upfront" OR "Mixed — roughly split between memberships and one-time treatments"):
+  monthly_leads × 0.15 × avg_treatment_value × 8
+Rationale: Same LTV logic — a nurtured lead who eventually converts represents a membership lifetime, not a single visit.
+leakageExplanation format (LTV model): "Of the roughly [monthly_leads] leads in your pipeline, about [N] drop off during nurture before ever booking a consultation. At $[avg_treatment_value] × 8-visit lifetime value = $[LTV] per client — that's [N] lost leads × $[LTV] = $[raw_estimate] raw estimate."
+leakageExplanation format (one-time model): "Of the roughly [monthly_leads] leads in your pipeline, about [N] drop off during nurture before booking. At $[avg_treatment_value] per treatment, that's [N] × $[avg_treatment_value] = $[raw_estimate] raw estimate."
+
+The 40% monthly revenue cap still applies as the ceiling on total leakage across all areas.
+`;
+
 // ─── Anthropic client (module-scoped — reused across requests) ────────────────
 
 const client = new Anthropic();
@@ -190,13 +221,15 @@ export async function analyzeWorkflows(
       verticalConfig.leakageFormula
     );
 
-    // Property-maintenance has two non-standard formula types (LTV-based and
-    // churn-based) that the generic rate section cannot express.  Inject an
-    // explicit override block so Claude uses the correct formulas for those
-    // three areas regardless of what the generic section says about them.
+    // Some verticals use non-standard formula types (LTV-based, churn-based,
+    // or conditional multipliers) that the generic rate section cannot express.
+    // Inject an explicit override block so Claude uses the correct formulas
+    // regardless of what the generic section says about those areas.
     const formulaOverride =
       verticalId === "property-maintenance"
         ? PROPERTY_MAINTENANCE_LEAKAGE_OVERRIDE
+        : verticalId === "med-spa"
+        ? MED_SPA_LEAKAGE_OVERRIDE
         : "";
 
     const parts = [rateSection, formulaOverride, verticalConfig.aiPromptAdditions]

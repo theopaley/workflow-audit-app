@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const client = new Anthropic();
 
-const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", or "universal".
+const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", or "universal".
+
+MED SPA — classify as "med-spa" when the description mentions: med spa, medspa, medical spa, aesthetic clinic, aesthetics practice, Botox, fillers, injectables, neurotoxin, dermal filler, laser treatments, microneedling, HydraFacial, body contouring, IV therapy, hormone therapy, regenerative medicine, PRP, medical aesthetics, cosmetic injections, non-surgical, injector, nurse injector, aesthetic nurse.
+Edge cases: "I do Botox and fillers" → med-spa. "I run a day spa with massages and facials" → universal. "I'm a chiropractor" → universal. "I do IV drips and aesthetic treatments" → med-spa. "I sell regenerative medicine products to med spas" → universal.
 
 REAL ESTATE — classify as "real-estate" when the description mentions: real estate agent, realtor, licensed agent, buyer's agent, listing agent, sell homes, sell houses, help buyers, help sellers, commission, closings, transactions, MLS, residential real estate, commercial real estate, luxury real estate, real estate broker, flip houses, real estate investing, wholesaling.
 Edge cases: "I sell homes" → real-estate. "I flip houses" → real-estate. "I manage rental properties as a property manager" → real-estate (property management as a professional service). "I manage an Airbnb portfolio" → property-maintenance. "I do lawn care for rental properties" → property-maintenance.
@@ -40,9 +43,17 @@ For "real-estate", set serviceTypeKey to "re_focus_type" and pick serviceType fr
 - "Real estate investing / wholesaling"
 - "Mixed — I do several of these"
 
+For "med-spa", set serviceTypeKey to "hw_service_focus" and pick serviceType from this exact list:
+- "Injectables — Botox, fillers, neurotoxins"
+- "Laser & energy treatments — laser resurfacing, IPL, body contouring"
+- "Regenerative & wellness — IV therapy, PRP, hormone therapy, peptides"
+- "Full-service aesthetics — injectables plus laser plus skincare"
+- "Skincare & facial treatments — HydraFacial, microneedling, chemical peels"
+
 Return ONLY valid JSON in this exact format: { "slug": "home-services", "confidence": "high", "serviceType": "HVAC, Plumbing, or Electrical", "serviceTypeKey": "hs_service_type" }
 For property-maintenance: { "slug": "property-maintenance", "confidence": "high", "serviceType": "Lawn Care or Landscaping Maintenance", "serviceTypeKey": "pm_service_type" }
 For real-estate: { "slug": "real-estate", "confidence": "high", "serviceType": "Residential sales — buyers and sellers", "serviceTypeKey": "re_focus_type" }
+For med-spa: { "slug": "med-spa", "confidence": "high", "serviceType": "Injectables — Botox, fillers, neurotoxins", "serviceTypeKey": "hw_service_focus" }
 If slug is "universal": { "slug": "universal", "confidence": "high", "serviceType": null, "serviceTypeKey": null }
 No markdown, no explanation.`;
 
