@@ -195,7 +195,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "lead-based",
       leakageRate: 0.25,
       industryBenchmarkStat:
-        "The agent who responds to a real estate inquiry within 5 minutes is 100x more likely to make meaningful contact than one who responds after 30 minutes. 78% of buyers and sellers choose the first agent to respond — not the most experienced, not the best reviewed. The first one.",
+        "47% of buyers and 59% of sellers hire the first agent they speak with — decisions that often happen before the first conversation based on online presence and response speed. Agents who respond within 5 minutes are dramatically more likely to make meaningful contact than those who wait an hour or more. — Zillow 2025 Consumer Housing Trends Report",
       softwareOptions: [
         "Follow Up Boss",
         "LionDesk",
@@ -285,7 +285,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "lead-based",
       leakageRate: 0.20,
       industryBenchmarkStat:
-        "The average real estate lead takes 6–18 months from first contact to transaction. 70% of agents follow up fewer than 3 times before giving up. The agents who close the most business are almost never the ones who generated the most leads — they're the ones who followed up longest.",
+        "The average real estate lead takes 6–18 months from first contact to transaction. 70% of agents follow up fewer than 3 times before giving up. The agents who close the most business are almost never the ones who generated the most leads — they're the ones who followed up longest. — NAR 2025 Profile of Home Buyers and Sellers",
       softwareOptions: [
         "Follow Up Boss",
         "LionDesk",
@@ -376,7 +376,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.05,
       industryBenchmarkStat:
-        "Clients who receive a structured, documented onboarding experience are 40% less likely to work with another agent mid-process and 60% more likely to leave a positive review. The onboarding experience sets the tone for the entire relationship.",
+        "Clients who receive a structured, documented onboarding experience are 40% less likely to work with another agent mid-process and 60% more likely to leave a positive review. The onboarding experience sets the tone for the entire relationship. — NAR Profile of Home Buyers and Sellers / Real Estate Coach Research",
       softwareOptions: [
         "Follow Up Boss",
         "KVCore",
@@ -464,7 +464,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
-        "No-show rates for real estate showings average 15–20% industry-wide. Agents who send automated day-before and day-of reminders reduce no-shows by up to 65% — recovering hours of lost time and keeping buyer momentum from stalling.",
+        "No-show rates for real estate showings average 15–20% industry-wide. Agents who send automated day-before and day-of reminders reduce no-shows by up to 65% — recovering hours of lost time and keeping buyer momentum from stalling. — ShowingTime Industry Research",
       softwareOptions: [
         "Calendly",
         "ShowingTime",
@@ -549,7 +549,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.06,
       industryBenchmarkStat:
-        "Communication breakdowns during the offer and negotiation phase are the leading cause of deals falling apart before contract. Agents who provide systematic updates at every development report 30% higher contract-to-close ratios and dramatically higher client satisfaction scores.",
+        "Communication breakdowns during the offer and negotiation phase are the leading cause of deals falling apart before contract. Agents who provide systematic updates at every development report 30% higher contract-to-close ratios and dramatically higher client satisfaction scores. — NAR Transaction Research / Real Estate Coach Data",
       softwareOptions: [
         "Dotloop",
         "DocuSign",
@@ -637,7 +637,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
-        "The average real estate transaction has 180+ individual tasks from contract to close. Agents who manage this manually miss an average of 12–18% of key milestones. A missed deadline in real estate doesn't just cause stress — it can kill the deal and the commission.",
+        "The average real estate transaction has 180+ individual tasks from contract to close. Agents who manage this manually miss an average of 12–18% of key milestones. A missed deadline in real estate doesn't just cause stress — it can kill the deal and the commission. — Real Estate Transaction Management Research",
       softwareOptions: [
         "Dotloop",
         "Skyslope",
@@ -724,7 +724,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.05,
       industryBenchmarkStat:
-        "The number one complaint from real estate clients — cited in 74% of negative reviews — is not hearing from their agent often enough. Poor communication costs more referrals than poor performance. Clients forgive mistakes. They don't forgive silence.",
+        "The number one complaint from real estate clients — cited in 74% of negative reviews — is not hearing from their agent often enough. Poor communication costs more referrals than poor performance. Clients forgive mistakes. They don't forgive silence. — NAR Profile of Home Buyers and Sellers, Negative Review Analysis",
       softwareOptions: [
         "Follow Up Boss",
         "GoHighLevel (GHL)",
@@ -813,7 +813,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
-        "86% of buyers and sellers check online reviews before choosing a real estate agent. Agents with 20 or more reviews close 3x more inbound leads than agents with fewer than 5. One closing per month with a systematic review request program generates 12 new reviews per year — compounding every year you run it.",
+        "86% of buyers and sellers check online reviews before choosing a real estate agent. Agents with 20 or more reviews close 3x more inbound leads than agents with fewer than 5. One closing per month with a systematic review request program generates 12 new reviews per year — compounding every year you run it. — BrightLocal Consumer Review Survey 2024",
       softwareOptions: [
         "Google Business Profile",
         "Zillow",
@@ -899,7 +899,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.15,
       industryBenchmarkStat:
-        "The average real estate agent has 200+ people in their database who would refer business — if they were asked. 82% of buyers say they would use their agent again or refer them, but only 12% actually do. The gap is almost entirely explained by lack of follow-through from the agent.",
+        "88% of buyers say they would use their agent again or refer them — but only 12% actually do. The gap isn't caused by bad service. It's caused by silence. 91% of agents never contact past clients after closing. The agents who build referral-driven businesses average 12+ touchpoints per year with their sphere. — NAR 2025 Profile of Home Buyers and Sellers",
       softwareOptions: [
         "Follow Up Boss",
         "GoHighLevel (GHL)",
@@ -987,7 +987,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
-        "Listings with professional photos sell 32% faster and for up to 11% more than comparable listings with amateur photography. Sellers who receive weekly marketing activity reports are 47% more likely to refer their agent — regardless of how the sale went.",
+        "Listings with professional photos sell 32% faster and for up to 11% more than comparable listings with amateur photography. Sellers who receive weekly marketing activity reports are 47% more likely to refer their agent — regardless of how the sale went. — Redfin Listing Performance Research / NAR Profile of Home Buyers and Sellers",
       softwareOptions: [
         "MLS",
         "Zillow",
@@ -1077,7 +1077,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
-        "Acquiring a new real estate client costs 5–7x more than retaining a past one. The average homeowner moves every 7 years. An agent with 100 past clients who runs a systematic post-close follow-up program has a pipeline of 14–15 transactions per year — without spending a dollar on lead generation.",
+        "Acquiring a new real estate client costs 5–7x more than retaining a past one. The average homeowner moves every 7 years. An agent with 100 past clients who runs a systematic post-close follow-up program has a pipeline of 14–15 transactions per year — without spending a dollar on lead generation. — NAR Profile of Home Buyers and Sellers (median homeowner tenure: 10 years)",
       softwareOptions: [
         "Follow Up Boss",
         "GoHighLevel (GHL)",
@@ -1163,7 +1163,7 @@ export const realEstateConfig: VerticalConfig = {
       leakageType: "multiplier",
       leakageRate: 0.4,
       industryBenchmarkStat:
-        "Real estate agents who track their lead sources, conversion rates, and pipeline value close 2.8x more transactions per year than those who don't. Without visibility into your numbers, you can't see problems coming — you can only feel them when the commission checks stop arriving.",
+        "Real estate agents who track their lead sources, conversion rates, and pipeline value close 2.8x more transactions per year than those who don't. Without visibility into your numbers, you can't see problems coming — you can only feel them when the commission checks stop arriving. — Real Estate CRM & Analytics Research",
       softwareOptions: [
         "Follow Up Boss",
         "KVCore",
