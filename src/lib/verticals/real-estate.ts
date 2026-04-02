@@ -1,5 +1,125 @@
 import type { VerticalConfig } from "./types";
 
+// ─── Commission tiers ─────────────────────────────────────────────────────────
+// Four option + midpoint sets for fin_avg_sale, selected dynamically based on
+// the practice focus the agent chose in re_focus_type.
+
+const RESIDENTIAL_COMMISSION_OPTIONS = [
+  "Under $3,000",
+  "$3,000–$5,000",
+  "$5,000–$7,500",
+  "$7,500–$10,000",
+  "$10,000–$13,000",
+  "$13,000–$17,000",
+  "$17,000–$22,000",
+  "$22,000–$28,000",
+  "$28,000–$35,000",
+  "$35,000–$45,000",
+  "Over $45,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const RESIDENTIAL_COMMISSION_MIDPOINTS: Record<string, number> = {
+  "Under $3,000":       2000,
+  "$3,000–$5,000":      4000,
+  "$5,000–$7,500":      6250,
+  "$7,500–$10,000":     8750,
+  "$10,000–$13,000":   11500,
+  "$13,000–$17,000":   15000,
+  "$17,000–$22,000":   19500,
+  "$22,000–$28,000":   25000,
+  "$28,000–$35,000":   31500,
+  "$35,000–$45,000":   40000,
+  "Over $45,000":      55000,
+  "I'm not sure":      10000,
+  "Enter exact amount":    0,
+};
+
+const LUXURY_COMMISSION_OPTIONS = [
+  "Under $10,000",
+  "$10,000–$15,000",
+  "$15,000–$22,000",
+  "$22,000–$30,000",
+  "$30,000–$40,000",
+  "$40,000–$55,000",
+  "$55,000–$75,000",
+  "$75,000–$100,000",
+  "$100,000–$135,000",
+  "Over $135,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const LUXURY_COMMISSION_MIDPOINTS: Record<string, number> = {
+  "Under $10,000":       7500,
+  "$10,000–$15,000":    12500,
+  "$15,000–$22,000":    18500,
+  "$22,000–$30,000":    26000,
+  "$30,000–$40,000":    35000,
+  "$40,000–$55,000":    47500,
+  "$55,000–$75,000":    65000,
+  "$75,000–$100,000":   87500,
+  "$100,000–$135,000": 117500,
+  "Over $135,000":     160000,
+  "I'm not sure":       50000,
+  "Enter exact amount":     0,
+};
+
+const COMMERCIAL_COMMISSION_OPTIONS = [
+  "Under $5,000",
+  "$5,000–$10,000",
+  "$10,000–$18,000",
+  "$18,000–$28,000",
+  "$28,000–$40,000",
+  "$40,000–$60,000",
+  "$60,000–$90,000",
+  "$90,000–$130,000",
+  "$130,000–$180,000",
+  "Over $180,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const COMMERCIAL_COMMISSION_MIDPOINTS: Record<string, number> = {
+  "Under $5,000":        3500,
+  "$5,000–$10,000":      7500,
+  "$10,000–$18,000":    14000,
+  "$18,000–$28,000":    23000,
+  "$28,000–$40,000":    34000,
+  "$40,000–$60,000":    50000,
+  "$60,000–$90,000":    75000,
+  "$90,000–$130,000":  110000,
+  "$130,000–$180,000": 155000,
+  "Over $180,000":     220000,
+  "I'm not sure":       50000,
+  "Enter exact amount":     0,
+};
+
+const INVESTING_COMMISSION_OPTIONS = [
+  "Under $2,000",
+  "$2,000–$4,000",
+  "$4,000–$6,500",
+  "$6,500–$9,000",
+  "$9,000–$12,000",
+  "$12,000–$16,000",
+  "$16,000–$22,000",
+  "$22,000–$30,000",
+  "Over $30,000",
+  "I'm not sure",
+  "Enter exact amount",
+];
+const INVESTING_COMMISSION_MIDPOINTS: Record<string, number> = {
+  "Under $2,000":       1500,
+  "$2,000–$4,000":      3000,
+  "$4,000–$6,500":      5250,
+  "$6,500–$9,000":      7750,
+  "$9,000–$12,000":    10500,
+  "$12,000–$16,000":   14000,
+  "$16,000–$22,000":   19000,
+  "$22,000–$30,000":   26000,
+  "Over $30,000":      38000,
+  "I'm not sure":      12000,
+  "Enter exact amount":    0,
+};
+
 export const realEstateConfig: VerticalConfig = {
   verticalId: "real-estate",
   displayName: "Real Estate Audit",
@@ -11,6 +131,24 @@ export const realEstateConfig: VerticalConfig = {
   introQuestions: {
     fin_avg_sale: {
       question: "What is your average commission per transaction?",
+      options: RESIDENTIAL_COMMISSION_OPTIONS,
+      dynamicOptionsSource: "re_focus_type",
+      dynamicOptions: {
+        "Residential sales — buyers and sellers": RESIDENTIAL_COMMISSION_OPTIONS,
+        "Luxury or high-end residential":         LUXURY_COMMISSION_OPTIONS,
+        "Commercial real estate":                 COMMERCIAL_COMMISSION_OPTIONS,
+        "Property management":                    INVESTING_COMMISSION_OPTIONS,
+        "Real estate investing / wholesaling":    INVESTING_COMMISSION_OPTIONS,
+        "Mixed — I do several of these":          RESIDENTIAL_COMMISSION_OPTIONS,
+      },
+      dynamicMidpoints: {
+        "Residential sales — buyers and sellers": RESIDENTIAL_COMMISSION_MIDPOINTS,
+        "Luxury or high-end residential":         LUXURY_COMMISSION_MIDPOINTS,
+        "Commercial real estate":                 COMMERCIAL_COMMISSION_MIDPOINTS,
+        "Property management":                    INVESTING_COMMISSION_MIDPOINTS,
+        "Real estate investing / wholesaling":    INVESTING_COMMISSION_MIDPOINTS,
+        "Mixed — I do several of these":          RESIDENTIAL_COMMISSION_MIDPOINTS,
+      },
     },
     fin_close_rate: {
       question: "Out of every 10 leads, roughly how many become closed transactions?",

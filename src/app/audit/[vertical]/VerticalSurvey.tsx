@@ -59,10 +59,12 @@ function resolveQuestion(q: Question, answers: SurveyAnswers): Question {
   // 1. Dynamic options (tier-based)
   if (q.dynamicOptionsSource && q.dynamicOptions) {
     const sourceAnswer = answers[q.dynamicOptionsSource];
-    if (typeof sourceAnswer === "string") {
-      const options = q.dynamicOptions[sourceAnswer];
+    // Multi-select sources store an array — use the first selected value.
+    const sourceKey = Array.isArray(sourceAnswer) ? sourceAnswer[0] : sourceAnswer;
+    if (typeof sourceKey === "string") {
+      const options = q.dynamicOptions[sourceKey];
       if (options) {
-        const midpoints = q.dynamicMidpoints?.[sourceAnswer];
+        const midpoints = q.dynamicMidpoints?.[sourceKey];
         resolved = { ...resolved, options, ...(midpoints !== undefined ? { midpoints } : {}) };
       }
     }
