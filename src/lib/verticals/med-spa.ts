@@ -24,7 +24,7 @@ export const medSpaConfig: VerticalConfig = {
     hw_service_focus: {
       id: "hw_service_focus",
       areaId: null,
-      type: "single",
+      type: "multi",
       question: "Which best describes your primary services?",
       options: [
         "Injectables — Botox, fillers, neurotoxins",
