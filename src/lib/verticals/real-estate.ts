@@ -35,7 +35,7 @@ export const realEstateConfig: VerticalConfig = {
     re_focus_type: {
       id: "re_focus_type",
       areaId: null,
-      type: "single",
+      type: "multi",
       question: "Which best describes your real estate focus?",
       options: [
         "Residential sales — buyers and sellers",
@@ -419,6 +419,7 @@ export const realEstateConfig: VerticalConfig = {
         "Skyslope",
         "Follow Up Boss",
         "GoHighLevel (GHL)",
+        "zipForm",
         "None",
         "Other",
       ],
@@ -593,6 +594,8 @@ export const realEstateConfig: VerticalConfig = {
         "BoomTown",
         "Mailchimp",
         "ActiveCampaign",
+        "Email",
+        "Text Message",
         "None",
         "Other",
       ],
