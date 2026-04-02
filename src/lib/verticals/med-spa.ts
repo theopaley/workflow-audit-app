@@ -10,6 +10,24 @@ export const medSpaConfig: VerticalConfig = {
   introQuestions: {
     fin_avg_sale: {
       question: "Average revenue per treatment",
+      options: [
+        "Under $400",
+        "$400–$800",
+        "$800–$1,500",
+        "$1,500–$3,000",
+        "Over $3,000",
+        "I'm not sure",
+        "Enter exact amount",
+      ],
+      midpoints: {
+        "Under $400":       300,
+        "$400–$800":        600,
+        "$800–$1,500":     1150,
+        "$1,500–$3,000":   2250,
+        "Over $3,000":     4000,
+        "I'm not sure":    1000,
+        "Enter exact amount": 0,
+      },
     },
     fin_close_rate: {
       question: "Consultation-to-booking conversion rate",
