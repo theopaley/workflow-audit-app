@@ -443,7 +443,7 @@ export const realEstateConfig: VerticalConfig = {
           question:
             "Do you have a process to present multiple offer scenarios to buyers or sellers — not just the headline number but net proceeds, contingencies, and risk?",
           options: [
-            "No — I present the offer and give my opinion",
+            "No — I walk them through the numbers and share my take, but there's no formal process",
             "I explain the key points verbally",
             "I walk through the main terms in detail",
             "Yes — I have a formal comparative presentation that helps clients make informed decisions",
