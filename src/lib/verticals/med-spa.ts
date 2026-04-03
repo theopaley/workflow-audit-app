@@ -392,6 +392,7 @@ export const medSpaConfig: VerticalConfig = {
             "High — more than 20% of appointments are missed or cancelled",
             "Moderate — around 10-20%",
             "Low — under 10%",
+            "I'm not sure — we don't track this",
             "Very low — under 5%, and we have a system that keeps it there",
           ],
         },
