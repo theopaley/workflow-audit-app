@@ -74,7 +74,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "lead-based",
       leakageRate: 0.20,
       industryBenchmarkStat:
-        "New med spa leads are simultaneously researching 3-5 other practices. The practice that responds within 5 minutes is 21x more likely to convert that lead than one that responds within 30 minutes. Most practices respond in hours — or not at all. The first call wins.",
+        "New med spa leads are simultaneously researching 3-5 other practices. The practice that responds within 5 minutes is 21x more likely to convert that lead than one that responds within 30 minutes. Most practices respond in hours — or not at all. The first call wins. — Lead Response Management Study / PatientPop 2023 Patient Perspective Survey",
       softwareOptions: [
         "GoHighLevel (GHL)",
         "HubSpot",
@@ -164,7 +164,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "lead-based",
       leakageRate: 0.15,
       industryBenchmarkStat:
-        "70% of new med spa leads are not ready to book on first contact — they're researching, comparing, and building trust. Practices that nurture these leads with educational content and consistent follow-up convert them at 3x the rate of practices that only pursue hot leads. Most practices abandon a lead after 2 follow-ups. The average conversion happens at follow-up 5-7.",
+        "70% of new med spa leads are not ready to book on first contact — they're researching, comparing, and building trust. Practices that nurture these leads with educational content and consistent follow-up convert them at 3x the rate of practices that only pursue hot leads. Most practices abandon a lead after 2 follow-ups. The average conversion happens at follow-up 5-7. — PatientPop 2023 Practice Growth Report / Allergan Data on File",
       softwareOptions: [
         "GoHighLevel (GHL)",
         "HubSpot",
@@ -252,7 +252,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.06,
       industryBenchmarkStat:
-        "The consultation is the highest-leverage moment in a med spa client relationship. Practices with a structured, documented consultation process convert first-time visitors to multi-treatment clients at 2.5x the rate of practices that consult informally. A client who understands their full treatment plan on day one spends 40% more in their first year.",
+        "The consultation is the highest-leverage moment in a med spa client relationship. Practices with a structured, documented consultation process convert first-time visitors to multi-treatment clients at 2.5x the rate of practices that consult informally. A client who understands their full treatment plan on day one spends 40% more in their first year. — AmSpa 2024 Medical Spa State of the Industry Report",
       softwareOptions: [
         "Zenoti",
         "AestheticsPro",
@@ -342,7 +342,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.09,
       industryBenchmarkStat:
-        "The average med spa loses 22% of its appointments to cancellations, and no-shows can account for up to 14% of daily revenue. Practices that require a deposit at booking and send automated reminders reduce no-show rates by up to 75% — recovering tens of thousands of dollars in previously lost provider time every year.",
+        "The average med spa loses 22% of its appointments to cancellations, and no-shows can account for up to 14% of daily revenue. Practices that require a deposit at booking and send automated reminders reduce no-show rates by up to 75% — recovering tens of thousands of dollars in previously lost provider time every year. — Zenoti 2024 Salon and Spa Industry Benchmark Report",
       softwareOptions: [
         "Zenoti",
         "Boulevard (BLVD)",
@@ -431,7 +431,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.12,
       industryBenchmarkStat:
-        "Med spa membership clients spend up to 35% more per visit than non-members and visit 2x as often. Practices with active membership programs saw a 24% increase in membership sales in 2024 alone. Yet most practices leave this entirely to chance — waiting for clients to ask rather than presenting it as the natural next step after every treatment.",
+        "Med spa membership clients spend up to 35% more per visit than non-members and visit 2x as often. Practices with active membership programs saw a 24% increase in membership sales in 2024 alone. Yet most practices leave this entirely to chance — waiting for clients to ask rather than presenting it as the natural next step after every treatment. — AmSpa 2024 Medical Spa State of the Industry Report / Allergan Practice Insights",
       softwareOptions: [
         "Zenoti",
         "Boulevard (BLVD)",
@@ -516,7 +516,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
-        "Botox wears off in 3-4 months. Fillers in 6-12 months. Every client who walks out without their next appointment already booked is a retention risk. Industry data shows that clients who rebook before leaving are 70% more likely to return than clients who say 'I'll call.' Most practices let them call — and most of them don't.",
+        "Botox wears off in 3-4 months. Fillers in 6-12 months. Every client who walks out without their next appointment already booked is a retention risk. Industry data shows that clients who rebook before leaving are 70% more likely to return than clients who say 'I'll call.' Most practices let them call — and most of them don't. — Allergan Aesthetics Practice Consultation Data / ASPS Procedural Statistics 2023",
       softwareOptions: [
         "Aesthetic Record",
         "PatientNow",
@@ -605,7 +605,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.05,
       industryBenchmarkStat:
-        "The number one reason med spa clients leave for a competitor is not price and not results — it's feeling forgotten between visits. With Botox clients visiting every 3-4 months, practices have a 90-120 day window of silence between appointments. The practices that fill that silence with value-driven communication retain clients at 2x the rate of those that only reach out when it's time to rebook.",
+        "The number one reason med spa clients leave for a competitor is not price and not results — it's feeling forgotten between visits. With Botox clients visiting every 3-4 months, practices have a 90-120 day window of silence between appointments. The practices that fill that silence with value-driven communication retain clients at 2x the rate of those that only reach out when it's time to rebook. — PatientPop 2023 Patient Perspective Survey / Podium 2024 State of Patient Experience",
       softwareOptions: [
         "GoHighLevel (GHL)",
         "Mailchimp",
@@ -695,7 +695,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
-        "86% of new med spa clients check online reviews before booking a consultation. Practices with 50 or more Google reviews convert inbound leads at 3x the rate of practices with fewer than 10. The barrier to leaving a review is low — the barrier to asking consistently is entirely behavioral, and almost every practice fails it.",
+        "86% of new med spa clients check online reviews before booking a consultation. Practices with 50 or more Google reviews convert inbound leads at 3x the rate of practices with fewer than 10. The barrier to leaving a review is low — the barrier to asking consistently is entirely behavioral, and almost every practice fails it. — Birdeye 2024 State of Online Reviews / BrightLocal 2024 Consumer Review Survey",
       softwareOptions: [
         "Google Business Profile",
         "Birdeye",
@@ -740,6 +740,7 @@ export const medSpaConfig: VerticalConfig = {
             "0 to 3",
             "4 to 8",
             "9 to 15",
+            "I'm not sure — I don't track this",
             "16 or more",
           ],
         },
@@ -778,7 +779,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
-        "80% of med spas say word-of-mouth is their biggest source of new clients. Only 3% have a structured referral program. The gap between those two numbers is the single most actionable growth opportunity in the business. A referred client arrives pre-sold, converts at higher rates, and has a higher lifetime value than any paid lead source.",
+        "80% of med spas say word-of-mouth is their biggest source of new clients. Only 3% have a structured referral program. The gap between those two numbers is the single most actionable growth opportunity in the business. A referred client arrives pre-sold, converts at higher rates, and has a higher lifetime value than any paid lead source. — AmSpa 2024 Medical Spa State of the Industry Report / Nielsen Global Trust in Advertising Survey",
       softwareOptions: [
         "GoHighLevel (GHL)",
         "ReferralHero",
@@ -864,7 +865,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
-        "The average med spa loses 50-60% of clients annually — not because those clients are dissatisfied, but because no one followed up. A client who visited 6 months ago and hasn't rebooked is not a lost client — they're a warm prospect sitting in your database waiting to be asked. Win-back campaigns consistently produce 20-35% reactivation rates at near-zero acquisition cost.",
+        "The average med spa loses 50-60% of clients annually — not because those clients are dissatisfied, but because no one followed up. A client who visited 6 months ago and hasn't rebooked is not a lost client — they're a warm prospect sitting in your database waiting to be asked. Win-back campaigns consistently produce 20-35% reactivation rates at near-zero acquisition cost. — Zenoti 2024 Salon and Spa Industry Benchmark Report / Bain & Company Customer Loyalty Research",
       softwareOptions: [
         "GoHighLevel (GHL)",
         "Mailchimp",
@@ -951,7 +952,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
-        "Successful med spas generate 10-15% of total revenue from retail skincare sales — revenue that requires no additional treatment rooms, no additional provider time, and no additional clients. The average practice leaves this entirely to chance, with staff recommending products 'when it comes up.' A systematic retail process increases average ticket by $60-120 per visit.",
+        "Successful med spas generate 10-15% of total revenue from retail skincare sales — revenue that requires no additional treatment rooms, no additional provider time, and no additional clients. The average practice leaves this entirely to chance, with staff recommending products 'when it comes up.' A systematic retail process increases average ticket by $60-120 per visit. — AmSpa 2024 Medical Spa State of the Industry Report / Allergan Practice Insights",
       softwareOptions: [
         "Zenoti",
         "Boulevard (BLVD)",
@@ -999,6 +1000,7 @@ export const medSpaConfig: VerticalConfig = {
             "Less than 10% — most clients don't buy retail",
             "10-20%",
             "20-35%",
+            "I'm not sure — we don't track this",
             "Over 35% — retail is a consistent part of the client visit",
           ],
         },
@@ -1038,7 +1040,7 @@ export const medSpaConfig: VerticalConfig = {
       leakageType: "multiplier",
       leakageRate: 0.40,
       industryBenchmarkStat:
-        "Med spa owners who track lead source, conversion rate, provider utilization, and client lifetime value simultaneously grow 2.8x faster than those flying blind. With an average treatment value of $536 and clients returning 3-4 times per year, the difference between an 85% booked schedule and a 70% booked schedule is tens of thousands of dollars in annual revenue — invisible without the right dashboard.",
+        "Med spa owners who track lead source, conversion rate, provider utilization, and client lifetime value simultaneously grow 2.8x faster than those flying blind. With an average treatment value of $536 and clients returning 3-4 times per year, the difference between an 85% booked schedule and a 70% booked schedule is tens of thousands of dollars in annual revenue — invisible without the right dashboard. — ASPS 2023 Procedural Statistics / AmSpa 2024 Medical Spa State of the Industry Report",
       softwareOptions: [
         "Zenoti",
         "AestheticsPro",
