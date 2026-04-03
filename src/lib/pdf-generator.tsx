@@ -865,7 +865,7 @@ function FindingCard({ area, displayLeakage, verticalId }: { area: AreaResult; d
             <Text style={s.yourResultLabel}>How We Calculated This</Text>
             <Text style={s.findingBodyMuted}>{`${
               isBizVis
-                ? `Every other gap in this report costs you money. Without a reporting system, those problems go undetected longer — which means each one costs more than our conservative estimates suggest. We apply a compounding factor to reflect that reality. On top of that, flying blind on metrics like lead sources, conversion rates, and project profitability has its own direct cost in slow decisions and missed opportunities. Combined, that\u2019s ${formatCurrency(area.monthlyLeakage > 0 ? area.monthlyLeakage : displayLeakage)} per month before applying your revenue cap.`
+                ? `Every other gap in this report costs you money. Without a reporting system, those problems go undetected longer — which means each one costs more than our conservative estimates suggest. We apply a compounding factor to reflect that reality. On top of that, flying blind on metrics like lead sources, conversion rates, and project profitability has its own direct cost in slow decisions and missed opportunities.${area.monthlyLeakage > 0 ? ` Combined, that\u2019s ${formatCurrency(area.monthlyLeakage)} per month before applying your revenue cap.` : ""}`
                 : area.leakageExplanation
             } Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
           </View>
@@ -925,6 +925,22 @@ function FindingsPage({ result, scaleFactor, verticalId }: { result: AnalysisRes
         displayValues.findIndex((_, i) => i !== bizVisIdx)
       );
       if (largestOtherIdx !== -1) displayValues[largestOtherIdx] += excess;
+    }
+  }
+
+  // Fallback: if the AI returned monthlyLeakage=0 for the BizVis area and the
+  // remainder rounded to 0, displayValues[bizVisIdx] is still 0. This causes
+  // the "How We Calculated This" section to be suppressed. Steal 10% from the
+  // largest other card so the BizVis card always shows a non-zero amount.
+  if (bizVisIdx !== -1 && displayValues[bizVisIdx] <= 0 && displayValues.length > 1) {
+    const largestOtherIdx = displayValues.reduce(
+      (best, v, i) => (i !== bizVisIdx && v > displayValues[best] ? i : best),
+      displayValues.findIndex((_, i) => i !== bizVisIdx)
+    );
+    if (largestOtherIdx !== -1 && displayValues[largestOtherIdx] > 0) {
+      const steal = Math.max(1, Math.round(displayValues[largestOtherIdx] * 0.10));
+      displayValues[bizVisIdx] = steal;
+      displayValues[largestOtherIdx] -= steal;
     }
   }
 

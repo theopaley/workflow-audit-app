@@ -110,8 +110,14 @@ function buildLeakageRateSection(
       const increment = leakageFormula[area.id] ?? 0;
       const highX = (1 + increment).toFixed(2);
       const midX = (1 + increment / 2).toFixed(2);
+      // Be explicit about the per-card monthlyLeakage formula so the model
+      // does not misread the multiplier as applying only to totalMonthlyLeakage
+      // while leaving this area's own monthlyLeakage at 0.
       lines.push(
-        `  • ${area.name} (${area.id}): ${highX}× when score < 40 | ${midX}× when score 40–69 | 1.00× when score 70+`
+        `  • ${area.name} (${area.id}):
+    - score < 40:  set this area's monthlyLeakage = baseLeakageTotal × ${increment.toFixed(2)}  (total leakage becomes ${highX}× of base)
+    - score 40–69: set this area's monthlyLeakage = baseLeakageTotal × ${(increment / 2).toFixed(2)}  (total leakage becomes ${midX}× of base)
+    - score 70+:   set this area's monthlyLeakage = 0`
       );
     }
     lines.push("");
