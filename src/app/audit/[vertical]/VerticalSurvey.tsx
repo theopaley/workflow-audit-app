@@ -965,9 +965,7 @@ export default function VerticalSurvey({ config }: Props) {
             ? "RevRep.ai — Home Services Audit"
             : "RevRep.ai Workflow Audit"}
         </span>
-        <span className="text-sm text-slate-400">
-          {index + 1} / {total}
-        </span>
+        <span />
       </header>
 
       {/* Progress bar */}
