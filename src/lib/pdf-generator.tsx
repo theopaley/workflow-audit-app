@@ -843,15 +843,25 @@ function FindingCard({ area, displayLeakage, verticalId }: { area: AreaResult; d
       {/* Body */}
       <View style={s.findingCardBody}>
         {/* 1. Industry stat callout */}
-        {statText && area.score < 70 && (
-          <View style={s.statCallout}>
-            <Text style={s.statCalloutLabel}>Industry Data</Text>
-            <Text style={s.statCalloutText}>{statText}</Text>
-            {statSource && (
-              <Text style={s.statCalloutSource}>— {statSource}</Text>
-            )}
-          </View>
-        )}
+        {statText && area.score < 70 && (() => {
+          // Detect inline citations at the end of vertical stat strings.
+          // Pattern: body text followed by " — Source Name" at the end.
+          const citationMatch = !statSource ? statText.match(/^([\s\S]+)\s— ([^—]+)$/) : null;
+          const body = citationMatch ? citationMatch[1] : statText;
+          const inlineCitation = citationMatch ? citationMatch[2] : null;
+          return (
+            <View style={s.statCallout}>
+              <Text style={s.statCalloutLabel}>Industry Data</Text>
+              <Text style={s.statCalloutText}>{body}</Text>
+              {statSource && (
+                <Text style={s.statCalloutSource}>— {statSource}</Text>
+              )}
+              {inlineCitation && (
+                <Text style={s.statCalloutSource}>— {inlineCitation}</Text>
+              )}
+            </View>
+          );
+        })()}
 
         {/* 2. Your result */}
         <View>
