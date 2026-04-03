@@ -196,7 +196,12 @@ function buildLeftColumnCards(
   result: AnalysisResult,
   answers: SurveyAnswers
 ): PlatformEntry[] {
-  const entries: PlatformEntry[] = [];
+  // Collect every individual tool mention across all flagged areas, tracking
+  // the badge and action text for each occurrence.
+  const toolMap = new Map<
+    string,
+    { badge: PlatformEntry["badge"]; actionText: string }[]
+  >();
 
   for (const area of result.areas) {
     // Only show cards for flagged areas
@@ -222,46 +227,55 @@ function buildLeftColumnCards(
       );
     });
 
-    if (tools.length > 0) {
-      // One consolidated card per area with all tool names joined
-      const badge      = resolveAreaBadge(area, false);
-      const toolsLabel = tools.join(", ");
-      const description =
-        badge === "Deploy"
-          ? "Full deployment needed — not yet active"
-          : "Platform exists but needs setup or optimization";
-      const rawAction =
-        badge === "Deploy" ? (area.recommendation ?? area.stackReasoning) : area.stackReasoning;
-      const actionText =
-        badge === "Deploy"
-          ? `Deploy — ${rawAction.split(". ")[0]}`
-          : `Configure — ${rawAction.split(". ")[0]}`;
+    const badge = resolveAreaBadge(area, false);
+    const rawAction =
+      badge === "Deploy" ? (area.recommendation ?? area.stackReasoning) : area.stackReasoning;
+    const actionText =
+      badge === "Deploy"
+        ? `Deploy — ${rawAction.split(". ")[0]}`
+        : `Configure — ${rawAction.split(". ")[0]}`;
 
-      entries.push({ name: toolsLabel, badge, description, actionText });
+    for (const tool of tools) {
+      if (!toolMap.has(tool)) toolMap.set(tool, []);
+      toolMap.get(tool)!.push({ badge, actionText });
     }
   }
 
-  // Consolidate multiple single-tool "Jobber" entries into one card
-  const jobberEntries = entries.filter((e) => e.name === "Jobber");
-  const rest          = entries.filter((e) => e.name !== "Jobber");
-
-  if (jobberEntries.length > 1) {
-    const worstBadge = jobberEntries.reduce<PlatformEntry["badge"]>(
-      (w, e) => (BADGE_PRIORITY[e.badge] > BADGE_PRIORITY[w] ? e.badge : w),
+  // Deduplicate: one card per unique platform name. When a platform appears
+  // across multiple areas, use the worst badge and a consolidated description.
+  const entries: PlatformEntry[] = [];
+  for (const [name, occurrences] of toolMap) {
+    const worstBadge = occurrences.reduce<PlatformEntry["badge"]>(
+      (w, o) => (BADGE_PRIORITY[o.badge] > BADGE_PRIORITY[w] ? o.badge : w),
       "Automate"
     );
-    rest.push({
-      name: "Jobber",
-      badge: worstBadge,
-      description:
-        "You're using Jobber across multiple areas — but most automation features are sitting unused.",
-      actionText: "Configure automation across all Jobber modules",
-    });
-  } else if (jobberEntries.length === 1) {
-    rest.push(jobberEntries[0]);
+
+    if (occurrences.length > 1) {
+      entries.push({
+        name,
+        badge: worstBadge,
+        description:
+          `You're using ${name} across ${occurrences.length} workflow areas — consolidate configuration to get more from it.`,
+        actionText:
+          worstBadge === "Deploy"
+            ? `Deploy ${name} fully across all areas`
+            : `Configure automation across all ${name} modules`,
+      });
+    } else {
+      const { actionText } = occurrences[0];
+      entries.push({
+        name,
+        badge: worstBadge,
+        description:
+          worstBadge === "Deploy"
+            ? "Full deployment needed — not yet active"
+            : "Platform exists but needs setup or optimization",
+        actionText,
+      });
+    }
   }
 
-  return rest;
+  return entries;
 }
 
 // ─── Hardcoded area tool chips ────────────────────────────────────────────────
