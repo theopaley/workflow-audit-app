@@ -768,9 +768,7 @@ export default function AuditPage() {
         <span className="text-base font-semibold tracking-tight text-slate-900">
           RevRep.ai Workflow Audit
         </span>
-        <span className="text-sm text-slate-400">
-          {index + 1} / {total}
-        </span>
+        <span />
       </header>
 
       {/* Progress bar */}
