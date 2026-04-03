@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const client = new Anthropic();
 
-const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", or "universal".
+const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", or "universal".
 
 MED SPA — classify as "med-spa" when the description mentions: med spa, medspa, medical spa, aesthetic clinic, aesthetics practice, Botox, fillers, injectables, neurotoxin, dermal filler, laser treatments, microneedling, HydraFacial, body contouring, IV therapy, hormone therapy, regenerative medicine, PRP, medical aesthetics, cosmetic injections, non-surgical, injector, nurse injector, aesthetic nurse.
 Edge cases: "I do Botox and fillers" → med-spa. "I run a day spa with massages and facials" → universal. "I'm a chiropractor" → universal. "I do IV drips and aesthetic treatments" → med-spa. "I sell regenerative medicine products to med spas" → universal.
@@ -50,10 +50,22 @@ For "med-spa", set serviceTypeKey to "hw_service_focus" and pick serviceType fro
 - "Full-service aesthetics — injectables plus laser plus skincare"
 - "Skincare & facial treatments — HydraFacial, microneedling, chemical peels"
 
+COMMERCIAL INSURANCE — classify as "commercial-insurance" when the description mentions: commercial insurance, commercial lines, business insurance, commercial broker, general liability, workers comp, workers compensation, commercial auto, commercial property, business owner policy, BOP, professional liability, E&O, errors and omissions, D&O, directors and officers, cyber liability, insurance broker, insurance agent, insurance agency, writing commercial accounts, commercial book, commercial coverage.
+Edge cases: "I sell commercial insurance policies" → commercial-insurance. "I'm an independent insurance agent" → commercial-insurance if commercial focus, universal if personal lines only. "I sell personal auto and homeowners insurance" → universal. "I sell group health benefits to businesses" → commercial-insurance. "I do risk management consulting" → commercial-insurance. "I'm a captive agent for State Farm selling auto and home" → universal.
+
+For "commercial-insurance", set serviceTypeKey to "ci_lines_focus" and pick serviceType from this exact list:
+- "General liability, BOP, and property"
+- "Workers compensation"
+- "Professional liability — E&O, D&O, cyber"
+- "Commercial auto and fleet"
+- "Specialty and surplus lines"
+- "Mixed commercial lines"
+
 Return ONLY valid JSON in this exact format: { "slug": "home-services", "confidence": "high", "serviceType": "HVAC, Plumbing, or Electrical", "serviceTypeKey": "hs_service_type" }
 For property-maintenance: { "slug": "property-maintenance", "confidence": "high", "serviceType": "Lawn Care or Landscaping Maintenance", "serviceTypeKey": "pm_service_type" }
 For real-estate: { "slug": "real-estate", "confidence": "high", "serviceType": "Residential sales — buyers and sellers", "serviceTypeKey": "re_focus_type" }
 For med-spa: { "slug": "med-spa", "confidence": "high", "serviceType": "Injectables — Botox, fillers, neurotoxins", "serviceTypeKey": "hw_service_focus" }
+For commercial-insurance: { "slug": "commercial-insurance", "confidence": "high", "serviceType": "General liability, BOP, and property", "serviceTypeKey": "ci_lines_focus" }
 If slug is "universal": { "slug": "universal", "confidence": "high", "serviceType": null, "serviceTypeKey": null }
 No markdown, no explanation.`;
 
