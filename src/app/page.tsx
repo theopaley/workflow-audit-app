@@ -3,37 +3,37 @@ import Link from "next/link";
 const steps = [
   {
     number: "01",
-    title: "Complete the Audit Survey",
+    title: "Answer Questions About Your Business",
     description:
-      "Answer 12 short sections covering every key area of your business — from sales and finance to HR and IT. Takes about 10 minutes.",
+      "Tell us how you handle leads, quoting, scheduling, team communication, invoicing, and follow-up. Takes about 10 minutes.",
   },
   {
     number: "02",
     title: "AI Analyzes Your Workflows",
     description:
-      "Our AI reviews your answers to identify broken processes, inefficiencies, integration gaps, and quick wins across your entire operation.",
+      "Our AI reviews your answers, calculates your revenue leakage across every workflow area, and identifies your highest-impact fixes.",
   },
   {
     number: "03",
-    title: "Receive Your Custom Report",
+    title: "Get Your Free Report",
     description:
-      "Get a branded PDF report emailed directly to you — with a health score for each workflow area, priority fixes, and a clear action plan.",
+      "Receive a PDF report with your exact leakage figure, a score for each workflow area, and a prioritized list of what to fix first.",
   },
 ];
 
 const areas = [
-  "Sales & CRM",
-  "Marketing",
-  "Finance & Accounting",
-  "HR & People",
-  "Project Management",
-  "Customer Support",
-  "Inventory & Supply Chain",
-  "Internal Communication",
-  "Reporting & Analytics",
-  "Legal & Compliance",
-  "IT & Security",
-  "Client Onboarding",
+  "Lead Capture & Response Time",
+  "Estimating & Quoting",
+  "Scheduling & Dispatch",
+  "Team & Crew Communication",
+  "Customer Onboarding & Prep",
+  "Job Completion & Handoff",
+  "Invoicing & Payment Collection",
+  "Customer Communication & Updates",
+  "Reviews & Reputation",
+  "Re-engagement & Follow-up",
+  "Referral Management",
+  "Business Visibility & Reporting",
 ];
 
 export default function Home() {
@@ -66,22 +66,23 @@ export default function Home() {
       <section className="px-6 py-24 text-center">
         <div className="mx-auto max-w-3xl">
           <div className="mb-6 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 text-sm font-medium text-slate-600">
-            Free for businesses with 5–25 employees
+            Free for service businesses with 5–25 employees
           </div>
           <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight text-slate-900 sm:text-6xl">
-            Find and fix the workflows{" "}
-            <span className="text-indigo-600">holding your business back</span>
+            See Exactly Where Your Business Is{" "}
+            <span className="text-indigo-600">Losing Money</span>
           </h1>
           <p className="mx-auto mb-10 max-w-xl text-xl leading-relaxed text-slate-500">
-            WorkflowAudit identifies exactly where your team is losing time,
-            money, and momentum — then delivers a prioritized action plan to fix
-            it.
+            WorkflowAudit analyzes how your team handles leads, quotes,
+            scheduling, invoicing, and follow-up — and shows you the dollar
+            figure slipping through the cracks. Free for service businesses with
+            5–25 employees.
           </p>
           <Link
             href="/audit"
             className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-500 hover:shadow-indigo-300 active:scale-95"
           >
-            Get Your Free Workflow Audit
+            Get My Free Audit
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -99,7 +100,7 @@ export default function Home() {
             No account required · Takes about 10 minutes · PDF report emailed to you
           </p>
           <p className="mt-2 text-xs text-slate-400">
-            Currently optimized for service-based businesses with 5–25 employees
+            Built for service-based businesses with 5–25 employees
           </p>
         </div>
       </section>
@@ -112,7 +113,7 @@ export default function Home() {
               How it works
             </h2>
             <p className="text-lg text-slate-500">
-              Three steps to a clearer, more efficient business.
+              Three steps to know exactly what your business is losing — and how to fix it.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">
@@ -133,15 +134,26 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Stat callout */}
+      <section className="border-t border-slate-100 px-6 py-16">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-2xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-3xl">
+            &ldquo;Service businesses lose an average of{" "}
+            <span className="text-indigo-600">23% of potential revenue</span> to
+            slow follow-up, scheduling gaps, and missed invoices.&rdquo;
+          </p>
+        </div>
+      </section>
+
       {/* Coverage */}
       <section className="border-t border-slate-100 px-6 py-24">
         <div className="mx-auto max-w-5xl">
           <div className="mb-12 text-center">
             <h2 className="mb-3 text-3xl font-bold tracking-tight text-slate-900">
-              Every corner of your business, covered
+              Every part of your operation, covered.
             </h2>
             <p className="text-lg text-slate-500">
-              The audit spans 12 workflow areas — so nothing gets missed.
+              The audit spans 12 workflow areas built for service businesses — so nothing gets missed.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -162,7 +174,7 @@ export default function Home() {
       <section className="border-t border-slate-100 bg-indigo-600 px-6 py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-white">
-            Ready to see what's slowing you down?
+            Ready to see what your business is losing?
           </h2>
           <p className="mb-8 text-lg text-indigo-200">
             Get your free, personalized workflow audit in under 10 minutes. No
@@ -172,7 +184,7 @@ export default function Home() {
             href="/audit"
             className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-lg font-semibold text-indigo-600 shadow-lg transition-all hover:bg-indigo-50 active:scale-95"
           >
-            Get Your Free Workflow Audit
+            Get My Free Audit
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
@@ -193,7 +205,7 @@ export default function Home() {
       <footer className="border-t border-slate-100 px-6 py-8">
         <div className="mx-auto flex max-w-5xl items-center justify-between text-sm text-slate-400">
           <span>WorkflowAudit</span>
-          <span>Free for small businesses · No account required</span>
+          <span>Free for service businesses · No account required</span>
         </div>
       </footer>
     </div>

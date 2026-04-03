@@ -302,7 +302,10 @@ Please analyse these responses thoroughly and return the complete audit report a
   }
 
   // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
-  const clean = raw.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+  let clean = (raw ?? '').trim();
+  if (clean.startsWith('```')) {
+    clean = clean.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+  }
 
   let result: AnalysisResult;
   try {
