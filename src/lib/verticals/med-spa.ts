@@ -4,7 +4,7 @@ export const medSpaConfig: VerticalConfig = {
   verticalId: "med-spa",
   displayName: "Med Spa Audit",
 
-  skipQuestions: ["intro_business"],
+  skipQuestions: ["intro_business", "financial_platform"],
 
   // ─── Intro question overrides ────────────────────────────────────────────────
   introQuestions: {

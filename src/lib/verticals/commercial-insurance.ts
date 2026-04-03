@@ -4,7 +4,7 @@ export const commercialInsuranceConfig: VerticalConfig = {
   verticalId: "commercial-insurance",
   displayName: "Commercial Insurance Audit",
 
-  skipQuestions: ["intro_business"],
+  skipQuestions: ["intro_business", "financial_platform"],
 
   // ─── Intro question overrides ────────────────────────────────────────────────
   introQuestions: {
