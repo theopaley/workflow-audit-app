@@ -4,6 +4,7 @@ import { propertyMaintenanceConfig } from "./property-maintenance";
 import { realEstateConfig } from "./real-estate";
 import { medSpaConfig } from "./med-spa";
 import { commercialInsuranceConfig } from "./commercial-insurance";
+import { b2bSalesConfig } from "./b2b-sales";
 
 /**
  * Registry of all supported verticals.
@@ -20,4 +21,5 @@ export const verticalRegistry: Record<string, VerticalConfig> = {
   "real-estate": realEstateConfig,
   "med-spa": medSpaConfig,
   "commercial-insurance": commercialInsuranceConfig,
+  "b2b-sales": b2bSalesConfig,
 };

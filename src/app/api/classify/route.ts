@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const client = new Anthropic();
 
-const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", or "universal".
+const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", "b2b-sales", or "universal".
 
 MED SPA — classify as "med-spa" when the description mentions: med spa, medspa, medical spa, aesthetic clinic, aesthetics practice, Botox, fillers, injectables, neurotoxin, dermal filler, laser treatments, microneedling, HydraFacial, body contouring, IV therapy, hormone therapy, regenerative medicine, PRP, medical aesthetics, cosmetic injections, non-surgical, injector, nurse injector, aesthetic nurse.
 Edge cases: "I do Botox and fillers" → med-spa. "I run a day spa with massages and facials" → universal. "I'm a chiropractor" → universal. "I do IV drips and aesthetic treatments" → med-spa. "I sell regenerative medicine products to med spas" → universal.
@@ -61,11 +61,22 @@ For "commercial-insurance", set serviceTypeKey to "ci_lines_focus" and pick serv
 - "Specialty and surplus lines"
 - "Mixed commercial lines"
 
+B2B SALES — classify as "b2b-sales" when the business's PRIMARY revenue activity is selling products or services TO other businesses through a dedicated sales team or rep structure. Triggers: B2B sales, business to business, sell to businesses, sell to companies, sales team, sales reps, account executives, sales organization, field sales, outside sales, inside sales, sales force, distributor, distribution company, wholesale, product rep, account manager, territory manager, regional sales manager, "we sell [product/service] to [businesses/clinics/contractors/dentists/etc.]."
+Edge cases: "I sell medical products to clinics" → b2b-sales. "I sell software to businesses" → b2b-sales. "I'm a real estate agent" → real-estate. "I'm an insurance broker" → commercial-insurance. "I run a marketing agency" → universal. "I have a sales team that sells our HVAC services" → home-services.
+
+For "b2b-sales", set serviceTypeKey to "bs_sales_model" and pick serviceType from this exact list:
+- "Field sales — reps visit prospects and clients in person"
+- "Inside sales — reps sell primarily by phone, email, and video"
+- "Hybrid — a mix of in-person and remote selling"
+- "Owner-led — I personally handle most or all of the selling"
+- "Channel/distributor — we sell through partners or reps who represent us"
+
 Return ONLY valid JSON in this exact format: { "slug": "home-services", "confidence": "high", "serviceType": "HVAC, Plumbing, or Electrical", "serviceTypeKey": "hs_service_type" }
 For property-maintenance: { "slug": "property-maintenance", "confidence": "high", "serviceType": "Lawn Care or Landscaping Maintenance", "serviceTypeKey": "pm_service_type" }
 For real-estate: { "slug": "real-estate", "confidence": "high", "serviceType": "Residential sales — buyers and sellers", "serviceTypeKey": "re_focus_type" }
 For med-spa: { "slug": "med-spa", "confidence": "high", "serviceType": "Injectables — Botox, fillers, neurotoxins", "serviceTypeKey": "hw_service_focus" }
 For commercial-insurance: { "slug": "commercial-insurance", "confidence": "high", "serviceType": "General liability, BOP, and property", "serviceTypeKey": "ci_lines_focus" }
+For b2b-sales: { "slug": "b2b-sales", "confidence": "high", "serviceType": "Inside sales — reps sell primarily by phone, email, and video", "serviceTypeKey": "bs_sales_model" }
 If slug is "universal": { "slug": "universal", "confidence": "high", "serviceType": null, "serviceTypeKey": null }
 No markdown, no explanation.`;
 
