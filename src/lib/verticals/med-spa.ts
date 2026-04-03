@@ -852,6 +852,7 @@ export const medSpaConfig: VerticalConfig = {
             "Less than 20% — most new clients come from paid ads or Google",
             "20-40%",
             "40-60%",
+            "I'm not sure — we don't track this",
             "Over 60% — referrals are the primary driver of new client growth",
           ],
         },
