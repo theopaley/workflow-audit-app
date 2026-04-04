@@ -67,6 +67,24 @@ export interface AnalysisResult {
  * prompt so Claude uses the vertical-specific rates instead of the universal
  * percentages defined in the base prompt.
  */
+
+/**
+ * Builds a section mapping each area to its locked industryBenchmarkStat so
+ * the AI copies it verbatim into the `stat` field instead of inventing its own.
+ */
+function buildLockedStatSection(workflowAreas: VerticalArea[]): string {
+  const lines: string[] = [
+    "LOCKED BENCHMARK STATS — for each area below, copy the stat text EXACTLY into the area's \"stat\" field in your JSON output. Do not paraphrase, shorten, or swap stats between areas.",
+    "",
+  ];
+  for (const area of workflowAreas) {
+    lines.push(`AREA: ${area.name} (${area.id})`);
+    lines.push(`STAT: ${area.industryBenchmarkStat}`);
+    lines.push("");
+  }
+  return lines.join("\n");
+}
+
 function buildLeakageRateSection(
   workflowAreas: VerticalArea[],
   leakageFormula: Record<string, number>
@@ -265,7 +283,9 @@ export async function analyzeWorkflows(
         ? FITNESS_WELLNESS_LEAKAGE_OVERRIDE
         : "";
 
-    const parts = [rateSection, formulaOverride, verticalConfig.aiPromptAdditions]
+    const lockedStats = buildLockedStatSection(verticalConfig.workflowAreas);
+
+    const parts = [rateSection, formulaOverride, lockedStats, verticalConfig.aiPromptAdditions]
       .filter(Boolean)
       .join("\n");
     additions = parts || undefined;

@@ -211,6 +211,7 @@ Return a single valid JSON object with this structure:
       "name": "string — IMPORTANT: use the exact area name from the vertical config. Do not rename, reword, combine, or abbreviate area names. They are locked.",
       "score": number,
       "grade": "Red|Amber|Green",
+      "stat": "string — if a LOCKED BENCHMARK STAT is provided for this area in the vertical config, copy it here VERBATIM. Do not paraphrase, shorten, or rewrite. If no locked stat is provided, write a relevant industry data point.",
       "scoreReasoning": "string",
       "monthlyLeakage": number,
       "leakageExplanation": "string",
