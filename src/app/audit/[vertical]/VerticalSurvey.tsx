@@ -624,19 +624,17 @@ export default function VerticalSurvey({ config }: Props) {
         }
       }
 
-      // Injected non-base questions pre-answered by the classify API (e.g.
-      // re_focus_type for real-estate) would otherwise be silently skipped.
-      // Only keep a classify-injected answer if that question ID is referenced
-      // as a dynamicOptionsSource by another intro override — e.g. hs_service_type
-      // drives fin_avg_sale tier selection and must stay. Questions with no
-      // downstream dependency are cleared so the user sees and confirms them.
-      const dynamicSourceIds = new Set(
-        Object.values(config.introQuestions ?? {})
-          .map((q) => (q as Partial<Question>).dynamicOptionsSource)
-          .filter((id): id is string => typeof id === "string")
+      // Keep classify-injected intro answers (e.g. hs_service_type,
+      // pm_service_type, fw_facility_type) so the user skips past questions
+      // the classify API already answered. Any vertical-injected intro
+      // question that arrives via prefill is kept and skipped.
+      const verticalIntroIds = new Set(
+        Object.entries(config.introQuestions ?? {})
+          .filter(([key]) => !baseFinIdSet.has(key))
+          .map(([key]) => key)
       );
       for (const key of Object.keys(mappedPrefill)) {
-        if (!baseFinIdSet.has(key) && !dynamicSourceIds.has(key) && allQIdSet.has(key)) {
+        if (!baseFinIdSet.has(key) && !verticalIntroIds.has(key) && allQIdSet.has(key)) {
           delete mappedPrefill[key];
         }
       }
