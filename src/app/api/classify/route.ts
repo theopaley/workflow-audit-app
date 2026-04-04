@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const client = new Anthropic();
 
-const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", "b2b-sales", "fitness-wellness", or "universal".
+const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", "b2b-sales", "fitness-wellness", "professional-services", or "universal".
 
 MED SPA — classify as "med-spa" when the description mentions: med spa, medspa, medical spa, aesthetic clinic, aesthetics practice, Botox, fillers, injectables, neurotoxin, dermal filler, laser treatments, microneedling, HydraFacial, body contouring, IV therapy, hormone therapy, regenerative medicine, PRP, medical aesthetics, cosmetic injections, non-surgical, injector, nurse injector, aesthetic nurse.
 Edge cases: "I do Botox and fillers" → med-spa. "I run a day spa with massages and facials" → universal. "I'm a chiropractor" → universal. "I do IV drips and aesthetic treatments" → med-spa. "I sell regenerative medicine products to med spas" → universal.
@@ -83,6 +83,20 @@ For "fitness-wellness", set serviceTypeKey to "fw_facility_type" and pick servic
 - "Wellness center"
 - "Mixed — multiple formats or modalities"
 
+PROFESSIONAL SERVICES — classify as "professional-services" when the business provides knowledge-based, advisory, or expertise-driven services to clients. Triggers: accounting firm, CPA, CPA firm, tax preparer, bookkeeper, bookkeeping firm, law firm, attorney, lawyer, legal practice, consultant, consulting firm, management consultant, business consultant, strategy consultant, marketing agency, PR agency, creative agency, digital agency, advertising agency, IT consulting, MSP, managed services provider, managed IT, HR consulting, recruiting firm, executive search, staffing agency, coaching, business coach, executive coach, life coach, advisory, financial advisor, wealth management, architecture firm, engineering firm, design firm.
+Edge cases: "I run an accounting practice" → professional-services. "I'm a CPA" → professional-services. "I run a law firm" → professional-services. "I'm a business consultant" → professional-services. "I run a marketing agency" → professional-services. "I'm an IT consultant" → professional-services. "I run an MSP" → professional-services. "I'm a personal trainer with my own studio" → fitness-wellness. "I sell software to businesses" → b2b-sales. "I sell insurance" → commercial-insurance. "I'm a real estate agent" → real-estate. "I do Botox and fillers" → med-spa. "I'm a freelance graphic designer" → universal (solo freelancers without a team).
+
+For "professional-services", set serviceTypeKey to "ps_firm_type" and pick serviceType from this exact list:
+- "Accounting, tax, or financial advisory"
+- "Legal services"
+- "Business or management consulting"
+- "Marketing, PR, or creative agency"
+- "IT consulting or managed services"
+- "HR, recruiting, or executive search"
+- "Coaching or advisory services"
+- "Architecture, engineering, or design"
+- "Other professional services"
+
 Return ONLY valid JSON in this exact format: { "slug": "home-services", "confidence": "high", "serviceType": "HVAC, Plumbing, or Electrical", "serviceTypeKey": "hs_service_type" }
 For property-maintenance: { "slug": "property-maintenance", "confidence": "high", "serviceType": "Lawn Care or Landscaping Maintenance", "serviceTypeKey": "pm_service_type" }
 For real-estate: { "slug": "real-estate", "confidence": "high", "serviceType": "Residential sales — buyers and sellers", "serviceTypeKey": "re_focus_type" }
@@ -90,6 +104,7 @@ For med-spa: { "slug": "med-spa", "confidence": "high", "serviceType": "Injectab
 For commercial-insurance: { "slug": "commercial-insurance", "confidence": "high", "serviceType": "General liability, BOP, and property", "serviceTypeKey": "ci_lines_focus" }
 For b2b-sales: { "slug": "b2b-sales", "confidence": "high", "serviceType": "Inside sales — reps sell primarily by phone, email, and video", "serviceTypeKey": "bs_sales_model" }
 For fitness-wellness: { "slug": "fitness-wellness", "confidence": "high", "serviceType": "Gym or fitness center", "serviceTypeKey": "fw_facility_type" }
+For professional-services: { "slug": "professional-services", "confidence": "high", "serviceType": "Accounting, tax, or financial advisory", "serviceTypeKey": "ps_firm_type" }
 If slug is "universal": { "slug": "universal", "confidence": "high", "serviceType": null, "serviceTypeKey": null }
 No markdown, no explanation.`;
 
