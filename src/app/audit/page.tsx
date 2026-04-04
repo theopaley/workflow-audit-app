@@ -443,6 +443,7 @@ function SkipToast({
 
 export default function AuditPage() {
   const router = useRouter();
+  const [showIntro, setShowIntro] = useState(true);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<SurveyAnswers>({});
   const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
@@ -760,6 +761,44 @@ export default function AuditPage() {
       ? "opacity-0 translate-y-4"
       : "opacity-0 -translate-y-4"
     : "opacity-100 translate-y-0";
+
+  if (showIntro) {
+    return (
+      <div className="flex min-h-screen flex-col bg-white">
+        <header className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <span className="text-base font-semibold tracking-tight text-slate-900">
+            RevRep.ai Workflow Audit
+          </span>
+          <span />
+        </header>
+        <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
+          <div className="w-full max-w-2xl">
+            <h2 className="mb-6 text-2xl font-bold leading-snug text-slate-900 sm:text-3xl">
+              To get the most out of this audit, be as honest as you can.
+            </h2>
+            <p className="mb-4 text-base leading-relaxed text-slate-500">
+              Most business owners know something isn't working — they just haven't had a clear picture of where the gaps are or what they're actually costing. This audit is designed specifically to help you find those gaps and show you exactly what fixing them is worth.
+            </p>
+            <p className="mb-6 text-base leading-relaxed text-slate-500">
+              There are no right or wrong answers. If you don't know an exact number, your best estimate is fine. The more honest you are about where things actually stand, the more accurate your report will be — and the clearer your path forward.
+            </p>
+            <p className="mb-8 text-base font-semibold text-slate-900">
+              This tool exists for one reason: to help your business.
+            </p>
+            <button
+              onClick={() => setShowIntro(false)}
+              className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-500 hover:shadow-indigo-300 active:scale-95"
+            >
+              Begin Audit
+            </button>
+            <p className="mt-6 text-sm text-slate-400">
+              Takes about 10 minutes. Your results are confidential and go directly to you.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
