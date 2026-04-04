@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const client = new Anthropic();
 
-const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", "b2b-sales", or "universal".
+const CLASSIFY_SYSTEM_PROMPT = `You are a business classifier for a workflow audit tool. Given a business description, classify the business into one of these verticals: "home-services", "property-maintenance", "real-estate", "med-spa", "commercial-insurance", "b2b-sales", "fitness-wellness", or "universal".
 
 MED SPA — classify as "med-spa" when the description mentions: med spa, medspa, medical spa, aesthetic clinic, aesthetics practice, Botox, fillers, injectables, neurotoxin, dermal filler, laser treatments, microneedling, HydraFacial, body contouring, IV therapy, hormone therapy, regenerative medicine, PRP, medical aesthetics, cosmetic injections, non-surgical, injector, nurse injector, aesthetic nurse.
 Edge cases: "I do Botox and fillers" → med-spa. "I run a day spa with massages and facials" → universal. "I'm a chiropractor" → universal. "I do IV drips and aesthetic treatments" → med-spa. "I sell regenerative medicine products to med spas" → universal.
@@ -71,12 +71,25 @@ For "b2b-sales", set serviceTypeKey to "bs_sales_model" and pick serviceType fro
 - "Owner-led — I personally handle most or all of the selling"
 - "Channel/distributor — we sell through partners or reps who represent us"
 
+FITNESS & WELLNESS — classify as "fitness-wellness" when the description mentions: gym, fitness center, health club, yoga studio, pilates studio, CrossFit, CrossFit affiliate, functional fitness, boutique studio, spin studio, cycling studio, barre studio, boxing gym, MMA gym, martial arts studio, kickboxing, personal training studio, group fitness, boot camp, strength training, fitness classes, wellness center, fitness facility, gym owner, studio owner, memberships, member retention.
+Edge cases: "I own a gym" → fitness-wellness. "I run a yoga studio" → fitness-wellness. "I'm a personal trainer with my own studio" → fitness-wellness. "I'm a personal trainer who works at a gym" → universal. "I run a day spa with massages and facials" → universal. "I do Botox and fillers" → med-spa. "I'm a chiropractor" → universal. "I sell fitness equipment to gyms" → b2b-sales. "I run a CrossFit box" → fitness-wellness. "I own a martial arts academy" → fitness-wellness. "I'm a fitness influencer" → universal.
+
+For "fitness-wellness", set serviceTypeKey to "fw_facility_type" and pick serviceType from this exact list:
+- "Gym or fitness center"
+- "Boutique studio"
+- "Personal training studio"
+- "CrossFit or functional fitness affiliate"
+- "Martial arts, boxing, or MMA gym"
+- "Wellness center"
+- "Mixed — multiple formats or modalities"
+
 Return ONLY valid JSON in this exact format: { "slug": "home-services", "confidence": "high", "serviceType": "HVAC, Plumbing, or Electrical", "serviceTypeKey": "hs_service_type" }
 For property-maintenance: { "slug": "property-maintenance", "confidence": "high", "serviceType": "Lawn Care or Landscaping Maintenance", "serviceTypeKey": "pm_service_type" }
 For real-estate: { "slug": "real-estate", "confidence": "high", "serviceType": "Residential sales — buyers and sellers", "serviceTypeKey": "re_focus_type" }
 For med-spa: { "slug": "med-spa", "confidence": "high", "serviceType": "Injectables — Botox, fillers, neurotoxins", "serviceTypeKey": "hw_service_focus" }
 For commercial-insurance: { "slug": "commercial-insurance", "confidence": "high", "serviceType": "General liability, BOP, and property", "serviceTypeKey": "ci_lines_focus" }
 For b2b-sales: { "slug": "b2b-sales", "confidence": "high", "serviceType": "Inside sales — reps sell primarily by phone, email, and video", "serviceTypeKey": "bs_sales_model" }
+For fitness-wellness: { "slug": "fitness-wellness", "confidence": "high", "serviceType": "Gym or fitness center", "serviceTypeKey": "fw_facility_type" }
 If slug is "universal": { "slug": "universal", "confidence": "high", "serviceType": null, "serviceTypeKey": null }
 No markdown, no explanation.`;
 

@@ -193,6 +193,31 @@ leakageExplanation format (one-time model): "Of the roughly [monthly_leads] lead
 The 40% monthly revenue cap still applies as the ceiling on total leakage across all areas.
 `;
 
+// ─── Fitness-wellness leakage formula overrides ─────────────────────────────
+//
+// Areas 1 (fw_lead_capture) and 2 (fw_trial_conversion) use an LTV multiplier
+// (× 18 months) representing average member lifetime.  Area 2 also uses
+// close_rate.  Neither can be expressed by the generic buildLeakageRateSection()
+// output, so we inject explicit override instructions.
+
+const FITNESS_WELLNESS_LEAKAGE_OVERRIDE = `
+FITNESS & WELLNESS LEAKAGE FORMULA OVERRIDES — these two area IDs use formulas that differ from the standard section above. Apply them exactly for these IDs only; all other areas use the rates listed above.
+
+Note: avg_membership_value = answers.fin_avg_sale_value (same field — renamed for clarity in this vertical).
+
+AREA: fw_lead_capture (Lead Capture & Response Time)
+Formula: monthly_leads × 0.20 × avg_membership_value × 18
+Rationale: Lost leads in a membership business represent lost LTV, not a single month of dues. The ×18 factor represents an 18-month average member lifetime.
+leakageExplanation format: "Out of your estimated [monthly_leads] prospects per month, roughly [N] never get captured or followed up before going cold. At $[avg_membership_value]/month with an 18-month average member lifetime, each lost lead represents $[avg_membership_value × 18] in LTV — that's [N] lost members × $[LTV] = $[raw_estimate] raw estimate."
+
+AREA: fw_trial_conversion (Trial-to-Member Conversion)
+Formula: monthly_leads × close_rate × 0.18 × avg_membership_value × 18
+Rationale: These are prospects who visited for a trial but didn't convert to a paying membership. Each lost conversion is a lost recurring member — apply the same LTV multiplier.
+leakageExplanation format: "Of the roughly [monthly_leads × close_rate] prospects who visit for a trial each month, about [N] don't convert due to weak follow-up or no structured conversion process. At $[avg_membership_value]/month × 18-month LTV = $[LTV] per member — that's [N] lost members × $[LTV] = $[raw_estimate] raw estimate."
+
+The 40% monthly revenue cap still applies as the ceiling on total leakage across all areas.
+`;
+
 // ─── Anthropic client (module-scoped — reused across requests) ────────────────
 
 const client = new Anthropic();
@@ -236,6 +261,8 @@ export async function analyzeWorkflows(
         ? PROPERTY_MAINTENANCE_LEAKAGE_OVERRIDE
         : verticalId === "med-spa"
         ? MED_SPA_LEAKAGE_OVERRIDE
+        : verticalId === "fitness-wellness"
+        ? FITNESS_WELLNESS_LEAKAGE_OVERRIDE
         : "";
 
     const parts = [rateSection, formulaOverride, verticalConfig.aiPromptAdditions]
