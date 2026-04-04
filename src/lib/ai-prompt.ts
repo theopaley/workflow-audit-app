@@ -207,8 +207,8 @@ Return a single valid JSON object with this structure:
   },
   "areas": [
     {
-      "id": "string",
-      "name": "string",
+      "id": "string — use the exact area ID from the vertical config (e.g. fw_lead_capture, ci_renewal)",
+      "name": "string — IMPORTANT: use the exact area name from the vertical config. Do not rename, reword, combine, or abbreviate area names. They are locked.",
       "score": number,
       "grade": "Red|Amber|Green",
       "scoreReasoning": "string",

@@ -67,7 +67,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 1. Lead Capture & Response Time ───────────────────────────────────────
     {
       id: "fw_lead_capture",
-      name: "Lead Capture & Response Time",
+      name: "Lead Capture & New Member Conversion",
       leakageType: "lead-based",
       leakageRate: 0.20,
       industryBenchmarkStat:
@@ -157,7 +157,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 2. Trial-to-Member Conversion ─────────────────────────────────────────
     {
       id: "fw_trial_conversion",
-      name: "Trial-to-Member Conversion",
+      name: "Client Communication & Between-Visit Touchpoints",
       leakageType: "lead-based",
       leakageRate: 0.18,
       industryBenchmarkStat:
@@ -246,7 +246,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 3. New Member Onboarding ──────────────────────────────────────────────
     {
       id: "fw_onboarding",
-      name: "New Member Onboarding",
+      name: "New Member Onboarding & 90-Day Retention",
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
@@ -335,7 +335,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 4. Member Retention & Churn Prevention ────────────────────────────────
     {
       id: "fw_retention",
-      name: "Member Retention & Churn Prevention",
+      name: "Churn Prevention & At-Risk Member Management",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
@@ -425,7 +425,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 5. Class & Session Scheduling ─────────────────────────────────────────
     {
       id: "fw_scheduling",
-      name: "Class & Session Scheduling",
+      name: "Class Scheduling & Attendance Management",
       leakageType: "revenue-based",
       leakageRate: 0.09,
       industryBenchmarkStat:
@@ -514,7 +514,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 6. Revenue Optimization & Upsell ──────────────────────────────────────
     {
       id: "fw_revenue_optimization",
-      name: "Revenue Optimization & Upsell",
+      name: "Membership & Package Upsell",
       leakageType: "revenue-based",
       leakageRate: 0.12,
       industryBenchmarkStat:
@@ -603,7 +603,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 7. Member Communication & Engagement ──────────────────────────────────
     {
       id: "fw_communication",
-      name: "Member Communication & Engagement",
+      name: "Member Engagement & Community Building",
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
@@ -693,7 +693,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 8. Reviews & Reputation ───────────────────────────────────────────────
     {
       id: "fw_reviews",
-      name: "Reviews & Online Reputation",
+      name: "Reviews & Reputation",
       leakageType: "revenue-based",
       leakageRate: 0.09,
       industryBenchmarkStat:
@@ -777,7 +777,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 9. Referral Programs ──────────────────────────────────────────────────
     {
       id: "fw_referral",
-      name: "Referral Programs",
+      name: "Referral Management",
       leakageType: "revenue-based",
       leakageRate: 0.06,
       industryBenchmarkStat:
@@ -865,7 +865,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 10. Lapsed Member Reactivation ────────────────────────────────────────
     {
       id: "fw_reactivation",
-      name: "Lapsed Member Reactivation",
+      name: "Win-Back & Lapsed Member Reactivation",
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
@@ -953,7 +953,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
     // ── 11. Staff Productivity & Training ─────────────────────────────────────
     {
       id: "fw_staff",
-      name: "Staff Productivity & Training",
+      name: "Personal Training & Premium Service Upsell",
       leakageType: "revenue-based",
       leakageRate: 0.06,
       industryBenchmarkStat:
@@ -1187,10 +1187,17 @@ COMPETITIVE CONTEXT:
 - The independent gym's advantage is community, personal connection, and accountability. Recommendations should lean into these — not features that big-box chains or digital platforms do better.
 - Retention is the primary battleground. Acquiring a new member costs 5-7x more than retaining an existing one.
 
+PLATFORM STACK REASONING — when generating stackReasoning for these platforms, use the following context so the reasoning is never blank:
+- Zen Planner: "Zen Planner has built-in referral tracking, automated member communication, and retention reporting features that most facilities leave unconfigured. Configure it to automate referral program promotion, trigger at-risk member outreach, and surface churn risk before members cancel."
+- Mindbody: "Mindbody's automation suite — including class reminders, no-show follow-ups, and win-back campaigns — is underutilized in most facilities. Configure these automations to reduce manual effort and recover lost revenue."
+- Wodify: "Wodify includes athlete performance tracking, automated attendance alerts, and member milestone recognition. Configure these features to drive engagement and reduce churn."
+- Glofox: "Glofox offers built-in lead capture forms, trial-to-member conversion workflows, and automated billing management. Configure the full sales pipeline to close more trials."
+- PushPress: "PushPress has a built-in CRM, automated follow-up sequences, and member engagement scoring. Configure the engagement pipeline to identify at-risk members early."
+
 PRIORITY ORDERING:
 For fitness & wellness, weight these areas more heavily in Priority Actions:
-1. Member Retention & Churn Prevention — always top priority if score below 70 (churn is the primary revenue killer)
-2. Trial-to-Member Conversion — second priority (the growth bottleneck)
-3. Lapsed Member Reactivation — third priority (warm prospects at near-zero acquisition cost)
-4. Revenue Optimization & Upsell — fourth priority (grow revenue without new members)`,
+1. Churn Prevention & At-Risk Member Management — always top priority if score below 70 (churn is the primary revenue killer)
+2. Lead Capture & New Member Conversion — second priority (the growth bottleneck)
+3. Win-Back & Lapsed Member Reactivation — third priority (warm prospects at near-zero acquisition cost)
+4. Membership & Package Upsell — fourth priority (grow revenue without new members)`,
 };
