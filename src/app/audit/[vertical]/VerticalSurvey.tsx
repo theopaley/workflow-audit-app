@@ -1064,11 +1064,12 @@ export default function VerticalSurvey({ config }: Props) {
             : "RevRep.ai Workflow Audit"}
         </span>
       </header>
-      <div className="flex justify-center py-3">
-        <div className="w-[200px] h-4 rounded-full bg-slate-200 overflow-hidden">
+      {/* Progress bar */}
+      <div className="flex justify-center py-4">
+        <div className="w-[200px] h-4 rounded-full bg-slate-300 overflow-hidden">
           <div
             className="h-full rounded-full bg-indigo-500 transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${Math.max(progress, 2)}%` }}
           />
         </div>
       </div>
