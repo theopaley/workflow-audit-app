@@ -1063,13 +1063,15 @@ export default function VerticalSurvey({ config }: Props) {
             ? "RevRep.ai — Home Services Audit"
             : "RevRep.ai Workflow Audit"}
         </span>
-        <div className="w-[120px] h-1.5 rounded-full bg-slate-200 overflow-hidden">
+      </header>
+      <div className="flex justify-center py-3">
+        <div className="w-[200px] h-2 rounded-full bg-slate-200 overflow-hidden">
           <div
             className="h-full rounded-full bg-indigo-500 transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
-      </header>
+      </div>
 
       {/* Question area */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
