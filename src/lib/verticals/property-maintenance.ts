@@ -347,7 +347,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
             "When weather, equipment issues, or staffing problems force a schedule change, how do clients find out?",
           options: [
             "They don't — they just notice we didn't show up",
-            "We call when we can but it's chaotic",
+            "We call or text when we can but it's chaotic",
             "We try to notify but it's inconsistent",
             "Automated notifications go out immediately when a visit is rescheduled",
           ],
@@ -373,6 +373,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "GorillaDesk",
         "Connecteam",
         "Slack",
+        "Text / SMS",
         "None",
         "Other",
       ],
