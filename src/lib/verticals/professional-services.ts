@@ -438,7 +438,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 5. Time Tracking & Utilization ────────────────────────────────────────
     {
       id: "ps_time_tracking",
-      name: "Client Communication & Proactive Outreach",
+      name: "Engagement Expansion & Cross-Sell",
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
@@ -527,7 +527,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 6. Client Retention & Account Growth ──────────────────────────────────
     {
       id: "ps_retention",
-      name: "Engagement Expansion & Cross-Sell",
+      name: "Client Retention & Relationship Management",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
@@ -704,7 +704,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 8. Client Communication & Reporting ───────────────────────────────────
     {
       id: "ps_communication",
-      name: "Client Retention & Relationship Management",
+      name: "Client Communication & Proactive Outreach",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
