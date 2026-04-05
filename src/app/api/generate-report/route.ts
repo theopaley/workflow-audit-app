@@ -35,51 +35,25 @@ export async function POST(req: NextRequest) {
   const verticalConfig = verticalId ? verticalRegistry[verticalId] : undefined;
 
   if (verticalConfig) {
-    // Build name-based lookup (lowercased + trimmed) — AI area IDs are
-    // normalised and never match the hs_* prefixed config IDs, so ID
-    // matching is intentionally omitted here.
-    const statByName = new Map<string, string>();
+    // Build ID-based lookups for locked names and stats — bulletproof against
+    // AI hallucinating area names since we match on the area ID.
+    const nameById = new Map<string, string>();
+    const statById = new Map<string, string>();
     for (const area of verticalConfig.workflowAreas) {
-      statByName.set(area.name.toLowerCase().trim(), area.industryBenchmarkStat);
+      nameById.set(area.id, area.name);
+      statById.set(area.id, area.industryBenchmarkStat);
     }
-
-    // Returns the locked stat for an AI-produced area name using:
-    //   1. Exact match (lowercased + trimmed)
-    //   2. Best-score fuzzy fallback — counts word overlaps (≥4 chars) across
-    //      all config entries and returns the highest-scoring match.
-    //      Returning the first match instead caused false positives: common words
-    //      like "management" matched an earlier area in the Map before the correct
-    //      one was reached (e.g. "Route & Schedule Management" was returned for
-    //      "Reviews & Reputation Management" because "management" hit first).
-    const findLockedStat = (aiName: string): string | undefined => {
-      const norm = aiName.toLowerCase().trim();
-
-      if (statByName.has(norm)) return statByName.get(norm);
-
-      const aiWords = norm.split(/\W+/).filter((w) => w.length >= 4);
-      let bestStat: string | undefined;
-      let bestScore = 0;
-
-      for (const [configName, stat] of statByName) {
-        const configWords = configName.split(/\W+/).filter((w) => w.length >= 4);
-        const score =
-          configWords.filter((w) => norm.includes(w)).length +
-          aiWords.filter((w) => configName.includes(w)).length;
-        if (score > bestScore) {
-          bestScore = score;
-          bestStat = stat;
-        }
-      }
-
-      return bestScore >= 1 ? bestStat : undefined;
-    };
 
     auditResult = {
       ...auditResult,
       areas: auditResult.areas.map((area) => {
-        const lockedStat = findLockedStat(area.name);
-        if (!lockedStat) return area;
-        return { ...area, stat: lockedStat };
+        const lockedName = nameById.get(area.id);
+        const lockedStat = statById.get(area.id);
+        return {
+          ...area,
+          ...(lockedName ? { name: lockedName } : {}),
+          ...(lockedStat ? { stat: lockedStat } : {}),
+        };
       }),
     };
   }

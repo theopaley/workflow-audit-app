@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { AnalysisResult } from "@/lib/ai-analysis";
+import { verticalRegistry } from "@/lib/verticals";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -93,6 +94,7 @@ export default function ResultsPage() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [revenueLabel, setRevenueLabel] = useState<string>("");
   const [pdfState, setPdfState] = useState<"idle" | "loading" | "error">("idle");
+  const [lockedNames, setLockedNames] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     try {
@@ -110,6 +112,15 @@ export default function ResultsPage() {
           const answers = JSON.parse(answersRaw) as Record<string, unknown>;
           const label = answers["fin_monthly_revenue_label"];
           if (label) setRevenueLabel(String(label).replace("/month", "").trim());
+
+          // Build locked area name map from vertical config
+          const vid = typeof answers.verticalId === "string" ? answers.verticalId : undefined;
+          const vConfig = vid ? verticalRegistry[vid] : undefined;
+          if (vConfig) {
+            const nameMap = new Map<string, string>();
+            for (const a of vConfig.workflowAreas) nameMap.set(a.id, a.name);
+            setLockedNames(nameMap);
+          }
         }
       } catch {
         // revenue label is cosmetic — silently skip if unavailable
@@ -305,7 +316,10 @@ export default function ResultsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
                       <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-600">
-                        {priority.areaName}
+                        {(() => {
+                          const match = result.areas.find((a) => a.name === priority.areaName);
+                          return match ? (lockedNames.get(match.id) ?? priority.areaName) : priority.areaName;
+                        })()}
                       </span>
                       <span className="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-500">
                         {priority.effort} effort
@@ -336,7 +350,7 @@ export default function ResultsPage() {
                   className="rounded-2xl border border-slate-200 bg-white p-5"
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <h3 className="font-semibold text-slate-900 text-sm leading-tight">{area.name}</h3>
+                    <h3 className="font-semibold text-slate-900 text-sm leading-tight">{lockedNames.get(area.id) ?? area.name}</h3>
                     <span
                       className={`shrink-0 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${cfg.bg} ${cfg.color}`}
                     >
@@ -447,7 +461,7 @@ export default function ResultsPage() {
                               {sa.label}
                             </span>
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold text-slate-800">{area.name}</p>
+                              <p className="text-xs font-semibold text-slate-800">{lockedNames.get(area.id) ?? area.name}</p>
                               <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500">{area.stackReasoning}</p>
                             </div>
                           </div>
@@ -477,7 +491,7 @@ export default function ResultsPage() {
                               {sa.label}
                             </span>
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold text-slate-800">{area.name}</p>
+                              <p className="text-xs font-semibold text-slate-800">{lockedNames.get(area.id) ?? area.name}</p>
                               {area.replacementTool && (
                                 <p className="mt-0.5 text-[11px] font-medium text-indigo-600">
                                   Recommended: {area.replacementTool}
