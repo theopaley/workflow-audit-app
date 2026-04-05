@@ -685,6 +685,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "Birdeye",
         "Mailchimp",
         "Text Message",
+        "Email / Gmail / Outlook",
         "None",
         "Other",
       ],
