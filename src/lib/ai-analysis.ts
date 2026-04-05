@@ -316,11 +316,23 @@ export async function analyzeWorkflows(
     })
   );
 
+  // When a vertical config is present, build a pre-filled area scaffold so the
+  // AI receives the exact id+name pairs as non-overridable values.  This prevents
+  // the AI from hallucinating area names or reordering areas.
+  let areaScaffold = "";
+  if (verticalConfig) {
+    const scaffold = verticalConfig.workflowAreas.map((a) => ({
+      id: a.id,
+      name: a.name,
+    }));
+    areaScaffold = `\n\nIMPORTANT — Your response MUST use these exact area objects in this exact order. The "id" and "name" fields below are pre-filled and MUST NOT be changed:\n${JSON.stringify(scaffold, null, 2)}`;
+  }
+
   const userMessage = `Here are the survey responses for this workflow audit:
 
 ${JSON.stringify(trimmedAnswers, null, 2)}
 
-Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}`;
+Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}${areaScaffold}`;
 
   // Use the SDK's stream().finalMessage() pattern — stream() keeps the SSE
   // connection alive (beating the Vercel timeout) while finalMessage() waits
@@ -328,7 +340,7 @@ Please analyse these responses thoroughly and return the complete audit report a
   let message: Awaited<ReturnType<typeof stream.finalMessage>>;
   const stream = client.messages.stream({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 4000,
+    max_tokens: 6000,
     system: systemPrompt,
     messages: [{ role: "user", content: userMessage }],
   });
@@ -349,9 +361,10 @@ Please analyse these responses thoroughly and return the complete audit report a
   }
 
   // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
+  // trim() first to handle leading/trailing whitespace before backticks.
   let clean = (raw ?? '').trim();
   if (clean.startsWith('```')) {
-    clean = clean.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    clean = clean.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?\s*```\s*$/, '').trim();
   }
 
   let result: AnalysisResult;
