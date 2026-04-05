@@ -37,6 +37,35 @@ const FIN_IDS = [
   "financial_platform",
 ];
 
+// ─── Financial reconciliation ─────────────────────────────────────────────────
+
+const RECONCILIATION_VERTICALS = new Set([
+  "property-maintenance",
+  "home-services",
+  "fitness-wellness",
+  "real-estate",
+]);
+const CLOSE_RATE_VERTICALS = new Set(["real-estate"]);
+
+function computeImpliedRevenue(
+  ans: SurveyAnswers,
+  verticalId: string
+): number | null {
+  const avgSale = Number(ans.fin_avg_sale_value);
+  const leads = Number(ans.fin_monthly_leads_value);
+  if (!avgSale || !leads || isNaN(avgSale) || isNaN(leads)) return null;
+  if (CLOSE_RATE_VERTICALS.has(verticalId)) {
+    const closeRate = Number(ans.fin_close_rate_value);
+    if (!closeRate || isNaN(closeRate)) return null;
+    return leads * closeRate * avgSale;
+  }
+  return leads * avgSale;
+}
+
+function fmtDollars(n: number): string {
+  return "$" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 // ─── Dynamic option resolution ────────────────────────────────────────────────
 
 const RECURRING_SERVICE_TYPES = new Set([
@@ -667,6 +696,7 @@ export default function VerticalSurvey({ config }: Props) {
   } | null>(null);
   const [finAvgSaleCustom, setFinAvgSaleCustom] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [showReconciliation, setShowReconciliation] = useState(false);
   const skipToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
 
@@ -766,6 +796,26 @@ export default function VerticalSurvey({ config }: Props) {
       // apply vertical-specific prompt additions and terminology.
       final.verticalId = config.verticalId;
 
+      // Layer 2: silent revenue anchor — if implied revenue from leads × avg_sale
+      // is >50% off from entered monthly revenue, adjust the lead count so the AI
+      // formula uses a lead figure consistent with the revenue the owner confirmed.
+      if (RECONCILIATION_VERTICALS.has(config.verticalId)) {
+        const avgSale = Number(final.fin_avg_sale_value);
+        const revenue = Number(final.fin_monthly_revenue_value);
+        if (avgSale > 0 && revenue > 0) {
+          const closeRate = CLOSE_RATE_VERTICALS.has(config.verticalId)
+            ? Number(final.fin_close_rate_value) || 1
+            : 1;
+          const currentLeads = Number(final.fin_monthly_leads_value) || 0;
+          const implied = currentLeads * closeRate * avgSale;
+          if (implied < revenue * 0.5 || implied > revenue * 2.0) {
+            final.fin_monthly_leads_value = String(
+              Math.round(revenue / (closeRate * avgSale))
+            );
+          }
+        }
+      }
+
       return final;
     },
     [otherTexts, config.verticalId, allQuestions]
@@ -783,6 +833,23 @@ export default function VerticalSurvey({ config }: Props) {
         return;
       }
       setEmailError("");
+    }
+
+    // Financial reconciliation — pause before first workflow area question
+    if (
+      question.id === "fin_monthly_revenue" &&
+      RECONCILIATION_VERTICALS.has(config.verticalId)
+    ) {
+      const implied = computeImpliedRevenue(answers, config.verticalId);
+      const entered = Number(answers.fin_monthly_revenue_value);
+      if (
+        implied &&
+        entered &&
+        (implied < entered * 0.5 || implied > entered * 2.0)
+      ) {
+        setShowReconciliation(true);
+        return;
+      }
     }
 
     const answer = answers[question.id];
@@ -869,6 +936,39 @@ export default function VerticalSurvey({ config }: Props) {
     }
     transition(prevIdx, "back");
   };
+
+  // Reconciliation handlers
+  const handleReconciliationContinue = useCallback(() => {
+    setShowReconciliation(false);
+    // Advance past fin_monthly_revenue using the same skip logic as advance()
+    let nextIdx = index + 1;
+    while (nextIdx < total) {
+      const nextQ = allQuestions[nextIdx];
+      const preSkipped = answers[nextQ.id] === SKIPPED_VALUE;
+      const condSkipped =
+        nextQ.skipIf != null &&
+        answers[nextQ.skipIf.questionId] === nextQ.skipIf.answer;
+      if (!preSkipped && !condSkipped) break;
+      nextIdx++;
+    }
+    if (nextIdx >= total) {
+      sessionStorage.setItem(
+        "auditAnswers",
+        JSON.stringify(buildFinalAnswers(answers))
+      );
+      router.push("/processing");
+      return;
+    }
+    transition(nextIdx, "forward");
+  }, [index, total, answers, allQuestions, buildFinalAnswers, router, transition]);
+
+  const handleReconciliationAdjust = useCallback(() => {
+    setShowReconciliation(false);
+    const finAvgSaleIdx = allQuestions.findIndex(
+      (q) => q.id === "fin_avg_sale"
+    );
+    if (finAvgSaleIdx >= 0) transition(finAvgSaleIdx, "back");
+  }, [allQuestions, transition]);
 
   // Enter key advances (except on text inputs where it submits the input itself)
   useEffect(() => {
@@ -974,6 +1074,48 @@ export default function VerticalSurvey({ config }: Props) {
       {/* Question area */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         <div className="w-full max-w-2xl">
+          {showReconciliation ? (() => {
+            const implied = computeImpliedRevenue(answers, config.verticalId) ?? 0;
+            const entered = Number(answers.fin_monthly_revenue_value) || 0;
+            return (
+              <div>
+                <h2 className="mb-6 text-2xl font-bold leading-snug text-slate-900 sm:text-3xl">
+                  Quick check before we continue
+                </h2>
+                <p className="mb-4 text-base leading-relaxed text-slate-500">
+                  Based on the numbers you shared — your lead volume and average
+                  value — your monthly revenue works out to around{" "}
+                  <span className="font-semibold text-slate-700">
+                    {fmtDollars(implied)}
+                  </span>
+                  . You entered{" "}
+                  <span className="font-semibold text-slate-700">
+                    {fmtDollars(entered)}
+                  </span>
+                  .
+                </p>
+                <p className="mb-8 text-base leading-relaxed text-slate-500">
+                  These don't need to match exactly — but if something looks off,
+                  you can go back and adjust. Either way, your report will be
+                  accurate.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={handleReconciliationContinue}
+                    className="rounded-full bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 active:scale-95"
+                  >
+                    Looks right, continue
+                  </button>
+                  <button
+                    onClick={handleReconciliationAdjust}
+                    className="rounded-full border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95"
+                  >
+                    Let me adjust
+                  </button>
+                </div>
+              </div>
+            );
+          })() : (<>
           <div className={`transition-all duration-200 ease-out ${slideClass}`}>
             {/* Area badge */}
             <div className="mb-4 h-7">
@@ -1083,6 +1225,7 @@ export default function VerticalSurvey({ config }: Props) {
               </svg>
             </button>
           </div>
+          </>)}
         </div>
       </main>
 
