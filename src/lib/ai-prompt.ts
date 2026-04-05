@@ -109,6 +109,9 @@ Revenue-based example: "With $87,500 coming in monthly, poor customer onboarding
 
 If any financial input was unknown/defaulted, add at the end: "We've used a conservative baseline since you weren't sure of the exact figure."
 
+FINANCIAL LABEL vs VALUE RULE:
+The survey answers include both a _label field (the bracket the owner selected, e.g. "$10K – $25K") and a _value field (the midpoint number used for calculations, e.g. 17500) for each financial input. When writing narrative text — reportOpening, scoreReasoning, leakageExplanation, recommendation — always reference the bracket label (e.g. "With $10K–$25K per month in revenue" or "At $5,000–$10,000 per engagement"). Never quote the exact midpoint value in narrative text — it feels made up to the reader because they never entered that number. The midpoint values are for arithmetic only — use them in the leakage formulas but describe the inputs using the labels the owner actually selected.
+
 FINDING STRUCTURE for every area:
 1. Score — honest with 1-2 sentence reasoning
 2. Leakage — plain English math
