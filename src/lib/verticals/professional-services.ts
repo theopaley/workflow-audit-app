@@ -170,7 +170,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 2. Proposal & Engagement Conversion ───────────────────────────────────
     {
       id: "ps_proposal",
-      name: "Proposal & Engagement Conversion",
+      name: "Prospect Nurture & Proposal Follow-Up",
       leakageType: "lead-based",
       leakageRate: 0.15,
       industryBenchmarkStat:
@@ -259,7 +259,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 3. New Client Onboarding ──────────────────────────────────────────────
     {
       id: "ps_onboarding",
-      name: "New Client Onboarding",
+      name: "New Client Onboarding & Engagement Launch",
       leakageType: "revenue-based",
       leakageRate: 0.06,
       industryBenchmarkStat:
@@ -348,7 +348,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 4. Scope Management & Change Orders ───────────────────────────────────
     {
       id: "ps_scope",
-      name: "Scope Management & Change Orders",
+      name: "Service Delivery & Scope Management",
       leakageType: "revenue-based",
       leakageRate: 0.08,
       industryBenchmarkStat:
@@ -438,7 +438,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 5. Time Tracking & Utilization ────────────────────────────────────────
     {
       id: "ps_time_tracking",
-      name: "Time Tracking & Utilization",
+      name: "Client Communication & Proactive Outreach",
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
@@ -527,7 +527,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 6. Client Retention & Account Growth ──────────────────────────────────
     {
       id: "ps_retention",
-      name: "Client Retention & Account Growth",
+      name: "Engagement Expansion & Cross-Sell",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
@@ -615,7 +615,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 7. Invoicing & Collections ────────────────────────────────────────────
     {
       id: "ps_invoicing",
-      name: "Invoicing & Collections",
+      name: "Retainer & Recurring Revenue Development",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
@@ -704,7 +704,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 8. Client Communication & Reporting ───────────────────────────────────
     {
       id: "ps_communication",
-      name: "Client Communication & Reporting",
+      name: "Client Retention & Relationship Management",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
@@ -793,7 +793,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 9. Reviews & Professional Reputation ──────────────────────────────────
     {
       id: "ps_reviews",
-      name: "Reviews & Professional Reputation",
+      name: "Reviews & Thought Leadership",
       leakageType: "revenue-based",
       leakageRate: 0.06,
       industryBenchmarkStat:
@@ -880,7 +880,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 10. Referral & COI Network ────────────────────────────────────────────
     {
       id: "ps_referral",
-      name: "Referral & COI Network",
+      name: "Referral & Center of Influence Development",
       leakageType: "revenue-based",
       leakageRate: 0.10,
       industryBenchmarkStat:
@@ -967,7 +967,7 @@ export const professionalServicesConfig: VerticalConfig = {
     // ── 11. Lapsed Client Reactivation ────────────────────────────────────────
     {
       id: "ps_reactivation",
-      name: "Lapsed Client Reactivation",
+      name: "Lost Client Win-Back",
       leakageType: "revenue-based",
       leakageRate: 0.07,
       industryBenchmarkStat:
