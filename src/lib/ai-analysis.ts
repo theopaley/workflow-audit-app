@@ -358,19 +358,33 @@ Please analyse these responses thoroughly and return the complete audit report a
       throw new Error("AI analysis returned no text content");
     }
 
-    // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
-    let clean = (raw ?? "").trim();
-    if (clean.startsWith("```")) {
-      clean = clean.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?\s*```\s*$/, "").trim();
+    // Three-step JSON extraction — catches every fence variation.
+    // Step 1: Try raw trimmed response directly.
+    const trimmed = raw.trim();
+    try {
+      return JSON.parse(trimmed) as AnalysisResult;
+    } catch { /* fall through */ }
+
+    // Step 2: Strip ALL markdown fences globally and retry.
+    const stripped = trimmed.replace(/```(?:json)?\s*/g, "").trim();
+    try {
+      return JSON.parse(stripped) as AnalysisResult;
+    } catch { /* fall through */ }
+
+    // Step 3: Extract outermost JSON object by braces.
+    const firstBrace = trimmed.indexOf("{");
+    const lastBrace = trimmed.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      const extracted = trimmed.slice(firstBrace, lastBrace + 1);
+      try {
+        return JSON.parse(extracted) as AnalysisResult;
+      } catch { /* fall through */ }
     }
 
-    try {
-      return JSON.parse(clean) as AnalysisResult;
-    } catch {
-      throw new Error(
-        `Failed to parse AI response as JSON. Raw response:\n${raw.slice(0, 500)}`
-      );
-    }
+    // All three steps failed — throw for retry.
+    throw new Error(
+      `Failed to parse AI response as JSON. Raw response:\n${raw.slice(0, 500)}`
+    );
   };
 
   // Attempt with one automatic retry on JSON parse failure.
