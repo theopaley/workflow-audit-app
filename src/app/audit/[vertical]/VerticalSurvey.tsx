@@ -1065,7 +1065,7 @@ export default function VerticalSurvey({ config }: Props) {
         </span>
       </header>
       <div className="flex justify-center py-3">
-        <div className="w-[200px] h-2 rounded-full bg-slate-200 overflow-hidden">
+        <div className="w-[200px] h-4 rounded-full bg-slate-200 overflow-hidden">
           <div
             className="h-full rounded-full bg-indigo-500 transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
