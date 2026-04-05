@@ -437,7 +437,7 @@ export const professionalServicesConfig: VerticalConfig = {
 
     // ── 5. Time Tracking & Utilization ────────────────────────────────────────
     {
-      id: "ps_time_tracking",
+      id: "ps_expansion",
       name: "Engagement Expansion & Cross-Sell",
       leakageType: "revenue-based",
       leakageRate: 0.07,
@@ -455,8 +455,8 @@ export const professionalServicesConfig: VerticalConfig = {
       ],
       questions: [
         {
-          id: "ps_time_tracking_q1",
-          areaId: "ps_time_tracking",
+          id: "ps_expansion_q1",
+          areaId: "ps_expansion",
           type: "single",
           question:
             "How does your team track billable time — and how consistently is it captured?",
@@ -468,8 +468,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_time_tracking_q2",
-          areaId: "ps_time_tracking",
+          id: "ps_expansion_q2",
+          areaId: "ps_expansion",
           type: "single",
           question:
             "Do you know your firm's current billable utilization rate — what percentage of available hours are billed to clients?",
@@ -481,8 +481,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_time_tracking_q3",
-          areaId: "ps_time_tracking",
+          id: "ps_expansion_q3",
+          areaId: "ps_expansion",
           type: "single",
           question:
             "How much billable time do you estimate goes unrecorded each week — work that was done but never logged?",
@@ -494,8 +494,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_time_tracking_q4",
-          areaId: "ps_time_tracking",
+          id: "ps_expansion_q4",
+          areaId: "ps_expansion",
           type: "single",
           question:
             "Do you review time entries before invoicing — to catch missed entries, incorrect codes, or unbilled work?",
@@ -507,8 +507,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_time_tracking_q5",
-          areaId: "ps_time_tracking",
+          id: "ps_expansion_q5",
+          areaId: "ps_expansion",
           type: "single",
           question:
             "Do you use time data to improve pricing, scoping, and resource allocation — or just for invoicing?",
@@ -1145,7 +1145,7 @@ export const professionalServicesConfig: VerticalConfig = {
     ps_proposal:        0.15,
     ps_onboarding:      0.06,
     ps_scope:           0.08,
-    ps_time_tracking:   0.07,
+    ps_expansion:   0.07,
     ps_retention:       0.10,
     ps_invoicing:       0.10,
     ps_communication:   0.10,
