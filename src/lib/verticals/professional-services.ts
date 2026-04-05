@@ -612,7 +612,7 @@ export const professionalServicesConfig: VerticalConfig = {
 
     // ── 7. Invoicing & Collections ────────────────────────────────────────────
     {
-      id: "ps_invoicing",
+      id: "ps_retainer",
       name: "Retainer & Recurring Revenue Development",
       leakageType: "revenue-based",
       leakageRate: 0.10,
@@ -632,8 +632,8 @@ export const professionalServicesConfig: VerticalConfig = {
       ],
       questions: [
         {
-          id: "ps_invoicing_q1",
-          areaId: "ps_invoicing",
+          id: "ps_retainer_q1",
+          areaId: "ps_retainer",
           type: "single",
           question:
             "How quickly after completing work or reaching a billing milestone do invoices go out?",
@@ -645,8 +645,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_invoicing_q2",
-          areaId: "ps_invoicing",
+          id: "ps_retainer_q2",
+          areaId: "ps_retainer",
           type: "single",
           question:
             "When an invoice goes past due, is there an automated follow-up process — or does someone have to remember to chase it?",
@@ -658,8 +658,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_invoicing_q3",
-          areaId: "ps_invoicing",
+          id: "ps_retainer_q3",
+          areaId: "ps_retainer",
           type: "single",
           question:
             "Do you know your current average days to payment — how long it takes clients to pay after invoicing?",
@@ -671,8 +671,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_invoicing_q4",
-          areaId: "ps_invoicing",
+          id: "ps_retainer_q4",
+          areaId: "ps_retainer",
           type: "single",
           question:
             "Do clients have easy ways to pay — online payment, credit card, ACH — or do they have to mail a check?",
@@ -684,8 +684,8 @@ export const professionalServicesConfig: VerticalConfig = {
           ],
         },
         {
-          id: "ps_invoicing_q5",
-          areaId: "ps_invoicing",
+          id: "ps_retainer_q5",
+          areaId: "ps_retainer",
           type: "single",
           question:
             "Do you collect a retainer deposit or upfront payment before beginning new engagements?",
@@ -1147,7 +1147,7 @@ export const professionalServicesConfig: VerticalConfig = {
     ps_scope:           0.08,
     ps_expansion:   0.07,
     ps_retention:       0.10,
-    ps_invoicing:       0.10,
+    ps_retainer:       0.10,
     ps_communication:   0.10,
     ps_reviews:         0.06,
     ps_referral:        0.10,

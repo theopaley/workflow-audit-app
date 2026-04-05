@@ -332,7 +332,7 @@ export async function analyzeWorkflows(
 
 ${JSON.stringify(trimmedAnswers, null, 2)}
 
-Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}${areaScaffold}`;
+Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. CRITICAL: Output raw JSON only. Do NOT use markdown code fences. Do NOT wrap in backticks. Do NOT write \`\`\`json or \`\`\`. Your response must start with { and end with } and contain nothing else. Any markdown formatting will cause a system failure.${unknownNote}${areaScaffold}`;
 
   // Call the API and attempt to parse the response as JSON. Returns the parsed
   // result or throws with the raw response for diagnostics.
