@@ -334,47 +334,53 @@ ${JSON.stringify(trimmedAnswers, null, 2)}
 
 Please analyse these responses thoroughly and return the complete audit report as a single valid JSON object. Do not include any text before or after the JSON.${unknownNote}${areaScaffold}`;
 
-  // Use the SDK's stream().finalMessage() pattern — stream() keeps the SSE
-  // connection alive (beating the Vercel timeout) while finalMessage() waits
-  // for the guaranteed-complete response before resolving.
-  let message: Awaited<ReturnType<typeof stream.finalMessage>>;
-  const stream = client.messages.stream({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 6000,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userMessage }],
-  });
+  // Call the API and attempt to parse the response as JSON. Returns the parsed
+  // result or throws with the raw response for diagnostics.
+  const callAndParse = async (): Promise<AnalysisResult> => {
+    const stream = client.messages.stream({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 6000,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMessage }],
+    });
 
+    let message: Awaited<ReturnType<typeof stream.finalMessage>>;
+    try {
+      message = await stream.finalMessage();
+    } catch (err) {
+      console.error("[ai-analysis] Anthropic API call failed:", err);
+      throw err;
+    }
+
+    const raw = message.content[0].type === "text" ? message.content[0].text : "";
+
+    if (!raw.trim()) {
+      throw new Error("AI analysis returned no text content");
+    }
+
+    // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
+    let clean = (raw ?? "").trim();
+    if (clean.startsWith("```")) {
+      clean = clean.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?\s*```\s*$/, "").trim();
+    }
+
+    try {
+      return JSON.parse(clean) as AnalysisResult;
+    } catch {
+      throw new Error(
+        `Failed to parse AI response as JSON. Raw response:\n${raw.slice(0, 500)}`
+      );
+    }
+  };
+
+  // Attempt with one automatic retry on JSON parse failure.
   try {
-    message = await stream.finalMessage();
-  } catch (err) {
-    // Log the full Anthropic SDK error (includes status code, error type,
-    // and request ID) before re-throwing so Vercel logs capture it.
-    console.error("[ai-analysis] Anthropic API call failed:", err);
-    throw err;
-  }
-
-  const raw = message.content[0].type === "text" ? message.content[0].text : "";
-
-  if (!raw.trim()) {
-    throw new Error("AI analysis returned no text content");
-  }
-
-  // Strip markdown code fences if Claude wraps the JSON in ```json ... ```
-  // trim() first to handle leading/trailing whitespace before backticks.
-  let clean = (raw ?? '').trim();
-  if (clean.startsWith('```')) {
-    clean = clean.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?\s*```\s*$/, '').trim();
-  }
-
-  let result: AnalysisResult;
-  try {
-    result = JSON.parse(clean) as AnalysisResult;
-  } catch {
-    throw new Error(
-      `Failed to parse AI response as JSON. Raw response:\n${raw.slice(0, 500)}`
+    return await callAndParse();
+  } catch (firstErr) {
+    console.warn(
+      "[ai-analysis] First attempt failed, retrying once:",
+      firstErr instanceof Error ? firstErr.message.slice(0, 200) : firstErr
     );
+    return await callAndParse();
   }
-
-  return result;
 }
