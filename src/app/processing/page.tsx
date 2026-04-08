@@ -1,36 +1,41 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { verticalRegistry } from "@/lib/verticals";
 
-const MESSAGES = [
-  "Analyzing your workflow data...",
-  "Scoring your 12 workflow areas...",
-  "Calculating revenue leakage...",
-  "Identifying your top priorities...",
-  "Generating your PDF report...",
-  "Sending your report...",
-  "Your audit is ready!",
+const FALLBACK_AREAS = [
+  "Lead Capture & Response Time",
+  "Lead Follow-Up & CRM",
+  "Scheduling & Booking",
+  "Proposals & Quoting",
+  "Customer Onboarding",
+  "Job & Project Management",
+  "Invoicing & Payments",
+  "Customer Communication",
+  "Reviews & Reputation",
+  "Re-engagement & Retention",
+  "Referral Management",
+  "Business Visibility & Reporting",
 ];
 
-const MESSAGE_DURATION = 2600; // ms per message
+const AREA_INTERVAL = 7000; // ms between area completions
 
 export default function ProcessingPage() {
   const router = useRouter();
-  const [messageIndex, setMessageIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const [animationDone, setAnimationDone] = useState(false);
-  const [pdfDone, setPdfDone] = useState(false);
+  const [completedCount, setCompletedCount] = useState(0);
   const [apiDone, setApiDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [areaNames, setAreaNames] = useState<string[]>(FALLBACK_AREAS);
+  const apiDoneRef = useRef(false);
+  const redirectScheduled = useRef(false);
 
   const handleRetry = useCallback(() => {
-    setMessageIndex(0);
-    setVisible(true);
-    setAnimationDone(false);
-    setPdfDone(false);
+    setCompletedCount(0);
     setApiDone(false);
+    apiDoneRef.current = false;
+    redirectScheduled.current = false;
     setError(null);
     setRetryCount((c) => c + 1);
   }, []);
@@ -51,12 +56,19 @@ export default function ProcessingPage() {
       return;
     }
 
-    let answers: unknown;
+    let answers: Record<string, unknown>;
     try {
       answers = JSON.parse(raw);
     } catch {
       setError("Your survey answers appear to be corrupted. Please complete the survey again.");
       return;
+    }
+
+    // Resolve area names from the vertical config
+    const vid = typeof answers.verticalId === "string" ? answers.verticalId : undefined;
+    const vConfig = vid ? verticalRegistry[vid] : undefined;
+    if (vConfig) {
+      setAreaNames(vConfig.workflowAreas.map((a) => a.name));
     }
 
     // Step 1: AI analysis
@@ -78,11 +90,7 @@ export default function ProcessingPage() {
       .then((result) => {
         sessionStorage.setItem("auditResult", JSON.stringify(result));
 
-        // Unblock the animation immediately — PDF and email finish in the background.
-        // Note: /api/send-report requires PDF bytes, so PDF must complete before email
-        // can be sent. Both run as a fire-and-forget background task so the user
-        // navigates to /results as soon as analysis is done.
-        setPdfDone(true);
+        apiDoneRef.current = true;
         setApiDone(true);
 
         // Background: generate PDF then send email (silent failures acceptable)
@@ -121,63 +129,38 @@ export default function ProcessingPage() {
       });
   }, [retryCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Navigate when both animation and API have finished ───────────────────────
-  useEffect(() => {
-    if (animationDone && apiDone) {
-      router.push("/results");
-    }
-  }, [animationDone, apiDone, router]);
-
-  // ── Animation ─────────────────────────────────────────────────────────────
-  // Messages 0–3 cycle on the timer.
-  // Message 4 ("Generating your PDF report...") holds until pdfDone.
-  // Message 5 ("Sending your report...") holds until apiDone.
-  // Message 6 ("Your audit is ready!") shows then navigates.
-  const HOLD_PDF_INDEX  = MESSAGES.length - 3; // index 4
-  const HOLD_SEND_INDEX = MESSAGES.length - 2; // index 5
-  const READY_INDEX     = MESSAGES.length - 1; // index 6
-
+  // ── Area-by-area animation timer ──────────────────────────────────────────
   useEffect(() => {
     if (error) return;
+    // Stop advancing once all 12 areas are done + the "building report" step
+    if (completedCount > areaNames.length) return;
 
-    // "Your audit is ready!" — wait briefly then navigate
-    if (messageIndex >= READY_INDEX) {
-      const timer = setTimeout(() => setAnimationDone(true), MESSAGE_DURATION);
+    const timer = setInterval(() => {
+      setCompletedCount((c) => {
+        const next = c + 1;
+        // Once we finish the last area, advance one more to show "Building report"
+        if (next > areaNames.length + 1) {
+          clearInterval(timer);
+          return c;
+        }
+        return next;
+      });
+    }, AREA_INTERVAL);
+
+    return () => clearInterval(timer);
+  }, [error, areaNames.length, completedCount]);
+
+  // ── Redirect when API is done and current area animation finishes ─────────
+  useEffect(() => {
+    if (!apiDone || redirectScheduled.current) return;
+    // Wait for current area to finish before redirecting
+    if (completedCount >= 1) {
+      redirectScheduled.current = true;
+      // Small delay so the user sees the last completed checkmark
+      const timer = setTimeout(() => router.push("/results"), 800);
       return () => clearTimeout(timer);
     }
-
-    // "Sending your report..." — hold until email send completes
-    if (messageIndex >= HOLD_SEND_INDEX) {
-      if (!apiDone) return;
-      const fadeOut = setTimeout(() => setVisible(false), 300);
-      const swap = setTimeout(() => {
-        setMessageIndex(READY_INDEX);
-        setVisible(true);
-      }, 700);
-      return () => { clearTimeout(fadeOut); clearTimeout(swap); };
-    }
-
-    // "Generating your PDF report..." — hold until PDF generation completes
-    if (messageIndex >= HOLD_PDF_INDEX) {
-      if (!pdfDone) return;
-      const fadeOut = setTimeout(() => setVisible(false), 300);
-      const swap = setTimeout(() => {
-        setMessageIndex(HOLD_SEND_INDEX);
-        setVisible(true);
-      }, 700);
-      return () => { clearTimeout(fadeOut); clearTimeout(swap); };
-    }
-
-    // Normal cycle for messages 0–3
-    const fadeOut = setTimeout(() => setVisible(false), MESSAGE_DURATION - 400);
-    const swap = setTimeout(() => {
-      setMessageIndex((i) => i + 1);
-      setVisible(true);
-    }, MESSAGE_DURATION);
-    return () => { clearTimeout(fadeOut); clearTimeout(swap); };
-  }, [messageIndex, error, pdfDone, apiDone]);
-
-  const progress = Math.round(((messageIndex + 1) / MESSAGES.length) * 100);
+  }, [apiDone, completedCount, router]);
 
   // ── Error state ───────────────────────────────────────────────────────────────
   if (error) {
@@ -220,83 +203,116 @@ export default function ProcessingPage() {
     );
   }
 
-  // ── Normal processing state (animation unchanged) ─────────────────────────────
+  // ── Normal processing state — area-by-area checklist ──────────────────────
+  const analyzedCount = Math.min(completedCount, areaNames.length);
+  const showBuildingReport = completedCount > areaNames.length;
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
-      {/* Wordmark */}
-      <div className="absolute top-0 left-0 right-0 flex justify-between items-center border-b border-slate-100 px-6 py-4">
+    <div className="flex min-h-screen flex-col bg-white">
+      {/* Navbar */}
+      <header className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
         <span className="text-base font-semibold tracking-tight text-slate-900">
           RevRep.ai Workflow Audit
         </span>
-      </div>
+      </header>
 
-      <div className="flex w-full max-w-md flex-col items-center text-center">
-        {/* Spinner */}
-        <div className="relative mb-12 flex h-24 w-24 items-center justify-center">
-          {/* Outer ring */}
-          <svg
-            className="absolute inset-0 h-full w-full -rotate-90"
-            viewBox="0 0 96 96"
-          >
-            <circle
-              cx="48"
-              cy="48"
-              r="40"
-              fill="none"
-              stroke="#e0e7ff"
-              strokeWidth="6"
-            />
-            <circle
-              cx="48"
-              cy="48"
-              r="40"
-              fill="none"
-              stroke="#6366f1"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray={`${2 * Math.PI * 40}`}
-              strokeDashoffset={`${2 * Math.PI * 40 * (1 - progress / 100)}`}
-              className="transition-all duration-700 ease-out"
-            />
-          </svg>
-          {/* Pulsing inner dot */}
-          <span className="relative flex h-10 w-10 items-center justify-center">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-200 opacity-60" />
-            <span className="relative inline-flex h-5 w-5 rounded-full bg-indigo-500" />
-          </span>
-        </div>
+      <main className="flex flex-1 flex-col items-center px-6 py-12">
+        <div className="w-full max-w-lg">
+          {/* Top section */}
+          <div className="mb-8 text-center">
+            <h1 className="mb-2 text-2xl font-bold tracking-tight text-slate-900">
+              Analyzing your business...
+            </h1>
+            <p className="text-base text-slate-500">
+              We're reviewing each workflow area and calculating your revenue leakage.
+            </p>
+          </div>
 
-        {/* Status message */}
-        <div className="h-12 flex items-center justify-center">
-          <p
-            className={`text-2xl font-semibold text-slate-800 transition-all duration-300 ease-out ${
-              visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-            }`}
-          >
-            {MESSAGES[messageIndex]}
-          </p>
-        </div>
+          {/* Area checklist */}
+          <div className="mb-8">
+            {areaNames.map((name, i) => {
+              const isCompleted = i < completedCount;
+              const isCurrent = i === completedCount && !showBuildingReport;
+              return (
+                <div
+                  key={i}
+                  className={`flex items-center gap-3 border-b border-slate-100 py-3 transition-all duration-500 ${
+                    isCompleted
+                      ? "text-slate-900"
+                      : isCurrent
+                      ? "text-indigo-600"
+                      : "text-slate-400"
+                  }`}
+                >
+                  {/* Status icon */}
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center">
+                    {isCompleted ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-5 w-5 text-indigo-500"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : isCurrent ? (
+                      <span className="relative flex h-3 w-3">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
+                        <span className="relative inline-flex h-3 w-3 rounded-full bg-indigo-500" />
+                      </span>
+                    ) : (
+                      <span className="h-3 w-3 rounded-full border-2 border-slate-300" />
+                    )}
+                  </div>
+                  {/* Area name */}
+                  <span className={`text-sm ${isCompleted || isCurrent ? "font-medium" : ""}`}>
+                    {name}
+                  </span>
+                </div>
+              );
+            })}
 
-        <p className="mt-4 text-sm text-slate-400">
-          This usually takes 1–3 minutes
-        </p>
-
-        {/* Progress dots */}
-        <div className="mt-10 flex gap-2">
-          {MESSAGES.map((_, i) => (
-            <span
-              key={i}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                i < messageIndex
-                  ? "w-4 bg-indigo-400"
-                  : i === messageIndex
-                  ? "w-6 bg-indigo-600"
-                  : "w-1.5 bg-slate-200"
+            {/* Building report row */}
+            <div
+              className={`flex items-center gap-3 py-3 transition-all duration-500 ${
+                showBuildingReport ? "text-indigo-600" : "text-slate-400"
               }`}
-            />
-          ))}
+            >
+              <div className="flex h-5 w-5 shrink-0 items-center justify-center">
+                {showBuildingReport ? (
+                  <span className="relative flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-indigo-500" />
+                  </span>
+                ) : (
+                  <span className="h-3 w-3 rounded-full border-2 border-slate-300" />
+                )}
+              </div>
+              <span className={`text-sm ${showBuildingReport ? "font-medium" : ""}`}>
+                Building your personalized report...
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom section */}
+          <div className="text-center">
+            <p className="text-sm text-slate-500">
+              {analyzedCount < areaNames.length
+                ? `Area ${analyzedCount + 1} of ${areaNames.length} analyzing`
+                : showBuildingReport
+                ? "Finalizing your report..."
+                : `${areaNames.length} of ${areaNames.length} areas analyzed`}
+            </p>
+            <p className="mt-2 text-xs text-slate-400">
+              This usually takes 1–2 minutes
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
