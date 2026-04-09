@@ -46,14 +46,21 @@ const RECONCILIATION_VERTICALS = new Set([
   "real-estate",
 ]);
 const CLOSE_RATE_VERTICALS = new Set(["real-estate"]);
+const ROUTE_SIZE_VERTICALS = new Set(["property-maintenance"]);
 
 function computeImpliedRevenue(
   ans: SurveyAnswers,
   verticalId: string
 ): number | null {
   const avgSale = Number(ans.fin_avg_sale_value);
+  if (!avgSale || isNaN(avgSale)) return null;
+  if (ROUTE_SIZE_VERTICALS.has(verticalId)) {
+    const routeSize = Number(ans.pm_route_size_value);
+    if (!routeSize || isNaN(routeSize)) return null;
+    return routeSize * avgSale;
+  }
   const leads = Number(ans.fin_monthly_leads_value);
-  if (!avgSale || !leads || isNaN(avgSale) || isNaN(leads)) return null;
+  if (!leads || isNaN(leads)) return null;
   if (CLOSE_RATE_VERTICALS.has(verticalId)) {
     const closeRate = Number(ans.fin_close_rate_value);
     if (!closeRate || isNaN(closeRate)) return null;

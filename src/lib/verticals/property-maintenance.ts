@@ -106,6 +106,16 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "125–200",
         "More than 200",
       ],
+      midpoints: {
+        "Fewer than 10": 7,
+        "10–20": 15,
+        "20–35": 27,
+        "35–50": 42,
+        "50–75": 62,
+        "75–125": 100,
+        "125–200": 162,
+        "More than 200": 250,
+      },
     },
   },
 
