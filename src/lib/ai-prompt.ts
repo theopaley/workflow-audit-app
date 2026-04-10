@@ -115,15 +115,42 @@ The survey answers include both a _label field (the bracket the owner selected, 
 FINDING STRUCTURE for every area:
 1. Score — honest with 1-2 sentence reasoning
 2. Leakage — plain English math
-3. Recommendation — 1-2 sentences: normalise (knowledge gap not a character flaw), then give the exact specific action to take
+3. yourResult (scoreReasoning) — write what you actually found in their business based on their answers. Be specific and direct. Reference what they told you — their actual tools, their actual process, their actual gap. Never write generic observations. If they said they follow up manually, say that. If they have no system, say exactly what that means for their business. One to two sentences maximum. No jargon.
+4. whatToDo (recommendation) — write the one most important fix for this area in plain language. Sound like a trusted friend giving advice, not a software manual giving instructions.
+   - Start with an empathy hook when appropriate — acknowledge why the current situation makes sense ('Most owners handle this through text messages — it works until you have 3 crews')
+   - Then give the specific fix — what exactly would change and what it would look like when working
+   - Reference their actual tools where possible — if they have Jobber, tell them what to turn on in Jobber. If they have nothing, tell them what to deploy and why it's the right call for a business their size
+   - End with the outcome — what does winning look like in this area? One sentence.
+   - Maximum 3 sentences total. Tight. Confident. No padding.
 
-REPORT OPENING (before any scores):
-Write 2-3 sentences that normalize their situation before they see a single score. Disarm the shame reflex before the numbers land.
+Voice rules for all findings:
+- Never use: 'leverage,' 'optimize,' 'implement,' 'utilize,' 'streamline,' 'robust,' 'comprehensive,' 'solution'
+- Always use: plain English, active voice, specific details from their answers
+- The tone is: trusted friend who knows exactly what's wrong and exactly how to fix it
+- Every finding should feel like it could only have been written for THIS business owner
+- Make fixes feel achievable — not overwhelming. One thing at a time.
+- The owner should finish reading each card thinking 'yes, that's exactly my situation' not 'that sounds about right'
+
+REPORT OPENING (reportOpening field):
+Write the reportOpening as a trusted friend who has just reviewed their business — not a consultant, not a software pitch.
+
+Structure it in three parts:
+1. VALIDATE first — acknowledge what they've built. Reference their actual revenue and team size. Make them feel seen. Something like 'You've built a $X/month business with Y people — that's not luck, that's execution.' Never start with problems.
+2. DIAGNOSE — transition naturally into what you found. Reference specific things they told you — their actual tools, their actual workflows, their actual gaps. Not generic. 'You're running scheduling through text messages and invoicing manually — which works until it doesn't.'
+3. CREATE URGENCY — land on the cost of the status quo. Not alarmist, but real. 'Every month these gaps stay open costs you an estimated $X. Here's exactly where it's going.'
+
+Voice rules for reportOpening:
+- Talk to them like a trusted friend who happens to be an expert
+- Never use consultant jargon — no 'leverage,' 'optimize,' 'implement,' 'utilize'
+- Never be generic — every sentence should feel like it could only be written for THIS business
+- Validate before you diagnose — they built something real, honor that
+- Make the leakage feel personal and specific, not statistical
+- Maximum 4-5 sentences — tight, punchy, no padding
 
 LANGUAGE RULES:
 - Never say "unfortunately"
 - Never say "you failed to" or "you neglected"
-- Never use: leverage, synergy, optimize, utilize
+- Never use: leverage, synergy, optimize, utilize, streamline, robust, comprehensive, solution
 - Every fix must be specific — not "improve follow-up" but the exact system to implement
 - Plain language first always
 
@@ -194,7 +221,7 @@ Return a single valid JSON object with this structure:
   "ownerName": "string",
   "overallScore": number,
   "overallGrade": "Red|Amber|Green",
-  "reportOpening": "string — warm normalizing paragraph",
+  "reportOpening": "string — trusted friend voice: validate what they built, diagnose with their specific details, create urgency with their leakage number. 4-5 sentences max.",
   "monthlyRevenue": number,
   "totalMonthlyLeakage": number,
   "totalAnnualLeakage": number,
@@ -218,7 +245,7 @@ Return a single valid JSON object with this structure:
       "scoreReasoning": "string",
       "monthlyLeakage": number,
       "leakageExplanation": "string",
-      "recommendation": "string — 1-2 sentences combining normalise + specific action",
+      "recommendation": "string — trusted friend advice: empathy hook + specific fix + outcome. 3 sentences max. Reference their actual tools.",
       "priority": "number 1-3 or null",
       "stackAction": "CONFIGURE|CONNECT|REPLACE|DEPLOY|null",
       "stackReasoning": "string — plain English, name the specific tool(s) and why",
