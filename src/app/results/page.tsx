@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { AnalysisResult } from "@/lib/ai-analysis";
 import { verticalRegistry } from "@/lib/verticals";
+import { getLeakageRange } from "@/lib/leakage-range";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -219,19 +220,23 @@ export default function ResultsPage() {
                   <span className="text-xs font-medium text-slate-400">/ 100</span>
                 </div>
               </div>
-              {result.totalMonthlyLeakage > 0 && (
-                <div className="text-center">
-                  <p className="text-xs font-medium uppercase tracking-widest text-slate-400">
-                    Est. Monthly Leakage
-                  </p>
-                  <p className={`text-2xl font-bold ${scoreColor(result.overallScore)}`}>
-                    {formatCurrency(result.totalMonthlyLeakage)}<span className="text-sm font-medium text-slate-400"> /mo</span>
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {formatCurrency(result.totalAnnualLeakage)} per year
-                  </p>
-                </div>
-              )}
+              {result.totalMonthlyLeakage > 0 && (() => {
+                const range = getLeakageRange(result.totalMonthlyLeakage);
+                const annualRange = getLeakageRange(result.totalAnnualLeakage);
+                return (
+                  <div className="text-center">
+                    <p className="text-xs font-medium uppercase tracking-widest text-slate-400">
+                      Est. Monthly Leakage
+                    </p>
+                    <p className={`text-2xl font-bold ${scoreColor(result.overallScore)}`}>
+                      {range.displayShort}<span className="text-sm font-medium text-slate-400"> /mo</span>
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {annualRange.displayShort} per year
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Legend */}

@@ -12,6 +12,7 @@ import {
 } from "@react-pdf/renderer";
 import type { AnalysisResult, AreaResult, StackAction } from "./ai-analysis";
 import type { SurveyAnswers } from "@/types/survey";
+import { getLeakageRange } from "./leakage-range";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 Font.registerHyphenationCallback((word) => [word]);
@@ -767,7 +768,7 @@ function CoverPage({
   result: AnalysisResult;
   businessName: string;
 }) {
-  const annualFormatted = formatCurrencyFull(result.totalAnnualLeakage);
+  const annualRange = getLeakageRange(result.totalAnnualLeakage);
 
   return (
     <Page size="A4" style={s.coverPage}>
@@ -785,7 +786,7 @@ function CoverPage({
           {"Based on your audit, "}
           <Text style={{ fontFamily: "Times-Bold", color: C.white }}>{businessName}</Text>
           {" is losing an estimated "}
-          <Text style={s.coverStatementBold}>{annualFormatted}</Text>
+          <Text style={s.coverStatementBold}>{annualRange.displayFull}</Text>
           {" every year to workflow gaps that AI can fix. Here's exactly where it's going — and how to get it back."}
         </Text>
       </View>
@@ -802,19 +803,22 @@ function CoverPage({
         </View>
 
         {/* Full-width leakage banner */}
-        {result.totalMonthlyLeakage > 0 && (
-          <View style={s.leakageBanner}>
-            <Text style={s.leakageBannerLabel}>
-              Estimated Monthly Revenue Leakage
-            </Text>
-            <Text style={s.leakageBannerValue}>
-              {`${formatCurrencyFull(result.totalMonthlyLeakage)} per month`}
-            </Text>
-            <Text style={s.leakageBannerSub}>
-              {`· ${formatCurrencyFull(result.totalAnnualLeakage)} per year`}
-            </Text>
-          </View>
-        )}
+        {result.totalMonthlyLeakage > 0 && (() => {
+          const monthlyRange = getLeakageRange(result.totalMonthlyLeakage);
+          return (
+            <View style={s.leakageBanner}>
+              <Text style={s.leakageBannerLabel}>
+                Estimated Monthly Revenue Leakage
+              </Text>
+              <Text style={s.leakageBannerValue}>
+                {`${monthlyRange.displayFull} per month`}
+              </Text>
+              <Text style={s.leakageBannerSub}>
+                {`\u00B7 ${annualRange.displayFull} per year`}
+              </Text>
+            </View>
+          );
+        })()}
       </View>
     </Page>
   );
@@ -891,7 +895,7 @@ function FindingCard({ area, displayLeakage, verticalId }: { area: AreaResult; d
               isBizVis
                 ? `Every other gap in this report costs you money. Without a reporting system, those problems go undetected longer — which means each one costs more than our conservative estimates suggest. We apply a compounding factor to reflect that reality. On top of that, flying blind on metrics like lead sources, conversion rates, and project profitability has its own direct cost in slow decisions and missed opportunities.${area.monthlyLeakage > 0 && area.monthlyLeakage >= displayLeakage ? ` Combined, that\u2019s ${formatCurrency(area.monthlyLeakage)} per month before applying your revenue cap.` : ""}`
                 : area.leakageExplanation
-            } Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap.`}</Text>
+            } Adjusted to ${formatCurrency(displayLeakage)}/mo after applying your revenue cap. These are conservative estimates \u2014 your actual leakage is likely higher. We cap our calculations at 40% of your revenue so we\u2019re never overstating what\u2019s at stake.`}</Text>
           </View>
         )}
 

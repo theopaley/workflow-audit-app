@@ -145,6 +145,7 @@ Voice rules for reportOpening:
 - Never be generic — every sentence should feel like it could only be written for THIS business
 - Validate before you diagnose — they built something real, honor that
 - Make the leakage feel personal and specific, not statistical
+- When referencing the leakage figure in the reportOpening, always express it as a range (e.g. 'between $6,000 and $8,000 per month') never as a single precise number. Add one sentence explaining these are conservative estimates — the actual cost is likely higher but we only show what we can confidently stand behind.
 - Maximum 4-5 sentences — tight, punchy, no padding
 
 LANGUAGE RULES:
