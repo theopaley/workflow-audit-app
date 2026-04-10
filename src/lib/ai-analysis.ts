@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { buildSystemPrompt } from "./ai-prompt";
+import { getLeakageRange } from "./leakage-range";
 import type { SurveyAnswers } from "@/types/survey";
 import type { VerticalConfig, VerticalArea } from "@/lib/verticals/types";
 
@@ -420,6 +421,22 @@ Please analyse these responses thoroughly and return the complete audit report a
         largestArea.monthlyLeakage = (largestArea.monthlyLeakage ?? 0) + remainder;
       }
       result.totalMonthlyLeakage = capAmount;
+    }
+  }
+
+  // Inject calculated leakage range into reportOpening — replace AI placeholder with our figure
+  if (result.reportOpening && typeof result.reportOpening === 'string') {
+    const range = getLeakageRange(result.totalMonthlyLeakage);
+    const annualLower = Math.round((range.lower * 12) / 1000);
+    const annualUpper = Math.round((range.upper * 12) / 1000);
+    const rangeText = `between ${range.displayFull} per month (${annualLower}K–${annualUpper}K per year)`;
+    result.reportOpening = result.reportOpening.replace('{{LEAKAGE_RANGE}}', rangeText);
+    // If AI ignored the placeholder and wrote its own numbers, append our figure
+    if (!result.reportOpening.includes(range.displayFull)) {
+      result.reportOpening = result.reportOpening.replace(
+        /every month these gaps[^.]*\./i,
+        `Every month these gaps stay open costs you ${rangeText}. Here's exactly where it's going.`
+      ) || result.reportOpening;
     }
   }
 

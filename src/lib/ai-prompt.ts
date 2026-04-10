@@ -137,7 +137,7 @@ Write the reportOpening as a trusted friend who has just reviewed their business
 Structure it in three parts:
 1. VALIDATE first — acknowledge what they've built. Reference their actual revenue and team size. Make them feel seen. Something like 'You've built a $X/month business with Y people — that's not luck, that's execution.' Never start with problems.
 2. DIAGNOSE — transition naturally into what you found. Reference specific things they told you — their actual tools, their actual workflows, their actual gaps. Not generic. 'You're running scheduling through text messages and invoicing manually — which works until it doesn't.'
-3. CREATE URGENCY — land on the cost of the status quo. Not alarmist, but real. 'Every month these gaps stay open costs you an estimated $X. Here's exactly where it's going.'
+3. CREATE URGENCY — end with exactly this sentence, word for word: 'Every month these gaps stay open costs you {{LEAKAGE_RANGE}}. Here's exactly where it's going.' Do not add any other dollar figures anywhere in the reportOpening. The {{LEAKAGE_RANGE}} placeholder will be replaced with the correct figure automatically.
 
 Voice rules for reportOpening:
 - Talk to them like a trusted friend who happens to be an expert
@@ -145,7 +145,6 @@ Voice rules for reportOpening:
 - Never be generic — every sentence should feel like it could only be written for THIS business
 - Validate before you diagnose — they built something real, honor that
 - Make the leakage feel personal and specific, not statistical
-- When referencing the leakage figure in the reportOpening, always express it as a range (e.g. 'between $6,000 and $8,000 per month') never as a single precise number. Add one sentence explaining these are conservative estimates — the actual cost is likely higher but we only show what we can confidently stand behind.
 - Maximum 4-5 sentences — tight, punchy, no padding
 
 LANGUAGE RULES:
