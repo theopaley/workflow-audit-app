@@ -425,28 +425,23 @@ Please analyse these responses thoroughly and return the complete audit report a
   }
 
   // Inject calculated leakage range into reportOpening — strip any AI-generated
-  // dollar figures near leakage language and replace with our calculated range.
+  // dollar figures and append our calculated range sentence.
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
-    const annualLower = Math.round((range.lower * 12) / 1000);
-    const annualUpper = Math.round((range.upper * 12) / 1000);
-    const rangeText = `between ${range.displayFull} per month ($${annualLower}K\u2013$${annualUpper}K per year)`;
+    const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
-    // Remove any dollar figures the AI placed near leakage/cost/month language
-    let opening = result.reportOpening;
-    opening = opening.replace(/costs? you[^.]*\$[\d,KkMm\u2013\-]+[^.]*/gi, `costs you ${rangeText}`);
-    opening = opening.replace(/losing[^.]*\$[\d,KkMm\u2013\-]+[^.]*/gi, `losing ${rangeText} monthly`);
-    opening = opening.replace(/between \$[\d,]+[^.]*/gi, `${rangeText}`);
+    // Remove the AI's urgency sentence entirely and append ours
+    let opening = result.reportOpening
+      .replace(/every month these gaps[^.]*\./gi, '')
+      .replace(/\[LEAKAGE\]/gi, range.displayFull)
+      .trim();
 
-    // If none of the patterns matched, find the urgency sentence and replace it entirely
-    if (opening === result.reportOpening) {
-      opening = opening.replace(
-        /every month[^.]*\./i,
-        `Every month these gaps stay open costs you ${rangeText}. Here's exactly where it's going.`
-      );
-    }
+    // Remove any dollar figures the AI snuck in
+    opening = opening.replace(/\$[\d,]+[KkMm]?(?:\s*[-–]\s*\$[\d,]+[KkMm]?)?/g, '').replace(/\s{2,}/g, ' ').trim();
 
-    result.reportOpening = opening;
+    // Ensure clean ending and append our sentence
+    if (!opening.endsWith('.')) opening += '.';
+    result.reportOpening = opening + ' ' + ourSentence;
   }
 
   return result;
