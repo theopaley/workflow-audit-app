@@ -388,13 +388,40 @@ Please analyse these responses thoroughly and return the complete audit report a
   };
 
   // Attempt with one automatic retry on JSON parse failure.
+  let result: AnalysisResult;
   try {
-    return await callAndParse();
+    result = await callAndParse();
   } catch (firstErr) {
     console.warn(
       "[ai-analysis] First attempt failed, retrying once:",
       firstErr instanceof Error ? firstErr.message.slice(0, 200) : firstErr
     );
-    return await callAndParse();
+    result = await callAndParse();
   }
+
+  // Programmatic cap enforcement — the AI prompt instructs a 40% cap but
+  // LLMs can exceed it.  Enforce it here so the report never overstates.
+  const monthlyRevenue = Number(answers.fin_monthly_revenue_value) || 0;
+  if (monthlyRevenue > 0) {
+    const capAmount = Math.round(monthlyRevenue * 0.40);
+    if (result.totalMonthlyLeakage > capAmount) {
+      const scaleFactor = capAmount / result.totalMonthlyLeakage;
+      result.areas = result.areas.map((area: AreaResult) => ({
+        ...area,
+        monthlyLeakage: Math.round((area.monthlyLeakage ?? 0) * scaleFactor),
+      }));
+      // Remainder adjustment — add any rounding difference to the largest area
+      const scaledTotal = result.areas.reduce((sum: number, a: AreaResult) => sum + (a.monthlyLeakage ?? 0), 0);
+      const remainder = capAmount - scaledTotal;
+      if (remainder !== 0) {
+        const largestArea = result.areas.reduce((max: AreaResult, a: AreaResult) =>
+          (a.monthlyLeakage ?? 0) > (max.monthlyLeakage ?? 0) ? a : max
+        );
+        largestArea.monthlyLeakage = (largestArea.monthlyLeakage ?? 0) + remainder;
+      }
+      result.totalMonthlyLeakage = capAmount;
+    }
+  }
+
+  return result;
 }
