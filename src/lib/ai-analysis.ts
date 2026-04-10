@@ -424,22 +424,25 @@ Please analyse these responses thoroughly and return the complete audit report a
     }
   }
 
-  // Inject calculated leakage range into reportOpening — strip any AI-generated
-  // dollar figures and append our calculated range sentence.
+  // Inject calculated leakage range into reportOpening — strip AI-generated
+  // cost/leakage dollar figures only, preserve revenue validation sentence.
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
-    // Remove the AI's urgency sentence entirely and append ours
     let opening = result.reportOpening
+      // Remove AI's urgency sentence if it used our exact phrasing
       .replace(/every month these gaps[^.]*\./gi, '')
+      // Replace [LEAKAGE] token if AI used it
       .replace(/\[LEAKAGE\]/gi, range.displayFull)
+      // Remove "Here's exactly where it's going" — we'll append it cleanly
+      .replace(/here'?s exactly where it'?s going\.?/gi, '')
+      // Strip dollar figures ONLY when near cost/leakage language
+      .replace(/(?:cost(?:s|ing)?\s+you|losing|leakage|bleeding)[^.]*?(\$[\d,]+(?:[KkMm]|,\d{3})*(?:\s*[-–]\s*\$[\d,]+(?:[KkMm]|,\d{3})*)?)/gi, '')
+      .replace(/\s{2,}/g, ' ')
       .trim();
 
-    // Remove any dollar figures the AI snuck in
-    opening = opening.replace(/\$[\d,]+[KkMm]?(?:\s*[-–]\s*\$[\d,]+[KkMm]?)?/g, '').replace(/\s{2,}/g, ' ').trim();
-
-    // Ensure clean ending and append our sentence
+    // Ensure clean ending then append our sentence
     if (!opening.endsWith('.')) opening += '.';
     result.reportOpening = opening + ' ' + ourSentence;
   }
