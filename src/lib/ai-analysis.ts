@@ -424,20 +424,29 @@ Please analyse these responses thoroughly and return the complete audit report a
     }
   }
 
-  // Inject calculated leakage range into reportOpening — replace AI placeholder with our figure
+  // Inject calculated leakage range into reportOpening — strip any AI-generated
+  // dollar figures near leakage language and replace with our calculated range.
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const annualLower = Math.round((range.lower * 12) / 1000);
     const annualUpper = Math.round((range.upper * 12) / 1000);
-    const rangeText = `between ${range.displayFull} per month (${annualLower}K–${annualUpper}K per year)`;
-    result.reportOpening = result.reportOpening.replace('{{LEAKAGE_RANGE}}', rangeText);
-    // If AI ignored the placeholder and wrote its own numbers, append our figure
-    if (!result.reportOpening.includes(range.displayFull)) {
-      result.reportOpening = result.reportOpening.replace(
-        /every month these gaps[^.]*\./i,
+    const rangeText = `between ${range.displayFull} per month ($${annualLower}K\u2013$${annualUpper}K per year)`;
+
+    // Remove any dollar figures the AI placed near leakage/cost/month language
+    let opening = result.reportOpening;
+    opening = opening.replace(/costs? you[^.]*\$[\d,KkMm\u2013\-]+[^.]*/gi, `costs you ${rangeText}`);
+    opening = opening.replace(/losing[^.]*\$[\d,KkMm\u2013\-]+[^.]*/gi, `losing ${rangeText} monthly`);
+    opening = opening.replace(/between \$[\d,]+[^.]*/gi, `${rangeText}`);
+
+    // If none of the patterns matched, find the urgency sentence and replace it entirely
+    if (opening === result.reportOpening) {
+      opening = opening.replace(
+        /every month[^.]*\./i,
         `Every month these gaps stay open costs you ${rangeText}. Here's exactly where it's going.`
-      ) || result.reportOpening;
+      );
     }
+
+    result.reportOpening = opening;
   }
 
   return result;

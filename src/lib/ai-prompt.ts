@@ -137,7 +137,7 @@ Write the reportOpening as a trusted friend who has just reviewed their business
 Structure it in three parts:
 1. VALIDATE first — acknowledge what they've built. Reference their actual revenue and team size. Make them feel seen. Something like 'You've built a $X/month business with Y people — that's not luck, that's execution.' Never start with problems.
 2. DIAGNOSE — transition naturally into what you found. Reference specific things they told you — their actual tools, their actual workflows, their actual gaps. Not generic. 'You're running scheduling through text messages and invoicing manually — which works until it doesn't.'
-3. CREATE URGENCY — end with exactly this sentence, word for word: 'Every month these gaps stay open costs you {{LEAKAGE_RANGE}}. Here's exactly where it's going.' Do not add any other dollar figures anywhere in the reportOpening. The {{LEAKAGE_RANGE}} placeholder will be replaced with the correct figure automatically.
+3. CREATE URGENCY — write one sentence about the monthly cost of the status quo. Use any dollar figure — it will be automatically replaced with the correct calculated amount. End with 'Here's exactly where it's going.'
 
 Voice rules for reportOpening:
 - Talk to them like a trusted friend who happens to be an expert
