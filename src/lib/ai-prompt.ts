@@ -135,7 +135,7 @@ REPORT OPENING (reportOpening field):
 Write the reportOpening as a trusted friend who has just reviewed their business — not a consultant, not a software pitch.
 
 Structure it in three parts:
-1. VALIDATE first — acknowledge what they've built. Reference their actual revenue and team size. Make them feel seen. Something like 'You've built a $X/month business with Y people — that's not luck, that's execution.' Never start with problems.
+1. VALIDATE first — acknowledge what they've built. Reference their actual revenue, team size, AND the specific type of business. Always name what they actually do — 'lawn care business,' 'CrossFit gym,' 'marketing agency,' 'property maintenance company' — never just say 'business.' Reference their actual operation with specific language — crews, routes, accounts, members, clients — whatever fits their vertical. Something like 'You've built a $X/month lawn care business with Y employees and Z accounts — that's not luck, that's execution.' Never start with problems.
 2. DIAGNOSE — transition naturally into what you found. Reference specific things they told you — their actual tools, their actual workflows, their actual gaps. Not generic. 'You're running scheduling through text messages and invoicing manually — which works until it doesn't.'
 3. CREATE URGENCY — end the reportOpening with exactly this sentence, word for word, no changes: 'Every month these gaps stay open costs you [LEAKAGE]. Here's exactly where it's going.' Do not write any dollar figures anywhere in the reportOpening. The [LEAKAGE] token will be replaced automatically.
 

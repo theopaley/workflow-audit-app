@@ -1145,6 +1145,7 @@ CLIENT COMMUNICATION:
 - Weather delays and schedule changes are the #1 communication failure in this vertical. Clients find out their lawn wasn't mowed when they get home, not before.
 - Automated visit confirmation texts ("We're coming Thursday between 9-11am") and completion texts ("Your lawn was serviced today — here's what we did") are the highest-impact communication wins.
 - Seasonal communication: spring startup letters, fall cleanup scheduling, winter freeze reminders.
+- IMPORTANT: When writing the Client Communication card findings, always reference at least one lawn care-specific scenario — weather delays, visit arrival windows, post-visit completion texts, or seasonal scheduling. Never write generic findings like 'clients only hear from you when there's a problem' — that describes every service business. The finding must feel like it was written for someone who runs crews and routes, not a generic service company.
 
 ROUTE & SCHEDULING:
 - Route inefficiency is measured in drive time between stops. A crew driving 45 minutes between jobs loses 1.5 hours of billable time per day.
