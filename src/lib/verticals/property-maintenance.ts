@@ -1129,5 +1129,39 @@ STACK RECOMMENDATION RULES:
 CONFIGURE PATTERN — ROUTE MANAGEMENT SOFTWARE:
 If a client lists Service Autopilot, FieldRoutes, Real Green, Jobber, or Skimmer AND scores poorly on scheduling, crew communication, invoicing, or client communication — the stack action MUST be CONFIGURE, not REPLACE or DEPLOY. These platforms have full capability for these functions. Poor scores mean configuration gaps, not missing tools.
 
-stackReasoning: "You already have [platform] — this is a configuration issue, not a missing tool. The fix is setting up [specific feature] inside your existing platform."`,
+stackReasoning: "You already have [platform] — this is a configuration issue, not a missing tool. The fix is setting up [specific feature] inside your existing platform."
+
+OPERATIONAL REALITY — LAWN CARE & LANDSCAPING SPECIFIC:
+Use these details to make findings and recommendations feel specific to the owner's actual day-to-day reality:
+
+REFERRALS:
+- Lawn care referrals happen neighbor-to-neighbor. A client sees your crew working next door and asks for a card. This is the highest-converting lead source in this vertical — not Google ads, not Facebook.
+- The referral ask should happen right after a completed visit while the lawn looks great and the client is happy — not in a generic email blast.
+- Nextdoor is the digital version of neighbor referrals — every lawn care business should have an optimized Nextdoor presence and a system to ask happy clients to recommend them there.
+- Seasonal timing matters: referral campaigns work best in spring (new season start) and fall (leaf cleanup season).
+
+CLIENT COMMUNICATION:
+- Clients care about three things: did you show up, did you do a good job, and when are you coming back.
+- Weather delays and schedule changes are the #1 communication failure in this vertical. Clients find out their lawn wasn't mowed when they get home, not before.
+- Automated visit confirmation texts ("We're coming Thursday between 9-11am") and completion texts ("Your lawn was serviced today — here's what we did") are the highest-impact communication wins.
+- Seasonal communication: spring startup letters, fall cleanup scheduling, winter freeze reminders.
+
+ROUTE & SCHEDULING:
+- Route inefficiency is measured in drive time between stops. A crew driving 45 minutes between jobs loses 1.5 hours of billable time per day.
+- The best route software clusters jobs by neighborhood — same street, same day.
+- No-shows and skipped visits (when crew doesn't show up) are the #1 cause of client cancellation in this vertical.
+
+INVOICING:
+- Most lawn care operators invoice at end of month or end of season. Monthly auto-pay is the gold standard — it removes the "I forgot to pay" problem and reduces voluntary churn by 30-40%.
+- Failed payments are the #1 cause of involuntary churn. An automated failed payment follow-up sequence recovers 60-70% of failed charges.
+
+REVIEWS:
+- The best time to ask for a Google review is immediately after a spring cleanup or a big landscaping job — when the transformation is visible and the client is emotional about how good it looks.
+- Most lawn care owners get reviews only when something goes wrong. A systematic post-visit review request after positive interactions flips this.
+- Nextdoor recommendations carry more weight than Google reviews in residential lawn care — a neighbor's recommendation is trusted more than a stranger's.
+
+RETENTION:
+- The average lawn care client churns for one of three reasons: price, no-show, or feeling ignored between visits.
+- At-risk accounts are identified by: missed payments, skipped visits, no response to communications, or complaints.
+- Win-back campaigns for lapsed clients work best in spring when they're looking for a new provider anyway.`,
 };
