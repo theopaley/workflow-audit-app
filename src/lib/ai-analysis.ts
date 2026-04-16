@@ -426,24 +426,23 @@ Please analyse these responses thoroughly and return the complete audit report a
 
   // Inject calculated leakage range into reportOpening — strip AI-generated
   // cost/leakage dollar figures only, preserve revenue validation sentence.
-  console.log('[DEBUG reportOpening raw]', result.reportOpening);
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
     let opening = result.reportOpening
-      // Remove AI's urgency sentence if it used our exact phrasing
+      // Step 1: Remove AI's urgency sentence if it used our exact phrasing
       .replace(/every month these gaps[^.]*\./gi, '')
-      // Replace [LEAKAGE] token if AI used it
-      .replace(/\[LEAKAGE\]/gi, range.displayFull)
-      // Remove "Here's exactly where it's going" — we'll append it cleanly
+      // Step 2: Remove "Here's exactly where it's going"
       .replace(/here'?s exactly where it'?s going\.?/gi, '')
-      // Strip dollar figures ONLY when near cost/leakage language
+      // Step 3: Strip dollar figures near cost/leakage language BEFORE we inject our range
       .replace(/[^.!?]*(?:cost(?:s|ing)?\s+you|costs?\s+us|losing|leakage|bleeding)[^.!?]*\$[\d,]+(?:[KkMm]|(?:[.,]\d+))*(?:\s*[\u2013\u2014\-–]\s*\$[\d,]+(?:[KkMm]|(?:[.,]\d+))*)?[^.!?]*/gi, '')
+      // Step 4: Replace [LEAKAGE] token AFTER stripping — this won't get stripped
+      .replace(/\[LEAKAGE\]/gi, range.displayFull)
       .replace(/\s{2,}/g, ' ')
       .trim();
 
-    // Ensure clean ending then append our sentence
+    // Ensure clean ending and append our sentence
     if (!opening.endsWith('.')) opening += '.';
     result.reportOpening = opening + ' ' + ourSentence;
   }
