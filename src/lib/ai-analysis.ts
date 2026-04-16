@@ -438,7 +438,7 @@ Please analyse these responses thoroughly and return the complete audit report a
       // Remove "Here's exactly where it's going" — we'll append it cleanly
       .replace(/here'?s exactly where it'?s going\.?/gi, '')
       // Strip dollar figures ONLY when near cost/leakage language
-      .replace(/[^.]*(?:cost(?:s|ing)?\s+you|losing|leakage|bleeding)[^.]*\$[\d,KkMm–\-]+[^.]*/gi, '')
+      .replace(/[^.!?]*(?:cost(?:s|ing)?\s+you|costs?\s+us|losing|leakage|bleeding)[^.!?]*\$[\d,]+(?:[KkMm]|(?:[.,]\d+))*(?:\s*[\u2013\u2014\-–]\s*\$[\d,]+(?:[KkMm]|(?:[.,]\d+))*)?[^.!?]*/gi, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
 

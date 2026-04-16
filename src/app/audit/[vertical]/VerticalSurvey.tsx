@@ -56,8 +56,11 @@ function computeImpliedRevenue(
   if (!avgSale || isNaN(avgSale)) return null;
   if (ROUTE_SIZE_VERTICALS.has(verticalId)) {
     const routeSize = Number(ans.pm_route_size_value);
-    if (!routeSize || isNaN(routeSize)) return null;
-    return routeSize * avgSale;
+    if (routeSize && !isNaN(routeSize)) return routeSize * avgSale;
+    // Fall back to fin_monthly_leads_value if pm_route_size not yet answered
+    const leads = Number(ans.fin_monthly_leads_value);
+    if (!leads || isNaN(leads)) return null;
+    return leads * avgSale;
   }
   const leads = Number(ans.fin_monthly_leads_value);
   if (!leads || isNaN(leads)) return null;
