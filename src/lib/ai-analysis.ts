@@ -426,6 +426,7 @@ Please analyse these responses thoroughly and return the complete audit report a
 
   // Inject calculated leakage range into reportOpening — strip AI-generated
   // cost/leakage dollar figures only, preserve revenue validation sentence.
+  console.log('[DEBUG reportOpening raw]', result.reportOpening);
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
