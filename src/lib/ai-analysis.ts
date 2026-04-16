@@ -430,20 +430,38 @@ Please analyse these responses thoroughly and return the complete audit report a
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
-    let opening = result.reportOpening
-      // Step 1: Remove AI's urgency sentence if it used our exact phrasing
-      .replace(/every month these gaps[^.]*\./gi, '')
-      // Step 2: Remove "Here's exactly where it's going"
-      .replace(/here'?s exactly where it'?s going\.?/gi, '')
-      // Step 3: Strip dollar figures near cost/leakage language BEFORE we inject our range
-      .replace(/[^.!?]*(?:cost(?:s|ing)?\s+you|costs?\s+us|losing|leakage|bleeding)[^.!?]*\$[\d,]+(?:[KkMm]|(?:[.,]\d+))*(?:\s*[\u2013\u2014\-–]\s*\$[\d,]+(?:[KkMm]|(?:[.,]\d+))*)?[^.!?]*/gi, '')
-      // Step 4: Replace [LEAKAGE] token AFTER stripping — this won't get stripped
+    // Split into individual sentences
+    const sentences = result.reportOpening
+      .split(/(?<=[.!?])\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const filtered = sentences.filter(s => {
+      // Always remove "Here's exactly where it's going" — we append it fresh
+      if (/here'?s exactly where it'?s going/i.test(s)) return false;
+
+      // Always keep validation sentences — these mention revenue/team/execution
+      if (/roughly|around|that'?s not luck|that'?s execution|that'?s impressive|that'?s real/i.test(s)) return true;
+
+      // Always keep diagnosis sentences — these describe the manual/broken workflows
+      if (/manually|no software|no system|no crm|handwritten|pen and paper|from memory|zero system/i.test(s)) return true;
+
+      // Remove any sentence that contains BOTH cost/leakage language AND a dollar figure
+      const hasLeakageCost = /cost(?:s|ing)?\s+you|costing\s+you|losing|leakage|bleeding|setting\s+you\s+back|every month/i.test(s);
+      const hasDollarFigure = /\$[\d,]+/.test(s);
+      if (hasLeakageCost && hasDollarFigure) return false;
+
+      // Keep everything else
+      return true;
+    });
+
+    const cleaned = filtered
+      .join(' ')
       .replace(/\[LEAKAGE\]/gi, range.displayFull)
       .replace(/\s{2,}/g, ' ')
       .trim();
 
-    // Ensure clean ending and append our sentence
-    if (!opening.endsWith('.')) opening += '.';
+    const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
     result.reportOpening = opening + ' ' + ourSentence;
   }
 
