@@ -1107,17 +1107,19 @@ TERMINOLOGY — use these consistently:
 - "at-risk accounts" not "unhappy customers"
 
 LEAKAGE FRAMING FOR RECURRING BUSINESSES:
-- Lost leads are lost customer relationships, not lost single visits. Apply LTV framing.
-- Churn is compounding. A 5% monthly churn rate = 46% annual account loss. Always annualize.
-- Re-engagement leakage is the highest-priority area for most route-based businesses.
-- Route inefficiency is a direct revenue cost — drive time is unbillable time.
+- Churn is compounding and permanent. A 5% monthly churn rate = 46% annual account loss. Always annualize churn leakage. "Losing 2 accounts per month" = "losing $X per month, every month, forever until you fix it."
+- Lost leads are lost LTV, not lost jobs. A lawn care lead that doesn't convert isn't a missed $200 visit — it's a missed $3,600 annual relationship.
+- Seasonal account loss is a specific and painful risk in this vertical. Accounts that don't rebook at the start of a new season (spring startup, fall cleanup transition) are churned accounts. The owner often doesn't realize they've lost someone until 6 weeks into the season. Always mention seasonal re-engagement as a specific risk.
+- Re-engagement of lapsed accounts in spring is the highest-ROI activity for most lawn care businesses — former clients already know the quality, they just need a reason to come back.
+- Route inefficiency is direct revenue loss. Every hour of windshield time is an hour that isn't billed.
 
 PRIORITY ORDERING:
-For property maintenance businesses, weight these areas more heavily in Priority Actions:
-1. Retention & Churn Prevention — always the top priority if score is below 70
-2. Lead Capture & Response Time — second priority (LTV makes each lost lead high cost)
-3. Route & Schedule Management — third priority (direct revenue impact)
-4. Invoicing & Payment Collection — fourth priority (failed payments = involuntary churn)
+For property maintenance businesses, the churn leakage story MUST dominate the report. This is non-negotiable. A recurring route business losing accounts is not losing one-time revenue — it is losing a monthly income stream permanently. Frame this with force.
+
+1. Retention & Churn Prevention — ALWAYS the #1 priority if score is below 70. Do not bury this. The opening of the findings narrative should establish that in a recurring business, one lost account = $X lost every single month forever. Make the owner feel the compounding weight of churn.
+2. Lead Capture & Response Time — second priority. Each lost lead is an LTV loss, not a single visit loss.
+3. Route & Schedule Management — third priority. Windshield time is unbillable time. Direct revenue cost.
+4. Invoicing & Payment Collection — fourth priority. Failed payments = involuntary churn. Silent account loss.
 
 STACK RECOMMENDATION RULES:
 - GoHighLevel is the automation and communication layer — CRM, follow-up, re-engagement, referrals
@@ -1129,7 +1131,13 @@ STACK RECOMMENDATION RULES:
 CONFIGURE PATTERN — ROUTE MANAGEMENT SOFTWARE:
 If a client lists Service Autopilot, FieldRoutes, Real Green, Jobber, or Skimmer AND scores poorly on scheduling, crew communication, invoicing, or client communication — the stack action MUST be CONFIGURE, not REPLACE or DEPLOY. These platforms have full capability for these functions. Poor scores mean configuration gaps, not missing tools.
 
-stackReasoning: "You already have [platform] — this is a configuration issue, not a missing tool. The fix is setting up [specific feature] inside your existing platform."
+When writing stackReasoning for a CONFIGURE action on route management software, be specific about what feature needs to be turned on — not generic boilerplate. Examples:
+- Jobber + poor client communication → "You have Jobber but automated visit reminders and completion notifications aren't turned on. Clients find out you didn't show up when they get home — not before."
+- Jobber + poor invoicing → "Jobber has auto-invoicing built in. Right now you're generating invoices manually. Turning on automatic post-visit invoicing eliminates the billing lag and reduces unpaid invoices."
+- Jobber + poor churn prevention → "Jobber tracks visit history — you can see exactly which accounts have had gaps or complaints. The missing piece is a re-engagement trigger when an account goes quiet."
+- Service Autopilot + poor route management → "Service Autopilot has route optimization built in. Running routes from memory is costing your crews windshield time every day."
+
+Never end a CONFIGURE reasoning with generic language like "this is a configuration issue, not a missing tool." Always name the specific feature and what turning it on would change.
 
 OPERATIONAL REALITY — LAWN CARE & LANDSCAPING SPECIFIC:
 Use these details to make findings and recommendations feel specific to the owner's actual day-to-day reality:
