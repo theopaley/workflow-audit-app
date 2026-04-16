@@ -362,7 +362,7 @@ export const QUESTIONS: Question[] = [
       "Over $1M",
     ],
     midpoints: {
-      "Under $10K": 5000,
+      "Under $10K": 7500,
       "$10K – $25K": 17500,
       "$25K – $40K": 32500,
       "$40K – $60K": 50000,
