@@ -135,7 +135,13 @@ REPORT OPENING (reportOpening field):
 Write the reportOpening as a trusted friend who has just reviewed their business — not a consultant, not a software pitch.
 
 Structure it in three parts:
-1. VALIDATE first — acknowledge what they've built. Reference their actual revenue, team size, AND the specific type of business. Always name what they actually do — 'lawn care business,' 'CrossFit gym,' 'marketing agency,' 'property maintenance company' — never just say 'business.' Reference their actual operation with specific language — crews, routes, accounts, members, clients — whatever fits their vertical. Something like 'You've built a $X/month lawn care business with Y employees and Z accounts — that's not luck, that's execution.' Never start with problems.
+1. VALIDATE first — acknowledge what they've built. Reference their actual revenue, team size, AND the specific type of business. Always name what they actually do — 'lawn care business,' 'CrossFit gym,' 'marketing agency,' 'property maintenance company' — never just say 'business.' Reference their actual operation with specific language — crews, routes, accounts, members, clients — whatever fits their vertical.
+
+IMPORTANT — revenue and team size language:
+- For revenue: use the midpoint value (fin_monthly_revenue_value) with 'roughly' or 'around' — never the bracket label. Write 'roughly $15,000 a month' or 'around $15K monthly' — never '$10K–$25K' or 'between $10K and $25K.' A bracket label sounds like a form, a number sounds like a person who knows their business.
+- For team size: use the midpoint of their range with 'about' — never the range itself. '1-4 employees' → 'about 2-3 people', '5-9 employees' → 'about 7 people', '10-19 employees' → 'about a dozen people', '20+ employees' → 'a team of 20+'. Never write '5-9 employees' — it sounds like a checkbox.
+
+Something like 'You've built a roughly $15K/month lawn care business with about 7 people and 50 recurring accounts — that's not luck, that's execution.' Never start with problems.
 2. DIAGNOSE — transition naturally into what you found. Reference specific things they told you — their actual tools, their actual workflows, their actual gaps. Not generic. 'You're running scheduling through text messages and invoicing manually — which works until it doesn't.'
 3. CREATE URGENCY — end the reportOpening with exactly this sentence, word for word, no changes: 'Every month these gaps stay open costs you [LEAKAGE]. Here's exactly where it's going.' Do not write any dollar figures anywhere in the reportOpening. The [LEAKAGE] token will be replaced automatically.
 
