@@ -424,36 +424,12 @@ Please analyse these responses thoroughly and return the complete audit report a
     }
   }
 
-  // Inject calculated leakage range into reportOpening — strip AI-generated
-  // cost/leakage dollar figures only, preserve revenue validation sentence.
+  // Append our calculated leakage sentence to the AI's reportOpening.
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
-
-    // Split into sentences
-    let sentences = result.reportOpening
-      .split(/(?<=[.!?])\s+/)
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    // Remove "Here's exactly where it's going" if AI wrote it as a standalone sentence
-    sentences = sentences.filter(s => !/here'?s exactly where it'?s going/i.test(s));
-
-    // The AI always puts the leakage sentence last (4-5 sentence structure)
-    // Remove the last sentence if it contains a dollar figure — that's the leakage sentence
-    if (sentences.length > 0 && /\$[\d,]+/.test(sentences[sentences.length - 1])) {
-      sentences = sentences.slice(0, -1);
-    }
-
-    // Replace [LEAKAGE] token in any remaining sentence (shouldn't be there but just in case)
-    const cleaned = sentences
-      .join(' ')
-      .replace(/\[LEAKAGE\]/gi, range.displayFull)
-      .replace(/\s{2,}/g, ' ')
-      .trim();
-
-    const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
-    result.reportOpening = opening + ' ' + ourSentence;
+    const opening = result.reportOpening.trim();
+    result.reportOpening = (opening.endsWith('.') ? opening : opening + '.') + ' ' + ourSentence;
   }
 
   return result;

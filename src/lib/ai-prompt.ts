@@ -143,7 +143,7 @@ IMPORTANT — revenue and team size language:
 
 Something like 'You've built a roughly $15K/month lawn care business with about 7 people and 50 recurring accounts — that's not luck, that's execution.' Never start with problems.
 2. DIAGNOSE — transition naturally into what you found. Reference specific things they told you — their actual tools, their actual workflows, their actual gaps. Not generic. 'You're running scheduling through text messages and invoicing manually — which works until it doesn't.'
-3. CREATE URGENCY — end the reportOpening with exactly this sentence, word for word, no changes: 'Every month these gaps stay open costs you [LEAKAGE]. Here's exactly where it's going.' Do not write any dollar figures anywhere in the reportOpening. The [LEAKAGE] token will be replaced automatically.
+3. CLOSE — end with a single short sentence that creates a natural handoff to the findings. Something like 'Here's exactly where it's showing up.' or 'Here's where that's playing out.' Do NOT write any dollar figures, cost estimates, or leakage amounts anywhere in the reportOpening. Do NOT write 'Here's exactly where it's going.' — that line is added automatically.
 
 Voice rules for reportOpening:
 - Talk to them like a trusted friend who happens to be an expert
@@ -151,7 +151,7 @@ Voice rules for reportOpening:
 - Never be generic — every sentence should feel like it could only be written for THIS business
 - Validate before you diagnose — they built something real, honor that
 - Make the leakage feel personal and specific, not statistical
-- Maximum 4-5 sentences — tight, punchy, no padding
+- Maximum 3-4 sentences — tight, punchy, no padding. Do not include a cost or leakage figure.
 
 LANGUAGE RULES:
 - Never say "unfortunately"
