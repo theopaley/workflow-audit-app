@@ -430,32 +430,23 @@ Please analyse these responses thoroughly and return the complete audit report a
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
-    // Split into individual sentences
-    const sentences = result.reportOpening
+    // Split into sentences
+    let sentences = result.reportOpening
       .split(/(?<=[.!?])\s+/)
       .map(s => s.trim())
       .filter(Boolean);
 
-    const filtered = sentences.filter(s => {
-      // Always remove "Here's exactly where it's going" — we append it fresh
-      if (/here'?s exactly where it'?s going/i.test(s)) return false;
+    // Remove "Here's exactly where it's going" if AI wrote it as a standalone sentence
+    sentences = sentences.filter(s => !/here'?s exactly where it'?s going/i.test(s));
 
-      // Always keep validation sentences — these mention revenue/team/execution
-      if (/roughly|around|that'?s not luck|that'?s execution|that'?s impressive|that'?s real/i.test(s)) return true;
+    // The AI always puts the leakage sentence last (4-5 sentence structure)
+    // Remove the last sentence if it contains a dollar figure — that's the leakage sentence
+    if (sentences.length > 0 && /\$[\d,]+/.test(sentences[sentences.length - 1])) {
+      sentences = sentences.slice(0, -1);
+    }
 
-      // Always keep diagnosis sentences — these describe the manual/broken workflows
-      if (/manually|no software|no system|no crm|handwritten|pen and paper|from memory|zero system/i.test(s)) return true;
-
-      // Remove any sentence that contains BOTH cost/leakage language AND a dollar figure
-      const hasLeakageCost = /cost(?:s|ing)?\s+you|costing\s+you|losing|leakage|bleeding|setting\s+you\s+back|every month/i.test(s);
-      const hasDollarFigure = /\$[\d,]+/.test(s);
-      if (hasLeakageCost && hasDollarFigure) return false;
-
-      // Keep everything else
-      return true;
-    });
-
-    const cleaned = filtered
+    // Replace [LEAKAGE] token in any remaining sentence (shouldn't be there but just in case)
+    const cleaned = sentences
       .join(' ')
       .replace(/\[LEAKAGE\]/gi, range.displayFull)
       .replace(/\s{2,}/g, ' ')
