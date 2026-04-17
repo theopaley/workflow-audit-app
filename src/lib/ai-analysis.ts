@@ -428,8 +428,26 @@ Please analyse these responses thoroughly and return the complete audit report a
   if (result.reportOpening && typeof result.reportOpening === 'string') {
     const range = getLeakageRange(result.totalMonthlyLeakage);
     const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
-    const opening = result.reportOpening.trim();
-    result.reportOpening = (opening.endsWith('.') ? opening : opening + '.') + ' ' + ourSentence;
+
+    const sentences = result.reportOpening
+      .split(/(?<=[.!?])\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const cleaned = sentences
+      .filter(s => {
+        if (/here'?s exactly where it'?s going/i.test(s)) return false;
+        if (/every month these gaps/i.test(s)) return false;
+        const isValidation = /roughly|around|that'?s not luck|that'?s execution|that'?s solid|that'?s impressive|that'?s real/i.test(s);
+        if (!isValidation && /\$[\d,]+/.test(s) && /cost(?:s|ing)?\s+you|costing|losing|leakage/i.test(s)) return false;
+        return true;
+      })
+      .join(' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
+    result.reportOpening = opening + ' ' + ourSentence;
   }
 
   return result;
