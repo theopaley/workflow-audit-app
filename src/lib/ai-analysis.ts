@@ -424,27 +424,9 @@ Please analyse these responses thoroughly and return the complete audit report a
     }
   }
 
-  // Strip AI's leakage sentence and insert placeholder — client-side injects the real range.
+  // Append placeholder — client-side handles all filtering and leakage injection.
   if (result.reportOpening && typeof result.reportOpening === 'string') {
-    const sentences = result.reportOpening
-      .split(/(?<=[.!?])\s+/)
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    const cleaned = sentences
-      .filter(s => {
-        if (/here'?s exactly where it'?s going/i.test(s)) return false;
-        if (/every month these gaps/i.test(s)) return false;
-        const isValidation = /roughly|around|that'?s not luck|that'?s execution|that'?s solid|that'?s impressive|that'?s real/i.test(s);
-        if (!isValidation && /\$[\d,]+/.test(s) && /cost(?:s|ing)?\s+you|costing|losing|leakage/i.test(s)) return false;
-        return true;
-      })
-      .join(' ')
-      .replace(/\s{2,}/g, ' ')
-      .trim();
-
-    const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
-    result.reportOpening = opening + ' [LEAKAGE_SENTENCE]';
+    result.reportOpening = result.reportOpening.trim() + ' [LEAKAGE_SENTENCE]';
   }
 
   return result;

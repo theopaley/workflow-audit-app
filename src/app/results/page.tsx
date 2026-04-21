@@ -245,7 +245,25 @@ export default function ResultsPage() {
                 {(() => {
                   const range = getLeakageRange(result.totalMonthlyLeakage);
                   const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
-                  return result.reportOpening.replace('[LEAKAGE_SENTENCE]', ourSentence);
+
+                  // Split into sentences, remove any that contain leakage/cost language with dollar figures
+                  // or match our known patterns, then append ours
+                  const sentences = result.reportOpening
+                    .replace('[LEAKAGE_SENTENCE]', '')
+                    .split(/(?<=[.!?])\s+/)
+                    .map((s: string) => s.trim())
+                    .filter((s: string) => {
+                      if (!s) return false;
+                      if (/here'?s exactly where it'?s going/i.test(s)) return false;
+                      if (/every month these gaps/i.test(s)) return false;
+                      const isValidation = /roughly|around|that'?s not luck|that'?s execution|that'?s solid|that'?s impressive|that'?s real/i.test(s);
+                      if (!isValidation && /\$[\d,]+/.test(s) && /cost(?:s|ing)?\s+you|costing|losing|leakage/i.test(s)) return false;
+                      return true;
+                    });
+
+                  const cleaned = sentences.join(' ').replace(/\s{2,}/g, ' ').trim();
+                  const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
+                  return opening + ' ' + ourSentence;
                 })()}
               </p>
               <div className="flex flex-wrap gap-3">
