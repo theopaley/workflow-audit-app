@@ -243,28 +243,18 @@ export default function ResultsPage() {
             <div className="flex flex-1 flex-col gap-4">
               <p className="text-slate-600 leading-relaxed">
                 {(() => {
-                  console.log('[DEBUG client reportOpening]', result.reportOpening);
                   const range = getLeakageRange(result.totalMonthlyLeakage);
                   const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
-                  // Split into sentences, remove any that contain leakage/cost language with dollar figures
-                  // or match our known patterns, then append ours
-                  const sentences = result.reportOpening
-                    .replace('[LEAKAGE_SENTENCE]', '')
-                    .split(/(?<=[.!?])\s+/)
-                    .map((s: string) => s.trim())
-                    .filter((s: string) => {
-                      if (!s) return false;
-                      if (/here'?s exactly where it'?s going/i.test(s)) return false;
-                      if (/every month these gaps/i.test(s)) return false;
-                      const isValidation = /roughly|around|that'?s not luck|that'?s execution|that'?s solid|that'?s impressive|that'?s real/i.test(s);
-                      if (!isValidation && /\$[\d,]+/.test(s) && /cost(?:s|ing)?\s+you|costing|losing|leakage/i.test(s)) return false;
-                      return true;
-                    });
+                  // Server always appends [LEAKAGE_SENTENCE] — just replace it
+                  // Also clean up any AI handoff sentence immediately before the placeholder
+                  const text = result.reportOpening
+                    .replace(/[^.!?]*here'?s exactly where[^.!?]*\.\s*/gi, '')
+                    .replace('[LEAKAGE_SENTENCE]', ourSentence)
+                    .replace(/\s{2,}/g, ' ')
+                    .trim();
 
-                  const cleaned = sentences.join(' ').replace(/\s{2,}/g, ' ').trim();
-                  const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
-                  return opening + ' ' + ourSentence;
+                  return text;
                 })()}
               </p>
               <div className="flex flex-wrap gap-3">
