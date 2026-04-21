@@ -243,6 +243,7 @@ export default function ResultsPage() {
             <div className="flex flex-1 flex-col gap-4">
               <p className="text-slate-600 leading-relaxed">
                 {(() => {
+                  console.log('[DEBUG client reportOpening]', result.reportOpening);
                   const range = getLeakageRange(result.totalMonthlyLeakage);
                   const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
 
