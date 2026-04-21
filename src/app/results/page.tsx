@@ -242,7 +242,11 @@ export default function ResultsPage() {
             {/* Legend */}
             <div className="flex flex-1 flex-col gap-4">
               <p className="text-slate-600 leading-relaxed">
-                {result.reportOpening}
+                {(() => {
+                  const range = getLeakageRange(result.totalMonthlyLeakage);
+                  const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
+                  return result.reportOpening.replace('[LEAKAGE_SENTENCE]', ourSentence);
+                })()}
               </p>
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700">

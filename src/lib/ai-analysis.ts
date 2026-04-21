@@ -424,11 +424,8 @@ Please analyse these responses thoroughly and return the complete audit report a
     }
   }
 
-  // Append our calculated leakage sentence to the AI's reportOpening.
+  // Strip AI's leakage sentence and insert placeholder — client-side injects the real range.
   if (result.reportOpening && typeof result.reportOpening === 'string') {
-    const range = getLeakageRange(result.totalMonthlyLeakage);
-    const ourSentence = `Every month these gaps stay open costs you ${range.displayFull}. Here's exactly where it's going.`;
-
     const sentences = result.reportOpening
       .split(/(?<=[.!?])\s+/)
       .map(s => s.trim())
@@ -447,7 +444,7 @@ Please analyse these responses thoroughly and return the complete audit report a
       .trim();
 
     const opening = cleaned.endsWith('.') ? cleaned : cleaned + '.';
-    result.reportOpening = opening + ' ' + ourSentence;
+    result.reportOpening = opening + ' [LEAKAGE_SENTENCE]';
   }
 
   return result;
