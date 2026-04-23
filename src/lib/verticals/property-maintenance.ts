@@ -293,6 +293,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "YardBook",
         "Skimmer",
         "GorillaDesk",
+        "PestRoutes",
         "Google Calendar",
         "None",
         "Other",
@@ -381,6 +382,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "Aspire",
         "Skimmer",
         "GorillaDesk",
+        "PestRoutes",
         "Connecteam",
         "Slack",
         "Text / SMS",
@@ -531,6 +533,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "Real Green",
         "Skimmer",
         "GorillaDesk",
+        "PestRoutes",
         "Aspire",
         "None",
         "Other",
@@ -835,6 +838,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
         "GoHighLevel (GHL)",
         "Service Autopilot",
         "FieldRoutes",
+        "PestRoutes",
         "Jobber",
         "Mailchimp",
         "ActiveCampaign",
@@ -993,6 +997,7 @@ export const propertyMaintenanceConfig: VerticalConfig = {
       softwareOptions: [
         "Service Autopilot",
         "FieldRoutes",
+        "PestRoutes",
         "Real Green",
         "Jobber",
         "GoHighLevel (GHL)",
@@ -1172,5 +1177,14 @@ REVIEWS:
 RETENTION:
 - The average lawn care client churns for one of three reasons: price, no-show, or feeling ignored between visits.
 - At-risk accounts are identified by: missed payments, skipped visits, no response to communications, or complaints.
-- Win-back campaigns for lapsed clients work best in spring when they're looking for a new provider anyway.`,
+- Win-back campaigns for lapsed clients work best in spring when they're looking for a new provider anyway.
+
+PEST CONTROL SPECIFIC (when pm_service_type = 'Pest Control or Mosquito/Tick Treatment'):
+- Pest control leakage concentrates in service agreement renewals and treatment compliance tracking — not route efficiency
+- The renewal story: most pest control clients are on quarterly or annual agreements. A client who doesn't renew is not one missed visit — it's a lost annual contract worth 4x the monthly value
+- Chemical compliance and treatment records are legally required in most states — owners using paper logs or memory are creating liability exposure, not just inefficiency
+- Mosquito/tick treatment is highly seasonal (April–October) — win-back campaigns must hit in February/March before clients shop competitors
+- PestRoutes and GorillaDesk are the primary pest control platforms — not Jobber or Service Autopilot which are lawn-care oriented
+- Service agreement language should dominate pest control findings — 'recurring contract' not 'recurring visit'
+- The #1 churn driver in pest control is 'I didn't see any bugs so I cancelled' — proactive communication about what was treated and prevented is the retention play`,
 };
