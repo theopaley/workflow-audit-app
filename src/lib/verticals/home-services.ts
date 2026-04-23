@@ -1263,5 +1263,16 @@ If a client lists Jobber or Housecall Pro AND scores poorly on any of the follow
 - Customer Onboarding & Prep — Jobber/HCP has automated reminders; poor score = not set up
 
 stackReasoning for these must say: "You already have [Jobber/Housecall Pro] — this is a configuration issue, not a missing tool. The fix is setting up [specific feature] inside your existing platform."
+
+CONFIGURE PATTERN — SERVICETITAN:
+ServiceTitan is the most powerful field service platform available — it handles everything from lead capture through invoicing. If a client lists ServiceTitan AND scores poorly on ANY area, the stack action MUST be CONFIGURE, never DEPLOY or REPLACE. ServiceTitan almost certainly has the capability for whatever is missing — the issue is always configuration, not tool gaps.
+
+When writing stackReasoning for a CONFIGURE action on ServiceTitan, be specific about the feature:
+- ServiceTitan + poor reviews → "ServiceTitan has automated review request workflows built in. The fix is setting up post-job review requests to fire automatically after job completion."
+- ServiceTitan + poor re-engagement → "ServiceTitan has maintenance reminder campaigns. Set up annual service reminder sequences for every closed job to drive repeat business."
+- ServiceTitan + poor reporting → "ServiceTitan has a full reporting dashboard. The fix is setting up your KPI dashboard and scheduling weekly report reviews."
+- ServiceTitan + poor referrals → "ServiceTitan has referral tracking. Set up post-job referral asks to fire automatically to satisfied customers."
+
+Never say "deploy GoHighLevel" when a client has ServiceTitan — GHL adds almost no value on top of a properly configured ServiceTitan. The recommendation should always be to configure what they already have.
 `,
 };
