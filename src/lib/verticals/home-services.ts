@@ -492,6 +492,7 @@ export const homeServicesConfig: VerticalConfig = {
         "Jobber",
         "ServiceTitan",
         "Slack",
+        "Text / SMS",
         "Workiz",
         "None",
         "Other",
@@ -764,6 +765,7 @@ export const homeServicesConfig: VerticalConfig = {
             "End of week, in a batch",
             "Monthly on a set date — all customers billed together",
             "End of day",
+            "It varies — depends on the job size or type",
             "Same day — invoices go out before the tech leaves or immediately after",
             "I honestly don't know",
           ],
@@ -1274,5 +1276,28 @@ When writing stackReasoning for a CONFIGURE action on ServiceTitan, be specific 
 - ServiceTitan + poor referrals → "ServiceTitan has referral tracking. Set up post-job referral asks to fire automatically to satisfied customers."
 
 Never say "deploy GoHighLevel" when a client has ServiceTitan — GHL adds almost no value on top of a properly configured ServiceTitan. The recommendation should always be to configure what they already have.
+
+OPERATIONAL REALITY — HOME SERVICES TRADE-SPECIFIC:
+
+PAINTING & DRYWALL:
+- Estimate follow-up is the #1 leakage point — painters send quotes and never follow up. The average painting estimate takes 3-5 follow-up touches before a decision. Most painters follow up once or not at all.
+- Project communication: clients want to know when the crew is arriving, what rooms are being done today, and when to expect completion. No-shows and surprise schedule changes are the #1 complaint.
+- Color approval and change orders: undocumented color changes and scope additions are the primary cause of disputes and unpaid invoices in painting.
+- Deposit collection before starting is standard in painting — owners who don't collect deposits have higher cancellation rates and cash flow problems.
+- Punch list sign-off: jobs that end without a formal client walk-through generate more disputes and negative reviews than any other failure.
+- When writing findings for a painting contractor: reference estimates, color approvals, crew arrival windows, punch lists, and deposit collection — not generic "no scheduling system" language.
+
+HVAC:
+- Seasonal demand creates massive lead spikes in summer (cooling) and winter (heating) — owners without a lead capture system lose jobs to whoever answers the phone first.
+- Maintenance agreements are the recurring revenue model in HVAC — converting one-time repair customers into annual maintenance plan members is the highest-LTV activity in the business.
+- Equipment replacement upsell: technicians who identify aging systems and present replacement options systematically generate 3-5x more revenue per visit than those who just fix the immediate problem.
+- After-hours emergency calls are a primary acquisition channel — the owner who answers at 11pm wins the customer for life.
+- Review timing: the best moment to ask for a review is immediately after a successful repair when the customer's relief is highest.
+- When writing findings for an HVAC company: reference maintenance agreements, seasonal demand, emergency response time, and equipment replacement upsell — not generic service language.
+
+PLUMBING & ELECTRICAL:
+- Emergency calls dominate new customer acquisition — response time is the primary selection criteria.
+- Upsell during service visits: plumbers who present water heater replacements, fixture upgrades, or whole-home assessments during routine visits generate significantly more revenue per truck roll.
+- When writing findings for a plumber or electrician: reference emergency response, upsell opportunities during visits, and permit coordination — not generic service language.
 `,
 };
