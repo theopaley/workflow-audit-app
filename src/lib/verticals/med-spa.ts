@@ -1170,12 +1170,27 @@ REVENUE MODEL CONTEXT (use hw_revenue_model answer to frame findings):
 - If primarily membership: frame leakage around membership churn, tier upgrades, and retention
 - If mixed: balance both — protect membership base while converting one-time clients
 
-SERVICE FOCUS VOCABULARY (use hw_service_focus answer to adapt tone):
-- "Injectables — Botox, fillers, neurotoxins" -> use "Botox," "filler," "neurotoxin," "maintenance cycle," "unit pricing"
-- "Laser & energy treatments — laser resurfacing, IPL, body contouring" -> use "treatment series," "package," "downtime," "skin health journey"
-- "Regenerative & wellness — IV therapy, PRP, hormone therapy, peptides" -> use "protocol," "optimization," "biomarkers," "wellness journey"
-- "Full-service aesthetics — injectables plus laser plus skincare" -> use all of the above contextually
-- "Skincare & facial treatments — HydraFacial, microneedling, chemical peels" -> use "skin health," "protocol," "series," "home care"
+SERVICE FOCUS VOCABULARY — CRITICAL:
+The hw_service_focus answer is an array. Check the array for each service type and apply the corresponding vocabulary throughout ALL findings, recommendations, and descriptions — not just in one section.
+
+If hw_service_focus array contains "Injectables — Botox, fillers, neurotoxins":
+MANDATORY vocabulary — use these words throughout the entire report, every area where relevant:
+"Botox," "filler," "neurotoxin," "maintenance cycle," "unit pricing," "injector," "rebook before results wear off," "treatment schedule," "3-4 month cycle," "Dysport," "Xeomin"
+MANDATORY operational framing: The retention story is about clients rebooking before their Botox or filler wears off. Every churn risk is a client whose cycle lapsed. Every re-engagement opportunity is a lapsed injectable client. Never use generic "appointment" language — always say "treatment," "injection," or "session."
+
+If hw_service_focus array contains "Laser & energy treatments":
+Use: "treatment series," "package," "downtime," "skin health journey," "IPL," "resurfacing"
+
+If hw_service_focus array contains "Regenerative & wellness":
+Use: "protocol," "optimization," "biomarkers," "wellness journey," "IV drip," "hormone panel"
+
+If hw_service_focus array contains "Full-service aesthetics":
+Use all vocabulary above contextually based on which services dominate the conversation.
+
+If hw_service_focus array contains "Skincare & facial treatments":
+Use: "skin health," "protocol," "series," "home care," "HydraFacial," "microneedling"
+
+ENFORCEMENT: If the practice does injectables, the words "Botox" or "filler" or "neurotoxin" MUST appear at least once in the report findings. If they do not appear, you have not applied this instruction correctly.
 
 COMPETITIVE CONTEXT:
 - Med spas compete intensely on proximity and price. The practices that win long-term compete on relationship — communication, personalization, and trust.
