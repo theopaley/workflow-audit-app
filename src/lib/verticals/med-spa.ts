@@ -1192,6 +1192,16 @@ Use: "skin health," "protocol," "series," "home care," "HydraFacial," "microneed
 
 ENFORCEMENT: If the practice does injectables, the words "Botox" or "filler" or "neurotoxin" MUST appear at least once in the report findings. If they do not appear, you have not applied this instruction correctly.
 
+REPORT OPENING BUSINESS NAME RULE:
+The reportOpening MUST name the specific type of practice based on hw_service_focus — not just "medical aesthetics practice" or "med spa":
+- hw_service_focus includes "Injectables" → call it "Botox and filler practice," "injectables practice," or "neurotoxin practice"
+- hw_service_focus includes "Laser" → call it "laser aesthetics practice" or "laser and body contouring practice"
+- hw_service_focus includes "Regenerative" → call it "wellness and regenerative medicine practice" or "IV and hormone optimization practice"
+- hw_service_focus includes "Full-service" → call it "full-service medical spa" or "full-service aesthetics practice"
+- hw_service_focus includes "Skincare" → call it "medical skincare practice" or "facial and skincare practice"
+
+The first sentence of reportOpening must use one of the above specific names — never "medical aesthetics practice" alone when a more specific term applies.
+
 COMPETITIVE CONTEXT:
 - Med spas compete intensely on proximity and price. The practices that win long-term compete on relationship — communication, personalization, and trust.
 - Groupon and discount platforms attract price-sensitive clients with low lifetime value. Recommendations should orient away from discounting and toward membership and relationship value.
