@@ -1150,6 +1150,7 @@ TERMINOLOGY — use these consistently:
 - "producer" — the sales person; not "agent" or "rep" in larger agency context
 - "CSR" — Client Service Representative; the service/retention team member
 - "AMS" — Agency Management System; the core operational platform
+- "commission" — always use when referencing broker income, never "revenue" or "payment" alone. Example: "your commission on this account" not "your revenue from this account"
 - "avg_job_value" in formulas = average annual commission per account
 
 PAIN POINT CONTEXT:

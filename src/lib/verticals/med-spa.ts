@@ -1184,8 +1184,12 @@ Use: "treatment series," "package," "downtime," "skin health journey," "IPL," "r
 If hw_service_focus array contains "Regenerative & wellness":
 Use: "protocol," "optimization," "biomarkers," "wellness journey," "IV drip," "hormone panel"
 
-If hw_service_focus array contains "Full-service aesthetics":
-Use all vocabulary above contextually based on which services dominate the conversation.
+If hw_service_focus array contains "Full-service aesthetics — injectables plus laser plus skincare":
+Use ALL vocabulary sets above contextually. MANDATORY: the report MUST mention at least one finding or recommendation specific to each of these service lines:
+- Injectables: use "Botox," "filler," "neurotoxin," "maintenance cycle"
+- Laser: use "laser treatment," "treatment series," "laser resurfacing," "IPL"
+- Body services: use "body contouring," "IV therapy," or "hormone optimization" where relevant
+Every full-service practice report must reference at least 3 distinct service lines by name. A report that only mentions injectables for a full-service practice is incomplete.
 
 If hw_service_focus array contains "Skincare & facial treatments":
 Use: "skin health," "protocol," "series," "home care," "HydraFacial," "microneedling"

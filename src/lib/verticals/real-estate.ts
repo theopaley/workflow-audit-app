@@ -1168,6 +1168,7 @@ export const realEstateConfig: VerticalConfig = {
         "Follow Up Boss",
         "KVCore",
         "BoomTown",
+        "CoStar",
         "Google Analytics",
         "Databox",
         "GoHighLevel (GHL)",
@@ -1276,6 +1277,7 @@ TERMINOLOGY — use these consistently:
 - "contract to close" — not "job completion"
 - "showing" — not "appointment" for property visits
 - "avg_job_value" in formulas = average commission per transaction
+- "commission" — always use when referencing agent income. "Your commission on this transaction" not "your revenue"
 
 PAIN POINT CONTEXT:
 - Speed of response is the single most important competitive variable in real estate. Leads simultaneously reach out to multiple agents — the first responder wins the majority of the time. Frame lead capture issues around this urgency.

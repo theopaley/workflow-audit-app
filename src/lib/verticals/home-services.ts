@@ -1299,5 +1299,8 @@ PLUMBING & ELECTRICAL:
 - Emergency calls dominate new customer acquisition — response time is the primary selection criteria.
 - Upsell during service visits: plumbers who present water heater replacements, fixture upgrades, or whole-home assessments during routine visits generate significantly more revenue per truck roll.
 - When writing findings for a plumber or electrician: reference emergency response, upsell opportunities during visits, and permit coordination — not generic service language.
+- Always use "service call" not "job" or "appointment" for plumbing visits
+- "repair" should appear in plumbing findings — water heater repair, pipe repair, drain repair
+- When writing findings for a plumber: reference service calls, emergency repairs, repair quotes, and repair upsells specifically
 `,
 };

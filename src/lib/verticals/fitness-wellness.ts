@@ -74,6 +74,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "82% of fitness prospects visit or contact multiple gyms before choosing one. The facility that responds first wins the visit more than 50% of the time — not the one with the best equipment or the lowest price. Yet the average gym takes over 24 hours to respond to a web inquiry. By then, the prospect has already walked into a competitor. — IHRSA 2024 Health Club Consumer Report / Lead Response Management Study",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Club OS",
         "Zen Planner",
         "Wodify",
@@ -166,6 +167,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "Club OS",
         "GymSales",
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "GoHighLevel (GHL)",
@@ -253,6 +255,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "Members who complete a structured onboarding program in their first 30 days are 75% more likely to still be active at 12 months. The first 30 days determine whether a new member builds a habit or becomes a ghost member — someone who pays but never shows up, and eventually cancels. Most gyms do nothing after the signup. — IHRSA 2024 Member Retention Report / Les Mills 2023 Global Consumer Fitness Survey",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "Club OS",
@@ -342,6 +345,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "The average gym loses 30-50% of its members every year. Most cancellations are predictable weeks in advance — declining visit frequency is the single strongest predictor of churn. Members who drop from 3 visits per week to 1 cancel within 60 days at a rate of 70%. Yet most facilities have no early warning system and only learn about churn when the cancellation request arrives. — IHRSA 2024 Member Retention Report / Retention Guru Fitness Industry Benchmark",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Club OS",
         "Wodify",
@@ -432,6 +436,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "No-shows and late cancellations cost the average boutique studio $15,000-$30,000 per year in lost revenue. Facilities that require advance booking, charge for no-shows, and send automated reminders reduce no-show rates by up to 60%. Every empty spot in a class or session that could have been filled is revenue that's gone forever. — Mindbody 2024 Fitness Industry Trends Report / ClassPass Scheduling Benchmark Data",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "Glofox",
@@ -521,6 +526,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "Top-performing fitness facilities generate 30-40% of revenue from secondary sources — personal training, nutrition coaching, retail, specialty programs, and premium upgrades. The average gym relies almost entirely on membership dues. Facilities with a systematic upsell process increase revenue per member by 35% without acquiring a single new member. — IHRSA 2024 Profiles of Success / ClubReady Revenue Benchmark Data",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "Glofox",
@@ -613,6 +619,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "Mailchimp",
         "Klaviyo",
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "ActiveCampaign",
@@ -786,6 +793,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "GoHighLevel (GHL)",
         "ReferralHero",
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "Glofox",
@@ -874,6 +882,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "GoHighLevel (GHL)",
         "Club OS",
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Mailchimp",
         "ActiveCampaign",
@@ -960,6 +969,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "In the fitness industry, front desk staff and trainers are the first and most frequent touchpoints for members. Facilities where staff follow a documented sales and service process retain members at 40% higher rates and generate 25% more secondary revenue than facilities where staff wing it. The difference between a great gym experience and a mediocre one is almost entirely behavioral — and behavior can be systematized. — IHRSA 2024 Profiles of Success / ACE Industry Insights Report",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "Deputy",
@@ -1048,6 +1058,7 @@ export const fitnessWellnessConfig: VerticalConfig = {
         "Gym owners who track lead source, conversion rate, member lifetime value, and churn rate simultaneously grow revenue 2-3x faster than those flying blind. With the average member worth $500-1,500 per year and the average facility losing 30-50% of its base annually, the difference between an 85% retention rate and a 70% retention rate is tens of thousands of dollars — invisible without the right dashboard. — IHRSA 2024 Profiles of Success / ClubReady Revenue Benchmark Data",
       softwareOptions: [
         "Mindbody",
+        "IClassPro",
         "Zen Planner",
         "Wodify",
         "Glofox",
@@ -1171,7 +1182,7 @@ FACILITY TYPE VOCABULARY (use fw_facility_type answer to adapt tone):
 - "Boutique studio" -> use "studio," "class packs," "community," "boutique experience"
 - "Personal training studio" -> use "clients," "sessions," "trainer-client relationship," "program design"
 - "CrossFit or functional fitness affiliate" -> use "box," "WOD," "community," "affiliate," "coach"
-- "Martial arts, boxing, or MMA gym" -> use "academy," "students," "belt progression," "training partners"
+- "Martial arts, boxing, or MMA gym" -> use "academy," "students," "belt," "rank," "belt progression," "belt testing," "summer camp," "training camp," "sparring," "training partners," "tournament," "competition"
 - "Wellness center" -> use "center," "modalities," "practitioners," "holistic"
 - "Mixed — multiple formats or modalities" -> use terms contextually based on the services described
 
