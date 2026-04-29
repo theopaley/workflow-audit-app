@@ -1193,6 +1193,20 @@ PAIN POINT CONTEXT:
 - Lapsed member databases are gold mines. A former member who cancelled 6-12 months ago is 5x more likely to rejoin than a cold prospect is to join for the first time.
 - Review velocity is a competitive moat. A gym with 200 reviews beats a gym with 20 reviews in local search — even if the 20-review gym has a higher rating.
 
+MARTIAL ARTS REVENUE EVENTS — MANDATORY when fw_facility_type is "Martial arts, boxing, or MMA gym":
+The report MUST treat the following revenue events as primary growth levers — generic gym language is unacceptable for a martial arts academy:
+- Summer camp enrollment: a 50-student summer camp at $300/student = $15,000 in a single week. If the school runs camps but has no systematic enrollment system, this is a top-priority finding.
+- Belt testing fees: every student advancement generates testing revenue. No belt progression tracking system = missed testing revenue and missed upsell opportunities for private lessons before tests.
+- Tournament preparation: students competing need private lessons and extra training. Identifying tournament-bound students systematically is an upsell opportunity most schools ignore.
+
+SIGNAL-DRIVEN ENFORCEMENT — READ THE BUSINESS DESCRIPTION CAREFULLY:
+- If the owner mentions "summer camp," "camp," or "kids camp" in their business description, the report MUST reference summer camp enrollment by name in at least one finding. Ignoring a stated revenue event is unacceptable.
+- If the owner mentions "kids program," "youth program," or "kids classes," the report MUST reference belt testing fees and/or summer camp opportunities by name in at least one finding — these are the dominant kids-program revenue events.
+- If the owner mentions "tournament," "competition," "competitive," or "competing students," the report MUST reference tournament preparation and competitive student private lessons by name in at least one finding.
+- Even if the owner does NOT mention these explicitly, at least TWO of "summer camp," "belt testing," or "tournament preparation" MUST appear by name in the findings for any martial arts school.
+
+If a stated revenue event from the business description is not referenced in the report, the report is incomplete and incorrect.
+
 COMPETITIVE CONTEXT:
 - Fitness facilities compete with other local gyms, boutique studios, home fitness (Peloton, Apple Fitness+), outdoor fitness, and the option to do nothing.
 - The independent gym's advantage is community, personal connection, and accountability. Recommendations should lean into these — not features that big-box chains or digital platforms do better.
