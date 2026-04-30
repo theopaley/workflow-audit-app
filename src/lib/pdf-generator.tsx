@@ -984,6 +984,29 @@ function FindingsPage({ result, scaleFactor, verticalId, companyName }: { result
         <Text style={{ fontSize: 11, color: '#4a4a4a', lineHeight: 1.6 }}>Every number in this report is based on your answers — your revenue, lead volume, close rate, and average job value. We apply industry-researched benchmarks to each workflow area, then cap the total at 40% of your monthly revenue to keep estimates conservative. Each card shows what fixing that area is conservatively worth to your business.</Text>
       </View>
 
+      {(() => {
+        const sorted = flaggedAreas
+          .map((area, i) => ({ name: area.name, leakage: displayValues[i] }))
+          .sort((a, b) => b.leakage - a.leakage);
+        const maxLeakage = sorted.length > 0 ? sorted[0].leakage : 1;
+        return (
+          <View style={{ marginBottom: 20 }}>
+            <Text style={s.sectionTitle}>Where Your Revenue Is Going</Text>
+            <Text style={{ fontSize: 10, color: '#4a4a4a', fontStyle: 'italic', marginBottom: 14 }}>Ranked by monthly impact — highest leakage first.</Text>
+            {sorted.map((item) => (
+              <View key={item.name} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Text style={{ fontFamily: 'Helvetica', fontSize: 10, color: '#1a1a1a', width: 180 }}>{item.name}</Text>
+                <View style={{ flex: 1, height: 8, backgroundColor: '#e8e3d8', borderRadius: 2 }}>
+                  <View style={{ width: `${Math.max(1, Math.round((item.leakage / maxLeakage) * 100))}%`, height: 8, backgroundColor: '#1a1a1a', borderRadius: 2 }} />
+                </View>
+                <Text style={{ fontFamily: 'Helvetica-Bold', fontSize: 10, color: '#1a1a1a', width: 80, textAlign: 'right' }}>{formatCurrency(item.leakage)}/mo</Text>
+              </View>
+            ))}
+            <View style={{ borderBottomWidth: 1, borderBottomColor: '#e8e3d8', marginVertical: 16 }} />
+          </View>
+        );
+      })()}
+
       {flaggedAreas.map((area, index) => (
         <FindingCard key={area.id} area={area} displayLeakage={displayValues[index]} verticalId={verticalId} />
       ))}
