@@ -129,7 +129,7 @@ function buildOwnerEmail(result: AnalysisResult): string {
 
 // ─── Team notification email ───────────────────────────────────────────────────
 
-function buildTeamEmail(result: AnalysisResult, answers: SurveyAnswers): string {
+function buildTeamEmail(result: AnalysisResult, answers: SurveyAnswers, companyName: string): string {
   const ownerEmail = String(answers["intro_email"] ?? "—");
   const teamSize = String(answers["intro_size"] ?? "—");
 
@@ -162,7 +162,7 @@ function buildTeamEmail(result: AnalysisResult, answers: SurveyAnswers): string 
           <tr>
             <td style="background: #1e293b; border-radius: 10px 10px 0 0; padding: 24px 32px;">
               <p style="margin: 0 0 2px 0; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8;">Internal — New Audit Submitted</p>
-              <h1 style="margin: 0; font-size: 20px; font-weight: 700; color: #f8fafc;">${result.businessName}</h1>
+              <h1 style="margin: 0; font-size: 20px; font-weight: 700; color: #f8fafc;">${companyName}</h1>
             </td>
           </tr>
 
@@ -286,6 +286,11 @@ export async function sendReportEmails(
   const ownerEmail = String(answers["intro_email"] ?? "");
   const fromEmail = "WorkflowAudit <hello@revrep.ai>";
   const teamEmail = process.env.TEAM_NOTIFICATION_EMAIL!;
+  const companyName =
+    typeof answers?.intro_company_name === "string" &&
+    answers.intro_company_name.trim()
+      ? answers.intro_company_name.trim()
+      : result.businessName;
 
   console.log("[email] Starting send — owner:", ownerEmail, "| team:", teamEmail);
   console.log("[email] From:", fromEmail, "| PDF size:", pdfBuffer.byteLength, "bytes");
@@ -297,7 +302,7 @@ export async function sendReportEmails(
   const ownerRes = await resend.emails.send({
     from: fromEmail,
     to: ownerEmail,
-    subject: `Your WorkflowAudit Report is Ready — ${result.businessName}`,
+    subject: `Your WorkflowAudit Report is Ready — ${companyName}`,
     html: buildOwnerEmail(result),
     attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
   });
@@ -320,8 +325,8 @@ export async function sendReportEmails(
   const teamRes = await resend.emails.send({
     from: fromEmail,
     to: teamEmail,
-    subject: `New Audit — ${result.businessName} | Score: ${result.overallScore} | Leakage: ${fmt(result.totalMonthlyLeakage)}/mo`,
-    html: buildTeamEmail(result, answers),
+    subject: `New Audit — ${companyName} | Score: ${result.overallScore} | Leakage: ${fmt(result.totalMonthlyLeakage)}/mo`,
+    html: buildTeamEmail(result, answers, companyName),
     attachments: [{ filename: "workflowaudit-report.pdf", content: pdfBuffer }],
   });
 

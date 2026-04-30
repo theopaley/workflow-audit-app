@@ -218,7 +218,7 @@ STACK SUMMARY — after evaluating all areas, produce a top-level stackSummary:
 - topStackIssue: one plain-English sentence naming the single biggest stack problem holding this business back.
 
 FIELD DERIVATION:
-- businessName: use answers.intro_company_name exactly as entered
+- businessName: If answers.intro_company_name is provided and non-empty, use it exactly as entered. If it is empty, missing, or just whitespace, generate a clean short business name (3-6 words max) based on the vertical and the owner's stated services — examples: "Full-service medical spa," "Botox and filler practice," "Commercial real estate practice," "Martial arts academy," "Property maintenance company," "Commercial cleaning company." NEVER use the raw business description as businessName. NEVER include first-person language ("I own," "we have"). The businessName should read naturally as the subject of a sentence like "[businessName] is losing an estimated..."
 - ownerName: use answers.intro_name exactly as entered
 
 Return a single valid JSON object with this structure:

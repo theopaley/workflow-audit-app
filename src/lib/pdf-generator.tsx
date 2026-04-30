@@ -920,7 +920,7 @@ function FindingCard({ area, displayLeakage, verticalId }: { area: AreaResult; d
   );
 }
 
-function FindingsPage({ result, scaleFactor, verticalId }: { result: AnalysisResult; scaleFactor: number; verticalId?: string }) {
+function FindingsPage({ result, scaleFactor, verticalId, companyName }: { result: AnalysisResult; scaleFactor: number; verticalId?: string; companyName: string }) {
   const flaggedAreas = result.areas.filter((a) => a.score < 70);
   const rawScaled = flaggedAreas.map((a) => Math.round(a.monthlyLeakage * scaleFactor));
   const scaledSum = rawScaled.reduce((s, v) => s + v, 0);
@@ -988,7 +988,7 @@ function FindingsPage({ result, scaleFactor, verticalId }: { result: AnalysisRes
         <FindingCard key={area.id} area={area} displayLeakage={displayValues[index]} verticalId={verticalId} />
       ))}
 
-      <PageFooter businessName={result.businessName} />
+      <PageFooter businessName={companyName} />
     </Page>
   );
 }
@@ -998,9 +998,11 @@ function FindingsPage({ result, scaleFactor, verticalId }: { result: AnalysisRes
 function PlatformPage({
   result,
   answers,
+  companyName,
 }: {
   result: AnalysisResult;
   answers: SurveyAnswers;
+  companyName: string;
 }) {
   const leftCards = buildLeftColumnCards(result, answers);
 
@@ -1057,7 +1059,7 @@ function PlatformPage({
         ))}
       </View>
 
-      <PageFooter businessName={result.businessName} />
+      <PageFooter businessName={companyName} />
     </Page>
   );
 }
@@ -1137,8 +1139,8 @@ export function AuditReportDocument({ result, answers }: AuditReportDocumentProp
       subject="AI Readiness Audit Report"
     >
       <CoverPage result={result} businessName={companyName} />
-      <FindingsPage result={result} scaleFactor={scaleFactor} verticalId={typeof answers.verticalId === "string" ? answers.verticalId : undefined} />
-      <PlatformPage result={result} answers={answers} />
+      <FindingsPage result={result} scaleFactor={scaleFactor} verticalId={typeof answers.verticalId === "string" ? answers.verticalId : undefined} companyName={companyName} />
+      <PlatformPage result={result} answers={answers} companyName={companyName} />
       <ClosingPage result={result} />
     </Document>
   );
