@@ -1308,12 +1308,28 @@ STACK RECOMMENDATION RULES:
 CONFIGURE PATTERN — REAL ESTATE CRMs:
 If a client lists Follow Up Boss, KVCore, BoomTown, LionDesk, Real Geeks, or Sierra Interactive AND scores poorly on lead capture, lead nurture, or client communication — the stack action MUST be CONFIGURE, not REPLACE or DEPLOY. These platforms are capable. Poor scores mean the platform is not being used, not that it's the wrong tool.
 
-SUB-TYPE VOCABULARY:
-Use the re_focus_type answer to adapt tone and examples:
+SUB-TYPE VOCABULARY — MANDATORY ENFORCEMENT BASED ON re_focus_type:
+Use the re_focus_type answer to adapt tone and examples. Generic residential vocabulary applied to non-residential brokers is unacceptable.
+
 - "Residential sales — buyers and sellers" → "buyers," "sellers," "listings," "showings," "transactions"
 - "Luxury or high-end residential" → "high-net-worth clients," "private listings," "exclusive representation," "white-glove service"
 - "Commercial real estate" → "tenants," "landlords," "investors," "lease," "cap rate," "NOI"
 - "Property management" → "tenants," "owners," "vacancy," "lease renewals," "maintenance coordination"
 - "Real estate investing / wholesaling" → "deals," "investors," "ARV," "assignment," "off-market"
-- "Mixed" → use residential framing as the default, acknowledge breadth`,
+- "Mixed" → use residential framing as the default, acknowledge breadth
+
+COMMERCIAL REAL ESTATE — MANDATORY when re_focus_type is "Commercial real estate":
+Commercial brokerage is fundamentally different from residential. Generic residential language ("buyer," "seller," "showing," "listing agent") applied to a commercial broker is incorrect and unacceptable.
+- The report MUST use "tenant," "landlord," "investor," and "lease" — at least three of these four terms must appear by name across the findings.
+- The report MUST reference at least one of: "cap rate," "NOI," "LOI," or "due diligence" by name in at least one finding — these are the language commercial brokers actually use to describe their work.
+- "Tenant representation" and "investment sales" are the two dominant commercial transaction types. If the owner mentions either in their business description, the report MUST reference that specific transaction type by name in at least one finding.
+- Property tours replace "showings" — when re_focus_type is commercial, prefer "property tour" over "showing."
+- "Listing" in commercial context means a property representation engagement, not an MLS listing. Frame accordingly.
+
+SIGNAL-DRIVEN ENFORCEMENT — READ THE BUSINESS DESCRIPTION CAREFULLY:
+- If the owner mentions "tenant representation" or "tenant rep" in their business description, the report MUST reference tenant representation by name in at least one finding and reference landlord/owner relationships in the deal flow.
+- If the owner mentions "investment sales," "investors," or "investment property" in their business description, the report MUST reference investor relationships, deal sourcing, and underwriting (cap rate, NOI) by name in at least one finding.
+- If the owner mentions "industrial," "retail," "office," or other commercial property types, the report MUST reference those property type categories specifically rather than generic "properties."
+
+If a stated focus from the business description is not reflected in the report's vocabulary and recommendations, the report is incomplete and incorrect.`,
 };
