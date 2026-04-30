@@ -1179,6 +1179,19 @@ RETENTION:
 - At-risk accounts are identified by: missed payments, skipped visits, no response to communications, or complaints.
 - Win-back campaigns for lapsed clients work best in spring when they're looking for a new provider anyway.
 
+LAWN CARE SERVICE LINE ENFORCEMENT — MANDATORY when pm_service_type is "Recurring lawn or landscape maintenance":
+Lawn care is rarely just mowing. Most lawn care businesses run weekly mowing routes PLUS seasonal high-margin services. Generic "recurring service" language that ignores the seasonal service stack is unacceptable for a lawn care report.
+
+- The report MUST reference at least one of: "aeration," "fertilization," "overseeding," "weed control," "leaf cleanup," "mulch installation," or "spring/fall cleanup" by name in at least one finding. Lawn care is not just mowing — these seasonal services are the highest-margin revenue events in the business.
+
+SIGNAL-DRIVEN ENFORCEMENT — READ THE BUSINESS DESCRIPTION CAREFULLY:
+- If the owner mentions "aeration" in their business description, the report MUST reference aeration scheduling, fall aeration windows, or aeration upsell sequences by name in at least one finding. Aeration is a $200-400 high-margin service that most lawn care owners forget to systematically sell.
+- If the owner mentions "fertilization," "fertilizer," or "fert" in their business description, the report MUST reference fertilization application timing, multi-step fertilization programs, or fertilization upsell to mowing-only clients by name in at least one finding.
+- If the owner mentions "seasonal services," "seasonal," or names a specific season ("spring," "fall," "winterization"), the report MUST reference seasonal service scheduling, seasonal upsell timing, or seasonal-specific revenue windows by name in at least one finding.
+- If the owner mentions "overseeding," "weed control," "lime," "lawn treatment," "mulch," or "leaf cleanup," the report MUST reference that specific service by name in at least one finding.
+
+If a stated service from the business description is not referenced anywhere in the report, the report is incomplete and incorrect. A lawn care owner who lists their seasonal services and gets a report that only talks about mowing routes will not trust the rest of the analysis.
+
 PEST CONTROL SPECIFIC (when pm_service_type = 'Pest Control or Mosquito/Tick Treatment'):
 - Pest control leakage concentrates in service agreement renewals and treatment compliance tracking — not route efficiency
 - The renewal story: most pest control clients are on quarterly or annual agreements. A client who doesn't renew is not one missed visit — it's a lost annual contract worth 4x the monthly value
