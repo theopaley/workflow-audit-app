@@ -72,10 +72,14 @@ export default function ProcessingPage() {
     }
 
     // Step 1: AI analysis
+    const abortController = new AbortController();
+    const fetchTimeout = setTimeout(() => abortController.abort(), 180000);
+
     fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(answers),
+      signal: abortController.signal,
     })
       .then((res) => {
         if (!res.ok) {
@@ -88,6 +92,7 @@ export default function ProcessingPage() {
         });
       })
       .then((result) => {
+        clearTimeout(fetchTimeout);
         sessionStorage.setItem("auditResult", JSON.stringify(result));
 
         apiDoneRef.current = true;
@@ -123,7 +128,12 @@ export default function ProcessingPage() {
         })();
       })
       .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        clearTimeout(fetchTimeout);
+        const message = err instanceof Error
+          ? (err.name === "AbortError"
+              ? "The analysis is taking longer than expected. Please try again."
+              : err.message)
+          : "Something went wrong. Please try again.";
         console.error("[processing] failed:", message);
         setError(message);
       });
@@ -161,6 +171,22 @@ export default function ProcessingPage() {
       return () => clearTimeout(timer);
     }
   }, [apiDone, completedCount, router]);
+
+  // ── Defensive safety net — if data is in sessionStorage, redirect after timeout ──
+  useEffect(() => {
+    if (error) return;
+    const safetyTimer = setTimeout(() => {
+      try {
+        if (sessionStorage.getItem("auditResult") && !redirectScheduled.current) {
+          redirectScheduled.current = true;
+          router.push("/results");
+        }
+      } catch {
+        // sessionStorage unavailable — let the error UI handle it
+      }
+    }, 90000); // 90 seconds — well past normal 60-90s completion
+    return () => clearTimeout(safetyTimer);
+  }, [error, router, retryCount]);
 
   // ── Error state ───────────────────────────────────────────────────────────────
   if (error) {
