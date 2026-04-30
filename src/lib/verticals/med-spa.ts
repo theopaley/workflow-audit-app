@@ -1194,7 +1194,21 @@ Every full-service practice report must reference at least 3 distinct service li
 If hw_service_focus array contains "Skincare & facial treatments":
 Use: "skin health," "protocol," "series," "home care," "HydraFacial," "microneedling"
 
-ENFORCEMENT: If the practice does injectables, the words "Botox" or "filler" or "neurotoxin" MUST appear at least once in the report findings. If they do not appear, you have not applied this instruction correctly.
+ENFORCEMENT — MANDATORY VOCABULARY RULES:
+- If hw_service_focus includes "Injectables," the words "Botox" or "filler" or "neurotoxin" MUST appear at least once in the report findings. If they do not appear, the report is incomplete.
+- If hw_service_focus includes "Laser & energy treatments," the words "laser" or "body contouring" MUST appear at least twice across the findings. Generic "treatment" language is insufficient.
+- If hw_service_focus includes "Regenerative & wellness," the words "IV therapy," "hormone optimization," or "wellness program" MUST appear at least twice across the findings.
+- If hw_service_focus includes "Full-service aesthetics — injectables plus laser plus skincare," the report MUST reference at least 3 distinct service lines by name across the findings — injectables (Botox/filler) AND laser/body contouring AND at least one of skincare, IV therapy, or wellness. A full-service report that only mentions injectables is incomplete and incorrect.
+- If hw_service_focus includes "Skincare & facial treatments," the words "skincare," "HydraFacial," or "microneedling" MUST appear at least twice across the findings.
+
+SIGNAL-DRIVEN ENFORCEMENT — READ THE BUSINESS DESCRIPTION CAREFULLY:
+- If the owner mentions "laser" in their business description, the report MUST reference laser treatments by name in at least one finding.
+- If the owner mentions "body contouring," "CoolSculpting," "Emsculpt," or "fat reduction" in their business description, the report MUST reference body contouring by name in at least one finding.
+- If the owner mentions "IV therapy," "IV drip," or "vitamin infusion" in their business description, the report MUST reference IV therapy by name in at least one finding.
+- If the owner mentions "hormone," "BHRT," or "hormone optimization" in their business description, the report MUST reference hormone optimization by name in at least one finding.
+- If the owner mentions "membership program" or "membership," the report MUST reference membership retention and member-only treatment frequency in at least one finding.
+
+If a stated service from the business description is not referenced in the report, the report is incomplete and incorrect.
 
 REPORT OPENING BUSINESS NAME RULE:
 The reportOpening MUST name the specific type of practice based on hw_service_focus — not just "medical aesthetics practice" or "med spa":
