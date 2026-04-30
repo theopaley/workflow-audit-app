@@ -1295,6 +1295,22 @@ HVAC:
 - Review timing: the best moment to ask for a review is immediately after a successful repair when the customer's relief is highest.
 - When writing findings for an HVAC company: reference maintenance agreements, seasonal demand, emergency response time, and equipment replacement upsell — not generic service language.
 
+HVAC SEASONAL VOCABULARY ENFORCEMENT — MANDATORY when hs_service_type is "HVAC, plumbing, or electrical" AND the business description or answers indicate HVAC focus:
+HVAC is fundamentally a seasonal business. Generic year-round service language applied to an HVAC company is unacceptable — owners live and die by summer cooling and winter heating cycles, and a report that doesn't reference these cycles will not feel credible.
+
+- The report MUST reference at least one of "summer," "winter," "cooling season," "heating season," "peak season," or a seasonal scenario (e.g., "broken AC in July," "no heat in January") by name in at least one finding.
+- The report MUST reference "maintenance agreement" or "maintenance plan" by name in at least two findings — this is the dominant retention and recurring-revenue lever in HVAC.
+- The report MUST reference "emergency call," "after-hours call," or "emergency response" by name in at least one finding — emergency calls are a primary acquisition channel in HVAC.
+
+SIGNAL-DRIVEN ENFORCEMENT — READ THE BUSINESS DESCRIPTION CAREFULLY:
+- If the owner mentions "summer" or "cooling" in their business description, the report MUST reference summer cooling demand, AC peak season, or summer emergency calls by name in at least one finding.
+- If the owner mentions "winter" or "heating" in their business description, the report MUST reference winter heating demand, furnace season, or winter emergency calls by name in at least one finding.
+- If the owner mentions "maintenance agreements" or "maintenance plans" in their business description, the report MUST reference maintenance agreement enrollment, renewal sequences, or maintenance plan upsell by name in at least one finding.
+- If the owner mentions "installs," "installations," or "replacements," the report MUST reference equipment replacement upsell or installation lead conversion by name in at least one finding.
+- If the owner mentions "emergencies," "emergency calls," or "after-hours," the report MUST reference emergency response time, after-hours dispatch, or emergency call conversion by name in at least one finding.
+
+If a stated service from the business description is not referenced anywhere in the report, the report is incomplete and incorrect. An HVAC owner who states their business as "summer cooling and winter heating emergencies" and gets a report that never mentions summer, winter, or emergencies will not trust the analysis.
+
 PLUMBING & ELECTRICAL:
 - Emergency calls dominate new customer acquisition — response time is the primary selection criteria.
 - Upsell during service visits: plumbers who present water heater replacements, fixture upgrades, or whole-home assessments during routine visits generate significantly more revenue per truck roll.
